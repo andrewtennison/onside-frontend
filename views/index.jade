@@ -1,12 +1,4 @@
 
-- if (!everyauth.loggedIn)
-	h2 Log In
-	<a href="/auth/twitter">log in with twitter</a>
-	<a href="/auth/facebook">log in with facebook</a>
-
-- else
-	h2 Logged In
-	p= JSON.stringify(everyauth.twitter.user)
 	
 
 
@@ -15,7 +7,36 @@ section#OnsideApp
 		section.page#listGroups
 			header
 				hgroup
-					h1 Onside.me / #{title}
+				- if (!everyauth.loggedIn)
+					h1 #{title}
+					br
+
+					a(href='/register') Register
+					a(href='/login', style='border: 0px') Login with Password					
+					
+					a(href='/register') Register
+					br
+					
+					a(href='/login', style='border: 0px') Login with Password
+					br
+					
+					a.fb_button_medium(href='/auth/facebook')
+						span#fb_login_text.fb_button_text
+						Connect with Facebook
+					br
+					a(href='/auth/twitter')
+						img(src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png')
+					br
+					
+					a(href='/auth/google')
+						img(style='border: 0px', src='https://www.google.com/favicon.ico')
+						
+				- else
+					h1= everyauth.user.name
+					a(href="/logout") logout
+					p= JSON.stringify(everyauth.user)
+
+
 				nav
 					a.filter.button(href="#") filter
 				
