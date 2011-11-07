@@ -6,6 +6,7 @@
 var express 	= require('express'),
 	routes 		= require('./routes'),
 	everyauth 	= require('everyauth'),
+	graph 		= require('fbgraph'),	
 	util 		= require('util');
 
 // Load Authentication code - doesnt need to be set to var
