@@ -1,0 +1,81 @@
+
+- if (!everyauth.loggedIn)
+	h2 Log In
+	<a href="/auth/twitter">log in with twitter</a>
+	<a href="/auth/facebook">log in with facebook</a>
+
+- else
+	h2 Logged In
+	p= JSON.stringify(everyauth.twitter.user)
+	
+
+
+section#OnsideApp
+	div#main(role='main')
+		section.page#listGroups
+			header
+				hgroup
+					h1 Onside.me / #{title}
+				nav
+					a.filter.button(href="#") filter
+				
+				div.filterBlock
+					p filter options
+
+				div.searchBlock
+					form(action="/")
+						input#groupSearch(type="search", placeholder="search")
+
+			section.content
+
+			footer
+				nav
+					a.settings.icon(href="#") settings
+					a.toggle.toggleButton(href="#")
+						span.channel channels
+						span.event events
+
+		section.page#listArticle
+			header
+				h1 Here are the highlights
+				nav
+					span.buttonGroup
+						a.filter(href="#") filter page
+					
+					span.buttonGroup
+						a.profile(href="#") profile
+						a.login(href="#") Sign out
+
+			section.content
+		
+		section.page#detailArticle
+			header
+				h1 Title of article
+				nav
+					span.buttonGroup
+						a.share(href="#") share
+						a.save(href="#") save
+
+					a.button.close(href="#") close
+
+			section.content
+		
+		section.page#listChat
+			header
+				h1
+					span 0
+					Chatter
+				
+				nav
+					a.button.filter(href="#") filter
+					a.button.add(href="#") Add
+
+				div.addBlock
+					form(action="/")
+						input#commentAdd(type="text", placeholder="add your comment")
+
+			section.content
+			footer
+				a(href="#") SEE MORE DISCUSSIONS
+
+

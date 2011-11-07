@@ -1,0 +1,149 @@
+/*
+   layout.css
+   site
+   
+   Created by andrew tennison on 2011-09-08.
+   Copyright 2011 andrew tennison. All rights reserved.
+*/
+
+
+/* ==|== normalise ====================================================== */
+@import "/c/style.css";
+
+/* ==|== typography ====================================================== */
+@import "/c/type.css";
+
+/* ==|== media queries ====================================================== 
+@import "/c/lessframework.css";*/
+
+/* ==|== primary styles ===================================================== */
+#topbar {position:absolute; height:35px; z-index:2; top:0px; left:0px; width:100%; background:#333; text-align:right; box-shadow:0 0 3px #000}
+	#topbar #logo {position:absolute; display:block; color:#fff; font-size:1.4em; text-decoration:none; padding:8px}
+	#topbar #logo small {display:none}
+	#topbar nav {position:relative; display:inline-block;}
+	#topbar nav a {position:relative; display:inline-block; color:#fff; margin:0 3px 0 0; padding:7px 10px 12px; top:3px;}
+	#topbar nav a.on {background:#999; color:#000; box-shadow:0 0 3px #000;}
+
+#contentNav .center {position:absolute; z-index:2; top:50%; left:0; width:30px; height:50px; margin-top:-15px; text-indent:-999px; overflow:hidden; background:red}
+
+#OnsideApp {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden}
+#main {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden;-webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {position:absolute; display:block; top:0; bottom:0; left:0; right:0; overflow-y:hidden; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {display: -moz-box; display: -webkit-box; display: box; -moz-box-orient: vertical; -webkit-box-orient: vertical; box-orient: vertical;}
+
+	#leftArrow, #rightArrow {position:absolute; display:block; top:0; width:30px; height:30px; background:#000; z-index:5}
+
+.page > section.content { -moz-box-flex: 1; -webkit-box-flex: 1; box-flex: 1; overflow-y: auto}
+
+header {}
+header nav {position:absolute; top:16px; right:10px;}
+header > [class*='Block'] {position:relative; display:none; padding:6px;}
+header > [class*='Block'] input {width:230px}
+header > .searchBlock {display:block; background:url(/i/sprites/carbonFibre.png) 0 0 repeat}
+
+/* ==|== listGroups styles ===================================================== */
+#main #listGroups {width:280px; right:auto; background:#edf0f5; z-index:3; box-shadow:0 0 7px #666}
+#listGroups header h1, 
+#listGroups footer {border-bottom:1px solid #cbcbcb; background: #ffffff; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #fdfdfd 50%, #e5e5e5 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#fdfdfd), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */background: -o-linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* Opera11.10+ */background: linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* W3C */}
+#listGroups footer {box-shadow:0 0 20px rgba(0,0,0,0.2);}
+#listGroups footer a {position:relative; display:inline-block; vertical-align:middle}
+#listGroups footer .settings, 
+#listGroups footer .wiggle {position:relative; display:inline-block; height:52px; text-indent:-999px; overflow:hidden}
+#listGroups footer .settings {background:url(/i/sprites/icon_gear.png) center center no-repeat; width:52px; border-right:1px solid #c6c8cd}
+#listGroups footer .wiggle {background:url(/i/sprites/icon_wiggle.png) center center no-repeat; width:58px; border-left:1px solid #c6c8cd}
+#listGroups footer .toggleButton {margin:0 20px; float:none}
+
+#listGroups h2 {color:#fff; font-weight:normal; font-size:1.1em; padding:4px 10px 2px; background: #595959; /* Old browsers */background: -moz-linear-gradient(top, #595959 0%, #020202 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(100%,#020202)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #595959 0%,#020202 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #595959 0%,#020202 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #595959 0%,#020202 100%); /* IE10+ */background: linear-gradient(top, #595959 0%,#020202 100%); /* W3C */}
+#listGroups article {position:relative; display:block; padding:8px 8px 8px 38px; border-bottom:1px solid #d4d7dc}
+#listGroups article:hover {cursor: pointer; background:#eee}
+#listGroups article img {position:absolute; left:8px; top:8px;}
+#listGroups article h1 {line-height:24px; font-size:1.2em; color:#494c4f; font-weight: normal}
+#listGroups article.active {background:#ddd;}
+
+/* ==|== listArticle styles ===================================================== */
+#main #listArticle {left:280px; right:280px; background:#fff; z-index:2; box-shadow:0 0 10px #666}
+#listArticle.shut {-moz-transform:translateX(-95%); -webkit-transform:translateX(-97.5%)}
+
+#listArticle header {border-bottom:1px solid #e6e6e6}
+#listArticle .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
+
+#listArticle article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
+#listArticle article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
+	#listArticle article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
+	#listArticle article img {max-width: 100%}
+	#listArticle article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
+	#listArticle article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
+	#listArticle article a {margin:0 5px 0 0; font-size:1.1em}
+	#listArticle article a.readMore {}
+
+/* ==|== detailArticle styles ===================================================== */
+#main #detailArticle {left:280px; right:280px; background:#fff; z-index:1}
+#detailArticle header {margin:0 0 0 5%; border-bottom:1px solid #e6e6e6}
+#detailArticle header h1{padding:16px 150px 16px 16px}
+#detailArticle section {margin:0 0 0 5%; padding:16px; font-size:1.2em}
+#detailArticle section h2 {font-size:1.2em; padding: 0 0 10px 0}
+#detailArticle section p {padding:0 0 10px 0}
+
+/* ==|== listChat styles ===================================================== */
+#main #listChat {width:280px; left:auto; background:#d2d7db; z-index:1}
+#listChat header {border-bottom:1px solid #dee3e7}
+#listChat header h1 {margin-left:10px; padding-left:30px; background:url(/i/sprites/icon_comment.png) left center no-repeat}
+#listChat header h1 span {position:absolute; top:8px; left:20px; font-size:0.5em; font-weight:normal; display:block; background:#3b97fe; color:#fff; border:2px solid #fff; border-radius:10px; padding:2px 4px 1px 4px; box-shadow:0 2px 3px rgba(0,0,0,0.5)}
+
+#listChat article {position:relative; display:block; margin:10px 10px 0 10px; padding:0 56px 0 0; background:#fff}
+#listChat article:before {content:''; width:0; height:0; position:absolute; left:-10px; top:20%; margin-top:-3px;  border:5px solid transparent; border-right-color:#fff}
+#listChat article p {padding:8px; font-size:1.1em; font-weight:bold; color:#4c4d4f; word-wrap: break-word}
+#listChat article img {position:absolute; top:8px; right:8px;}
+#listChat article time {position:relative; display:block; padding:0 0 8px 8px}
+
+#listChat footer {border-top:1px solid #bdc2c5}
+#listChat footer a {position:relative; display:block; color:#1b4773; text-align: center; padding:10px 0; text-decoration: none; font-size:1.2em; font-weight: bold;}
+#listChat footer a:hover {color:#D2D7DB; background:#455e6b}
+/* ==|== reused styles ===================================================== */
+
+
+
+
+
+
+/* ==|== media querys ===================================================== */
+@media only screen and (min-width: 480px) {}
+@media only screen and (min-width: 768px) {}
+
+@media only screen and (min-width: 1025px) {
+	#main {right:0px}
+}
+
+@media only screen and (min-width: 641px) and (max-width: 1024px) {
+	#main {right:-258px;}
+	#main.pageLeftCol {-webkit-transform: translateX(0px); -moz-transform: translateX(0px)}
+	#main.pageRightCol {-webkit-transform: translateX(-258px); -moz-transform: translateX(-258px);}
+
+	#leftArrow {left:250px}
+	#rightArrow {right:250px}
+	
+}
+
+@media only screen and (max-width: 640px) {
+	#main {right:0}
+	#main #listGroups, #main #listArticle, #main #detailArticle, #main #listChat {width:95%; right:auto;}
+	#main #listGroups {left:0}
+	#main #listArticle {left:95%;}
+	#main #detailArticle {left:95%;}
+	#main #listChat {left:190%}
+	
+	#main {overflow:visible}
+	#main.pageLeftCol {-webkit-transform: translateX(0%); -moz-transform: translateX(0%)}
+	#main.pageMidCol {-webkit-transform: translateX(-92.5%); -moz-transform: translateX(-92.5%);}
+	#main.pageRightCol {-webkit-transform: translateX(-185%); -moz-transform: translateX(-185%);}
+
+	#leftArrow {left:92.5%}
+	#rightArrow {left:187.5%}
+
+	#listArticle article {width:96%}
+
+}
+
+
+
+

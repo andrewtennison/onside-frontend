@@ -1,0 +1,28 @@
+// TEMPLATES ///////////////////////////////////////////
+
+script#eventListTemplate(type="text/html")
+  h1 {{collection}} / {{ name }}
+
+script#channelListTemplate(type="text/html)
+  <h1>{{ name }}</h1>
+  {{#img}} <img src='/assets/i/content/channel/{{ img }}_thumb.png' /> {{/img}}
+
+script#commentListTemplate(type="text/html")
+  p {{ text }}
+  time {{ created_at }}
+  img(src='{{ profile_image_url }}', alt='avatar')
+
+script#rssTemplate(type="text/html")
+  a.readMore(href="#")
+    h2 {{title}}
+  {{#o_img}} img(src="{{url}}") {{/o_img}}
+  p {{o_shortDesc}}
+  {{#o_readMore}} a.readMore.button(href="#") read more {{/o_readMore}}
+  a(href="{{link}}) view source
+  time {{o_date}}
+  nav
+
+script#fullArticleTemplate(type="text/html")
+  {{#o_img}} img(src="{{url}}") {{/o_img}}
+  div {{{o_longDesc}}}
+
