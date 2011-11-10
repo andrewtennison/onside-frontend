@@ -1,4 +1,9 @@
-var on = window.on || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
+
+
+// BB = {} is namespace for constructors
+// on = {} is namespace for instances on objects
+
+var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
 
 on.m = {};
 on.c = {};

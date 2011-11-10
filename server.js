@@ -10,16 +10,23 @@ var express 	= require('express'),
 	util 		= require('util');
 
 // Load Authentication code - doesnt need to be set to var
-var onsideAuth = require('./lib/auth')(app);
+var onsideAuth 	= require('./lib/auth')(app);
+
+process.on('uncaughtException', function (err) {
+  console.error(err);
+  console.log("Node NOT Exiting...");
+});
 
 // Create server	
 var app = module.exports = express.createServer();
 
 // Configuration
 app.configure(function(){
+	app.use(express.logger());
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({ secret : "changeToSomething!"}));
+	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
@@ -29,6 +36,7 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
+	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
 });
 

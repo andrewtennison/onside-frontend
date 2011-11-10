@@ -4,43 +4,55 @@ section#OnsideApp
 		section.page#listGroups
 			header
 				hgroup
-				- if (!everyauth.loggedIn)
-					h1 #{title}
-					br
+					- if (everyauth.loggedIn)
+						h1= everyauth.user.name
+					- else
+						h1 #{title}
 
-					a(href='/register') Register
-					a(href='/login', style='border: 0px') Login with Password					
-					
-					a(href='/register') Register
-					br
-					
-					a(href='/login', style='border: 0px') Login with Password
-					br
-					
-					a.fb_button_medium(href='/auth/facebook')
-						span#fb_login_text.fb_button_text
-						Connect with Facebook
-					br
-					a(href='/auth/twitter')
-						img(src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png')
-					br
-					
-					a(href='/auth/google')
-						img(style='border: 0px', src='https://www.google.com/favicon.ico')
-						
-				- else
-					h1= everyauth.user.name
-					a(href="/logout") logout
-					p= JSON.stringify(everyauth.user)
 
 
 				nav
-					a.filter.button(href="#") filter
+					span.buttonGroup
+						- if (everyauth.loggedIn)
+							a.account.toggleBlock(href="#navAccounts") profile
+						-else 
+							a.login.toggleBlock(href="#navLogin") Sign In
+					
+					a.filter.button.toggleBlock(href="#navFilters") filter
 				
-				div.filterBlock
+				- if (everyauth.loggedIn)
+					div#navAccounts.block
+							a.logout(href="/logout") Sign out
+				-else
+					div#navLogin.block
+						a(href='/register') Register
+						a(href='/login', style='border: 0px') Login with Password					
+						
+						a(href='/register') Register
+						br
+						
+						a(href='/login', style='border: 0px') Login with Password
+						br
+						
+						a.fb_button_medium(href='/auth/facebook')
+							span#fb_login_text.fb_button_text
+							Connect with Facebook
+						br
+						a(href='/auth/twitter')
+							img(src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png')
+						br
+						
+						a(href='/auth/google')
+							img(style='border: 0px', src='https://www.google.com/favicon.ico')
+							
+						a(href="/logout") logout
+						p= JSON.stringify(everyauth.user)
+
+
+				div#navFilters.block
 					p filter options
 
-				div.searchBlock
+				div#navSearch.block
 					form(action="/")
 						input#groupSearch(type="search", placeholder="search")
 
@@ -49,7 +61,7 @@ section#OnsideApp
 			footer
 				nav
 					a.settings.icon(href="#") settings
-					a.toggle.toggleButton(href="#")
+					a.toggleList.toggleButton(href="#")
 						span.channel channels
 						span.event events
 
@@ -59,11 +71,8 @@ section#OnsideApp
 				nav
 					span.buttonGroup
 						a.filter(href="#") filter page
+						a.refresh(href="#") refresh
 					
-					span.buttonGroup
-						a.profile(href="#") profile
-						a.login(href="#") Sign out
-
 			section.content
 		
 		section.page#detailArticle

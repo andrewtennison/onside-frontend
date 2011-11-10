@@ -1,6 +1,6 @@
-var on = window.on || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
+var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
 
-on.appRoutes = Backbone.Router.extend({
+BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''			: 'home',
 		
@@ -14,17 +14,21 @@ on.appRoutes = Backbone.Router.extend({
 	initialize: function(){
 		console.info('# appRoutes.initialize');
 				
-		on.m.app = new on.App();
-		on.v.onsideApp = new on.AppView({
+		on.m.app = new BB.App();
+		on.v.onsideApp = new BB.AppView({
 			el: $('#OnsideApp'),
 			app: on.m.app
 		});
 		
 		// create + init collections for channels + events
-		on.c.defaultChannels = new on.ChannelList();
-		on.c.defaultEvents = new on.EventList();
+		on.c.defaultChannels = new BB.ChannelList();
+		on.c.defaultEvents = new BB.EventList();
 		
-		on.v.nav = new on.NavView({
+		on.v.nav = new BB.NavView({
+			app: on.m.app
+		});
+		
+		on.v.detail = new BB.DetailView({
 			app: on.m.app
 		});
 		
@@ -49,13 +53,13 @@ on.appRoutes = Backbone.Router.extend({
 	getAuth: function( id ){
 		console.log('// Routes = "/user/'+id+'"');
 		
-		on.myChannel = new on.ChannelListView({
-			collection : on.ChannelList({ url : '/stubs/myChannels.js' })
+		on.myChannel = new BB.ChannelListView({
+			collection : BB.ChannelList({ url : '/stubs/myChannels.js' })
 		});
 		
 	}
 	
 });
 
-on.App = new on.appRoutes();
+var onside = new BB.appRoutes();
 Backbone.history.start();

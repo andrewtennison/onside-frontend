@@ -3,7 +3,7 @@
 	{
 		"UID": "000001",
 		"sport": "football",
-		"type": "league",
+		"type": "event:league",
 		"name": "Premier League 2011",
 		"participants": [
 			{"name":"Man Utd", "position":1, "played":3, "goalDiff":10, "points":9},
@@ -26,7 +26,7 @@
 	{
 		"UID": "000002",
 		"sport": "football",
-		"type": "match",
+		"type": "event:match",
 		"name": "Man U vs Chelsea",
 		"participants": [
 			{"name":"Man Utd", "position":null, "goalDiff":0},

@@ -37,9 +37,9 @@
 
 header {}
 header nav {position:absolute; top:16px; right:10px;}
-header > [class*='Block'] {position:relative; display:none; padding:6px;}
-header > [class*='Block'] input {width:230px}
-header > .searchBlock {display:block; background:url(/i/sprites/carbonFibre.png) 0 0 repeat}
+header > [class*='block'] {position:relative; display:none; padding:6px;}
+header > [class*='block'] input {width:230px}
+header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0 0 repeat}
 
 /* ==|== listGroups styles ===================================================== */
 #main #listGroups {width:280px; right:auto; background:#edf0f5; z-index:3; box-shadow:0 0 7px #666}
