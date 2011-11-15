@@ -47,6 +47,7 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
+app.get('/events', routes.index);
 
 app.get('/login', function(req,res){
 	res.render('login', { title: 'Log In' });

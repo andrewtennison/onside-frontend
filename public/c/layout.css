@@ -16,6 +16,9 @@
 /* ==|== media queries ====================================================== 
 @import "/c/lessframework.css";*/
 
+/* ==|== templating overide ====================================================== */ 
+.tmpl {display:none !important}
+
 /* ==|== primary styles ===================================================== */
 #topbar {position:absolute; height:35px; z-index:2; top:0px; left:0px; width:100%; background:#333; text-align:right; box-shadow:0 0 3px #000}
 	#topbar #logo {position:absolute; display:block; color:#fff; font-size:1.4em; text-decoration:none; padding:8px}
@@ -60,29 +63,31 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 #listGroups article h1 {line-height:24px; font-size:1.2em; color:#494c4f; font-weight: normal}
 #listGroups article.active {background:#ddd;}
 
-/* ==|== listArticle styles ===================================================== */
-#main #listArticle {left:280px; right:280px; background:#fff; z-index:2; box-shadow:0 0 10px #666}
-#listArticle.shut {-moz-transform:translateX(-95%); -webkit-transform:translateX(-97.5%)}
+/* ==|== listDetail styles ===================================================== */
+#main #listDetail {left:280px; right:280px; background:#fff; z-index:2; box-shadow:0 0 10px #666}
+#listDetail.shut {-moz-transform:translateX(-95%); -webkit-transform:translateX(-97.5%)}
 
-#listArticle header {border-bottom:1px solid #e6e6e6}
-#listArticle .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
+#listDetail header {border-bottom:1px solid #e6e6e6}
+#listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
 
-#listArticle article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
-#listArticle article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
-	#listArticle article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
-	#listArticle article img {max-width: 100%}
-	#listArticle article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
-	#listArticle article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
-	#listArticle article a {margin:0 5px 0 0; font-size:1.1em}
-	#listArticle article a.readMore {}
+#listDetail article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
+#listDetail article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
+	#listDetail article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
+	#listDetail article img {max-width: 100%}
+	#listDetail article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
+	#listDetail article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
+	#listDetail article a {margin:0 5px 0 0; font-size:1.1em}
+	#listDetail article a.readMore {}
 
 /* ==|== detailArticle styles ===================================================== */
 #main #detailArticle {left:280px; right:280px; background:#fff; z-index:1}
-#detailArticle header {margin:0 0 0 5%; border-bottom:1px solid #e6e6e6}
+#detailArticle header {margin:0 0 0 0%; border-bottom:1px solid #e6e6e6}
 #detailArticle header h1{padding:16px 150px 16px 16px}
 #detailArticle section {margin:0 0 0 5%; padding:16px; font-size:1.2em}
 #detailArticle section h2 {font-size:1.2em; padding: 0 0 10px 0}
 #detailArticle section p {padding:0 0 10px 0}
+
+#detailArticle .detailItem {position:relative; display:block; clear:both}
 
 /* ==|== listChat styles ===================================================== */
 #main #listChat {width:280px; left:auto; background:#d2d7db; z-index:1}
@@ -126,9 +131,9 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 
 @media only screen and (max-width: 640px) {
 	#main {right:0}
-	#main #listGroups, #main #listArticle, #main #detailArticle, #main #listChat {width:95%; right:auto;}
+	#main #listGroups, #main #listDetail, #main #detailArticle, #main #listChat {width:95%; right:auto;}
 	#main #listGroups {left:0}
-	#main #listArticle {left:95%;}
+	#main #listDetail {left:95%;}
 	#main #detailArticle {left:95%;}
 	#main #listChat {left:190%}
 	
@@ -140,7 +145,7 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 	#leftArrow {left:92.5%}
 	#rightArrow {left:187.5%}
 
-	#listArticle article {width:96%}
+	#listDetail article {width:96%}
 
 }
 

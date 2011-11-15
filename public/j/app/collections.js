@@ -5,30 +5,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 (function(BB){
 
 	var _Lists = Backbone.Collection.extend({
-		defaultUrl:'',
+		// overiden in extended objects
+		defaultUrl:'', 
+		// set when object is created in model.app
+		appUrl: null, 	
+		
+		// extend to look for proper urls based on routing
 		url: function(){
-			if(this.app.get('currentUrl') === null){
+			if(this.appUrl === null){
 				return this.defaultUrl;
 			}else{
 				alert('cant get channels because URL has changed - '+this.app.currentUrl)
 				return false;
 			}		
-		},
-		
-		initialize: function(){
-			console.info('# Collection.List.initialize + fetch');
-			
-			_.bindAll(this, 'update');
-			this.app = on.m.app;
-			this.app.bind('change:currentUrl', this.update);
-			
-			this.fetch();
-		},
-		
-		update: function(){
-			console.log('! Collection.List.update: new URL reset collection');
-			this.fetch();
-		}	
+		}
 	});
 	
 	var ChannelList = _Lists.extend({
@@ -43,7 +33,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var DetailList = Backbone.Collection.extend({
 		model: BB.Detail,
-		defaultUrl: ''
+		defaultUrl: function(){
+			return '';
+		},
+		comparator: function(){
+			// sort models.. by the users default order if available?
+		},
+		initialize: function(){
+			_.bindAll(this, 'manageCollection');
+			this.bind('add', this.manageCollection);
+		},
+		manageCollection: function(){
+			console.log(this)
+		}
 	});
 	
 	var ArticleList = Backbone.Collection.extend({

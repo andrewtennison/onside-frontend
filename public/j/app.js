@@ -2,7 +2,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
-		''			: 'home',
+		''				: 'home',
+		'events'		: 'events',
 		
 		// ID could be a name or string
 		'event/:id'		: 'getEvent',
@@ -13,22 +14,24 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	initialize: function(){
 		console.info('# appRoutes.initialize');
-				
+		
+		// App model	
 		on.m.app = new BB.App();
+		
+		// Create main views
+		// Application view
 		on.v.onsideApp = new BB.AppView({
 			el: $('#OnsideApp'),
 			app: on.m.app
 		});
 		
-		// create + init collections for channels + events
-		on.c.defaultChannels = new BB.ChannelList();
-		on.c.defaultEvents = new BB.EventList();
-		
+		// Navigation view		
 		on.v.nav = new BB.NavView({
 			app: on.m.app
 		});
 		
-		on.v.detail = new BB.DetailView({
+		// Detail view
+		on.v.detailList = new BB.DetailListView({
 			app: on.m.app
 		});
 		
@@ -37,9 +40,14 @@ BB.appRoutes = Backbone.Router.extend({
 	home: function(){
 		console.log('// Routes = "/"  (index)');
 		
-		on.m.app.set({currentList : 'channels'});
-		on.m.app.set({list : on.c.defaultChannel});
-		
+		on.m.app.set({currentUrl : null});
+		on.m.app.set({currentListName : 'channels'});
+		on.m.app.trigger('change:currentUrl');
+	},
+	
+	events: function(){
+		console.log('// Routes = "/events"');
+		on.m.app.set({currentListName : 'events'});
 	},
 	
 	getEvent: function( id ){

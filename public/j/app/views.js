@@ -15,7 +15,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		initialize: function(){
 			console.info('# View.Appview.initialize');
-					
+			this.app = this.options.app;
 		},
 		
 		search: function(){},
@@ -23,8 +23,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		login: function(){
 			// show lightbox / options
 			// use chooses, auths, returns to page
-			// I update a number of APP params including URL, change URL 
-			
+			// I update a number of APP params including URL, change URL 		
 		},
 		
 		onResize : function(e){
@@ -73,12 +72,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			_.bindAll(this, 'updateView', 'changeGroup', 'toggleBlocks');
 			
-			// BIND: if model.app.currentList changes this view will get updated
-			this.app.bind('change:currentList', this.updateView);
+			// BIND: if model.app.currentListName changes this view will get updated
+			this.app.bind('change:currentListName', this.updateView);
 			
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
-			var channelList = new ChannelListView({ collection: on.c.defaultChannels, app: this.options.app });
-			var eventList = new EventListView({ collection: on.c.defaultEvents, app: this.options.app });
+			var channelList = new ChannelListView({ collection: this.app.channels, app: this.options.app }),
+				eventList = new EventListView({ collection: this.app.events, app: this.options.app });
 	
 			// commonly
 			this.$channels = $(channelList.el);
@@ -111,13 +110,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channel' : 'event';
 			
-			this.app.set({currentList: val });
+			this.app.set({currentListName: val });
 		},
 		
 		updateView: function(){
 			console.log('* View.Nav.updateView');
 			
-			switch(this.app.get('currentList')){
+			switch(this.app.get('currentListName')){
 				case 'event':
 				case 'events':
 					this.$content.append(this.$events);
@@ -135,7 +134,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				
 				default:
-					console.error('!! view.NavView.updateView: this.app.get(currentList) value = ' + this.app.get('currentList'))
+					console.error('!! view.NavView.updateView: this.app.get(currentList) value = ' + this.app.get('currentListName'))
 					break;
 			}
 		},
@@ -160,11 +159,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		confirm: function(){
-			//console.log('ListView.confirm = collection.all')
+			// nothing to do
 		},
 		
 		addOne: function(item){
-			//console.log('ListView.addOne = collection.add')
+			// overwritten in extended object
 		},
 		
 		addAll: function(){
@@ -201,101 +200,175 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		initialize: function(){
 			this.app = this.options.app;
 			_.bindAll(this, 'render', 'updateItem');
-			
-			this.app.bind('change:currentListItem', this.updateItem)
-			
+			this.app.bind('change:currentItemCid', this.updateItem)
 		},
 		render: function(){
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		},
 		updateItem: function(){
-			var path = this.app.get('currentList') + ':' + this.model.get('UID');
-			
-			if(path === this.app.get('currentListItem')){
+			if( this.model.cid === this.app.get('currentItemCid')){
 				$(this.el).addClass('active');
-			}else{
+				this.model.selected = true;
+			}else if ( this.model.selected ){
 				$(this.el).removeClass('active');
 			}
 		},
 		selectItem: function(e){
-			e.preventDefault();
-			
+			e.preventDefault();			
 			console.log('click')
 			
 			var id = $(e.currentTarget).find('h1').attr('data-id'),
 				path = this.app.get('currentList') + ':' + id;
-	
-			this.app.set({currentListItem:path});
-			this.app.set({currentModel:this.model});
+
+			this.app.set({
+				currentItemCid	: this.model.cid,
+				currentList 	: this.model.name,
+				currentModel 	: this.model
+			});
 		}
 	});
 	var ChannelView 	= _ListItemView.extend({
 		className:'channelItem',
-		//template: _.template($('#channelListTemplate').html()),
-		template: _.template("<h1 data-id='{{UID}}'>{{name}}</h1>")
+		template: _.template( $('#channelListTemplate').html() )
 	});
 	var EventView 		= _ListItemView.extend({
 		className:'eventItem',
-		template: _.template("<h1 data-id='{{UID}}'>{{name}}</h1>")
+		template: _.template( $('#eventListTemplate').html() )
 	});
 	
-	// click channel/event, add model to DetailList.collection
-	// collection.bind('add')
-	// model = detail collection or event - all required meta data, get articles, get related events/channels/etc!
-	var DetailView 		= Backbone.View.extend({
-		tagName: 'article',
-		className: 'detailItem',
-		
+	var DetailListView 	= Backbone.View.extend({
+		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
+		el: $('#detailArticle'),
+
 		events: {
 			//'click .refresh'	: 'refresh',
 			//'click .home'		: 'goHome'
 		},
-		
+
 		initialize: function(){
 			console.info('# View.Detail.initialize')
-			this.app = this.options.app;
-			//this.model = this.options.app.get('currentModel');
-
-			_.bindAll(this, 'updateModel');
 			
-			// BIND: if model.app.currentModel changes this view will get updated
-			this.app.bind('change:currentModel', this.updateModel);
+			this.app = this.options.app;
+			this.collection = this.app.detailedList;
+
+			_.bindAll(this, 'addOne', 'addAll', 'removeOne', 'show');
+			
+			// BIND Collection
+			this.collection.bind('add', this.addOne);
+			this.collection.bind('reset', this.addAll);
+			this.collection.bind('remove', this.removeOne);
+			
+			//this.app.bind('change:currentItemCid', this.show);
 		},
 		
-		resetView: function(){},
-		
-		updateModel: function(){
-			var type = this.options.app.get('currentModel').get('type');
-
-			console.log('# Detail.updateModel: type = ' + type);
+		addOne: function(model){
+			console.log('View.DetailList.addOne');
+			var view = new DetailView({model:model, app:this.options.app});
+			model.view = view.render().el;
+		},
+		addAll: function(models){
+			console.log('View.DetailList.addAll');
+		},
+		removeOne: function(){
+			console.log('View.DetailList.removeOne');
+		},
+		show: function(){
+			console.log('View.DetailList.show');
+			var cid = this.app.get('currentItemCid'),
+				model = this.collection.getByCid(cid);
+			//t = this.collection
+			console.log(this.collection)
+			console.log(model)
+			console.log(cid)
 			
-			// switches on type, could specifically look for data properties so less dependent
-			switch ( type ){
-				case 'channel':
-					// show Articles
-					break;
-				case 'event':
-					break;
-				case 'event:match':
-				case 'event:league':
-					break;
-				default:
-					console.error( 'View.Detail.updateModel: this.model.get(type) = '+this.model.get('type') );
-					break;
-			}
+			t = model;
+			//console.log(this.collection)
+			//this.el.append(view.render().el);
 			
 		}
 	});
-	// possibly sub parts to detail View;
-	
+
+	var DetailView		= Backbone.View.extend({
+		tagName: 'article',
+		className: 'detailItem',
+		template: _.template( $('#detailTemplate').html() ),
+		events: function(){},
+		
+		initialize: function(){
+			_.bindAll(this, 'render');
+		},
+		
+		render: function(){
+			$(this.el).html(this.template(this.model.toJSON()));
+			var view = new ArticleListView({ model: this.model });
+			$(this.el).append(view.el);
+			
+		    return this;
+		}
+	});
+
 	var ArticleListView = Backbone.View.extend({
-		// el : $('#listArticle'),
-		// collection : BB.ArticleList(),
-		// initialize: function(){}
+		tagName: 'section',
+		className: 'content',
+		initialize: function(){
+			console.log('# View.ArticleList.initialize');
+			_.bindAll(this, 'addAll', 'addOne');
+			
+			this.collection = new BB.ArticleList();
+			this.collection.bind('reset', this.addAll);
+			this.collection.bind('add', this.addOne);
+
+			this.collection.fetchRSS({
+				keywords : this.model.get('keywords')
+			})
+
+		},
+		
+		addAll: function(){
+			this.collection.each(this.addOne);
+		},
+		addOne: function(article){
+			var view = new ArticleView({model:article});
+			$(this.el).append(view.render().el);
+		}
+	});
+	
+	var ArticleView 	= Backbone.View.extend({
+		tagName: 'article',
+		template: _.template( '<h2>{{title}}</h2>' ),
+//		template: _.template( $('#articleTemplate').html() ),
+		
+		initialize: function(){
+			console.info('# View.Article.initialize')
+			_.bindAll(this, 'render');
+		},
+		
+		render: function(){
+			console.log(this.model.toJSON())
+			
+			$(this.el).html(this.template(this.model.toJSON()));
+		    return this;
+		}
+	});
+	
+	var ArticleDetailView = Backbone.View.extend({
+		el: $('#detailArticle'),
+		template: $('#articleDetail'),
+		
+		initialize: function(){
+			_.bindAll(this, 'render')
+		},
+		
+		render: function(){
+			$(this.el).html(this.template(this.model.toJSON()));
+		    return this;
+		}
 		
 	});
-	var ArticleView 	= Backbone.View.extend({});
+	
+	var iframeView		= Backbone.View.extend({});
+	
 	
 	// on.m.app.change, CommentList.reset()
 	var CommentListView = Backbone.View.extend({});
@@ -304,11 +377,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	// Assign private var to namespace (_var only used as base for other objects)
 	BB.AppView 			= AppView;		
 	BB.NavView 			= NavView;
-	//BB.ChannelListView 	= ChannelListView;
+	//BB.ChannelListView = ChannelListView;
 	//BB.EventListView 	= EventListView;
-	//BB.ChannelView 		= ChannelView;
+	//BB.ChannelView 	= ChannelView;
 	//BB.EventView 		= EventView;
-	BB.DetailView 		= DetailView;
+	BB.DetailListView 	= DetailListView;
 	//BB.ArticleListView 	= ArticleListView;
 	//BB.ArticleView 		= ArticleView;
 	//BB.CommentListView 	= CommentListView;

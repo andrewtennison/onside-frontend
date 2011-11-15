@@ -23,6 +23,8 @@ section#OnsideApp
 				- if (everyauth.loggedIn)
 					div#navAccounts.block
 							a.logout(href="/logout") Sign out
+							p= JSON.stringify(everyauth.user)
+
 				-else
 					div#navLogin.block
 						a(href='/register') Register
@@ -44,10 +46,6 @@ section#OnsideApp
 						
 						a(href='/auth/google')
 							img(style='border: 0px', src='https://www.google.com/favicon.ico')
-							
-						a(href="/logout") logout
-						p= JSON.stringify(everyauth.user)
-
 
 				div#navFilters.block
 					p filter options
@@ -76,16 +74,6 @@ section#OnsideApp
 			section.content
 		
 		section.page#detailArticle
-			header
-				h1 Title of article
-				nav
-					span.buttonGroup
-						a.share(href="#") share
-						a.save(href="#") save
-
-					a.button.close(href="#") close
-
-			section.content
 		
 		section.page#listChat
 			header
@@ -102,7 +90,43 @@ section#OnsideApp
 						input#commentAdd(type="text", placeholder="add your comment")
 
 			section.content
+
 			footer
 				a(href="#") SEE MORE DISCUSSIONS
 
+
+// templates
+#channelListTemplate.tmpl
+	h1(data-id='{{UID}}') {{name}}
+
+#eventListTemplate.tmpl
+	h1(data-id='{{UID}}') {{name}}
+
+#detailTemplate.tmpl
+	header
+		h1 {{name}}
+		nav
+			span.buttonGroup
+				a.share(href="#") share
+				a.save(href="#") save
+				
+			a.button.close(href="#") close
+
+#articleTemplate.tmpl
+	a.readMore(href="#")
+		h2{{title}}
+		
+	{{#o_img}} img(src="{{url}}") {{/o_img}}
+	p {{o_shortDesc}}
+		{{#o_readMore}} a.readMore.button(href="#") read more {{/o_readMore}}
+	
+	a(href="{{link}}) view source
+	time {{o_date}}
+	nav
+
+#articleDetail.tmpl
+	h2 {{name}}
+
+{{#o_img}} <img src="{{url}}" /> {{/o_img}}
+div {{{o_longDesc}}}
 
