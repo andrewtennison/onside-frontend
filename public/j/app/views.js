@@ -9,17 +9,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		events: {
 			'resize' 			: 'onResize',
-			'click .login' 		: 'login',
-			'submit #search' 	: 'search'
+			'click .login' 		: 'login'
 		},
 		
 		initialize: function(){
 			console.info('# View.Appview.initialize');
 			this.app = this.options.app;
 		},
-		
-		search: function(){},
-		
+				
 		login: function(){
 			// show lightbox / options
 			// use chooses, auths, returns to page
@@ -62,7 +59,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			'click .toggleSize'		: 'expandContainer',
 			'click .toggleBlock'	: 'toggleBlocks'
 		},
-		
+
 		initialize: function(){
 			console.info('# View.Nav.initialize');
 			
@@ -144,6 +141,51 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 		
 	});
+
+	var SearchView 		= Backbone.View.extend({
+		el: $('#navSearch > form'),
+		
+		events: {
+			'focus input[name="q"]' 	: 'focus',
+			'blur input[name="q"]' 		: 'blur',
+			'submit'					: 'submit'
+		},
+		
+		initialize : function(){
+			this.app = this.options.app;
+			_.bindAll(this, 'search');
+		},
+		
+		focus: function(){
+			console.log('focus')
+		},
+		blur: function(){
+			console.log('blur')
+		},
+		submit: function(e){
+		    e.preventDefault();
+		    this.search($('input[name="q"]').val());
+		},
+		search: function(value){
+			var that = this,
+				searchUrl = (on.env.internetConnection)? ( on.path.api + '/search/q=' + value ) : '/stubs/api.search.js';
+
+			$.get(searchUrl, function(json) {
+				var obj = {
+					service		: json.service,
+					title		: value,
+					channels	: json.resultset.channels,
+					events		: json.resultset.events,
+					articles	: json.resultset.articles
+				};
+				
+				// add object to detailList
+				that.app.detailedList.create('search', obj);
+				
+			}, 'json');
+		}
+		
+	});
 	
 	// List Views for left nav
 	var _ListView 		= Backbone.View.extend({
@@ -203,6 +245,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.app.bind('change:currentItemCid', this.updateItem)
 		},
 		render: function(){
+			console.log(this.model.toJSON())
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		},
@@ -216,15 +259,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		selectItem: function(e){
 			e.preventDefault();			
-			console.log('click')
-			
-			var id = $(e.currentTarget).find('h1').attr('data-id'),
-				path = this.app.get('currentList') + ':' + id;
+			console.log('! View.listItem.selectItem => click');
+
+			// add object to detailList
+			this.app.detailedList.create( this.model.name, this.model.toJSON() );
 
 			this.app.set({
-				currentItemCid	: this.model.cid,
-				currentList 	: this.model.name,
-				currentModel 	: this.model
+//				currentItemCid	: this.model.cid,
+//				currentList 	: this.model.name,
+//				currentModel 	: this.model
 			});
 		}
 	});
@@ -239,7 +282,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var DetailListView 	= Backbone.View.extend({
 		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
-		el: $('#detailArticle'),
+		el: $('#listDetail'),
 
 		events: {
 			//'click .refresh'	: 'refresh',
@@ -265,7 +308,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		addOne: function(model){
 			console.log('View.DetailList.addOne');
 			var view = new DetailView({model:model, app:this.options.app});
-			model.view = view.render().el;
+			//model.view = view.render().el;
+			this.show(view);
 		},
 		addAll: function(models){
 			console.log('View.DetailList.addAll');
@@ -273,7 +317,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		removeOne: function(){
 			console.log('View.DetailList.removeOne');
 		},
-		show: function(){
+		show: function(view){
 			console.log('View.DetailList.show');
 			var cid = this.app.get('currentItemCid'),
 				model = this.collection.getByCid(cid);
@@ -282,9 +326,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			console.log(model)
 			console.log(cid)
 			
-			t = model;
-			//console.log(this.collection)
-			//this.el.append(view.render().el);
+			console.log(this.collection)
+			this.el.append(view.render().el);
 			
 		}
 	});
@@ -296,10 +339,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		events: function(){},
 		
 		initialize: function(){
+			console.info('# View.Detail.initialize');
 			_.bindAll(this, 'render');
 		},
 		
 		render: function(){
+			console.log('# View.Detail.render');
 			$(this.el).html(this.template(this.model.toJSON()));
 			var view = new ArticleListView({ model: this.model });
 			$(this.el).append(view.el);
@@ -319,9 +364,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('add', this.addOne);
 
-			this.collection.fetchRSS({
-				keywords : this.model.get('keywords')
-			})
+			//this.collection.fetchRSS({
+			//	keywords : this.model.get('keywords')
+			//})
+			this.collection.fetch();
 
 		},
 		
@@ -377,15 +423,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	// Assign private var to namespace (_var only used as base for other objects)
 	BB.AppView 			= AppView;		
 	BB.NavView 			= NavView;
-	//BB.ChannelListView = ChannelListView;
-	//BB.EventListView 	= EventListView;
-	//BB.ChannelView 	= ChannelView;
-	//BB.EventView 		= EventView;
+	BB.SearchView		= SearchView;
 	BB.DetailListView 	= DetailListView;
-	//BB.ArticleListView 	= ArticleListView;
-	//BB.ArticleView 		= ArticleView;
-	//BB.CommentListView 	= CommentListView;
-	//BB.CommentView 		= CommentView;
 	
 })(this.BB);
 

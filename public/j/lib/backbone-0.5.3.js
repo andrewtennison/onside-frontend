@@ -285,6 +285,7 @@
         if (success) success(model, resp);
       };
       options.error = wrapError(options.error, model, options);
+      
       return (this.sync || Backbone.sync).call(this, 'read', this, options);
     },
 
@@ -1077,7 +1078,7 @@
     if (params.type !== 'GET' && !Backbone.emulateJSON) {
       params.processData = false;
     }
-
+    
     // Make the request.
     return $.ajax(params);
   };

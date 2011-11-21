@@ -23,34 +23,89 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var ChannelList = _Lists.extend({
 		model : BB.Channel,
-		defaultUrl: '/stubs/channels.js'
-	});
+		defaultUrl: (on.env.internetConnection)? ( on.path.api + '/channel' ) : '/stubs/api.channel.js',
+		parse: function(resp, xhr) {
+			return resp.resultset.channels;
+		}
+    });
 	
 	var EventList = _Lists.extend({
 		model : BB.Event,
-		defaultUrl: '/stubs/events.single.js'
+		defaultUrl: (on.env.internetConnection)? ( on.path.api + '/event' ) : '/stubs/api.event.js',
+		parse: function(resp, xhr) {
+			return resp.resultset.events;
+		}
 	});
 	
 	var DetailList = Backbone.Collection.extend({
 		model: BB.Detail,
 		defaultUrl: function(){
+			// /event/{ID}  or /channel/{ID}
+			
 			return '';
 		},
 		comparator: function(){
 			// sort models.. by the users default order if available?
 		},
 		initialize: function(){
-			_.bindAll(this, 'manageCollection');
+			_.bindAll(this, 'manageCollection', 'create');
 			this.bind('add', this.manageCollection);
 		},
 		manageCollection: function(){
 			console.log(this)
+		},
+		create: function(type, obj){
+			// NOTE: channel or event - channel: new BB.channelList({url:'/channel?channel=id'}) - channel load related channels to this one? - fetch.
+			// ?: how to reference a model you are adding. can you do: model= new BB.detailModel({}); list.add(model)?
+			console.info('# Collection.DetailList.create')
+			console.log(type)
+			console.log(obj)
+			
+			var searchChannels 	= new BB.ChannelList(),
+				searchEvents 	= new BB.EventList(),
+				searchArticles 	= new BB.ArticleList();
+
+			switch (type){
+				case 'channel':
+				case 'channels':
+					var newModel = {
+						service 	: type,
+						title 		: obj.name,
+//						channels 	: searchChannels.reset(obj.channels),
+//						events 		: searchEvents.reset(obj.events),
+//						articles 	: searchArticles.reset(obj.articles),
+					};
+					_.extend(newModel, obj);
+					console.log(newModel)
+					this.add(newModel);
+					
+					break;
+				case 'event':
+				case 'events':
+					break;
+				case 'search':
+					this.add({
+						service: obj.service,
+						type: obj.type,
+						title: obj.title,
+						channels: searchChannels.reset(obj.channels),
+						events: searchEvents.reset(obj.events),
+						articles: searchArticles.reset(obj.articles),
+					});
+					
+					// will this work?? : channels: new BB.ChannelList(json) OR BB.ChannelList().reset(json)
+					break;
+				default:
+					console.error('# Collection.DetailList.Create: unknown type = ' + type);
+					return;	
+				
+			}
 		}
 	});
 	
 	var ArticleList = Backbone.Collection.extend({
 		model : BB.Article,
-		url : function(opts){
+		oldurl : function(opts){
 			var twitterUsername = false,
 				blockTerms = false,
 				searchTerms = opts.keywords.replace(' ','+').replace(',','%2c');
@@ -62,6 +117,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			url += '_id=b9b673bf19353ce78c8912180c1b414e&_render=json';
 	
 			return url;
+		},
+		
+		url: function(){
+			return on.path.api + '/article'; //?channel=id'
+		},
+		parse: function(resp, xhr) {
+			return resp.resultset.articles;
 		},
 	
 		filterJSON : function(JSON){

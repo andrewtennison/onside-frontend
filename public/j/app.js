@@ -26,14 +26,13 @@ BB.appRoutes = Backbone.Router.extend({
 		});
 		
 		// Navigation view		
-		on.v.nav = new BB.NavView({
-			app: on.m.app
-		});
+		on.v.nav = new BB.NavView({ app: on.m.app });
 		
 		// Detail view
-		on.v.detailList = new BB.DetailListView({
-			app: on.m.app
-		});
+		on.v.detailList = new BB.DetailListView({ app: on.m.app });
+		
+		// Search view
+		on.v.search = new BB.SearchView({ app: on.m.app });
 		
 	},
 	

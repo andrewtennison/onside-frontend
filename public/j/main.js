@@ -9,9 +9,15 @@ on.m = {};
 on.c = {};
 on.v = {};
 
+on.env = {
+	internetConnection : false
+};
 
 on.path = {
-	js: '/j/'
+	js: '/j/',
+	//api: 'http://onside.mini-apps.co.uk'
+	//api: 'http://api.onside.me:8000'
+	api:''
 };
 
 $LAB
@@ -27,6 +33,7 @@ $LAB
 	on.path.js + 'app/collections.js'
 )
 .wait(function(){
+	
 	_.templateSettings = {
 		interpolate : /\{\{(.+?)\}\}/g
 	};		

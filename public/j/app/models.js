@@ -16,7 +16,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			this.bind('change:currentUrl', this.updateUrl);
 			this.bind('change:currentModel', this.updateModel);
-			
 		},
 		defaults: {
 			list: null,
@@ -26,12 +25,23 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			currentModel: null
 		},
 		updateUrl: function(){
-			this.channels.fetch();
+			this.channels.fetch({
+				beforeSend:function(xhr){
+					// xhr.setRequestHeader('Origin', 'http://dev.onside.me')
+					// xhr.setRequestHeader('Access-Control-Request-Method', 'POST,GET,DELETE');
+					// xhr.setRequestHeader('Access-Control-Request-Headers','OnsideAuth')
+					// xhr.setRequestHeader('OnsideAuth', '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648')
+				}
+			});
 			this.events.fetch();
 		},
 		updateModel: function(){
+			// add new detail.model to detailList collection
+			// this.detailedList.add({})
+			
+			
 			var currentModel = this.get('currentModel'),
-				getModel = this.detailedList.getByCid( currentModel.cid );
+				getModel = this.detailedList.get( currentModel.id );
 
 			if(getModel === undefined) {
 				this.detailedList.add(currentModel);
@@ -41,37 +51,67 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			};
 		},
 	});
-	
+
 	var Channel = Backbone.Model.extend({
 		name: 'channels',
 		initialize: function(){
-			//console.info('# Model.Channel.initialize');
+			console.info('# Model.Channel.initialize');
 		},
 		defaults: {
-			selected: false,
-			detailSelected: false,
-			type: 'channel'
+			selected		: false,
+			detailSelected 	: false,
+			type 			: 'channel',
+			
+			// DB model structure
+			id 				: undefined,
+			name 			: undefined,
+			description 	: undefined,
+			// type 			: undefined, duplicate - is mine used, if so rename mine
+			sport 			: undefined,
+			level 			: undefined,
+			geolat 			: null,
+			geolng 			: null
 		}
 	});
 	
 	var Event = Backbone.Model.extend({
 		name: 'events',
 		initialize: function(){
-			//console.info('# Model.Event.initialize');
+			console.info('# Model.Event.initialize');
 		},
 		defaults: {
 			selected: false,
 			detailSelected: false,
-			type: 'event'
-		}		
+			type: 'event',
+
+			// DB model structure
+			name 			: undefined,
+			sport			: undefined,
+			type 			: undefined,
+			geolat			: null,
+			geolng			: null			
+		},
+		sync: function(method, model, options) {
+			options = _.extend({
+				beforeSend: function(xhr, settings) {
+					alert('!!!!')
+					xhr.setRequestHeader( 'OnsideAuth', '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b736482' );
+				}
+			}, options);
+			return Backbone.sync(method, model, options);
+		}
 	});
 	
 	var Detail = Backbone.Model.extend({
+		// channels: null,
+		// events: null,
+		// articles: null,
 		initialize: function(){
 			//console.info('# Model.Detail.initialize');
 		},
 		defaults: {
-			current: false
+			current: false,
+			type: undefined
 		}
 	});
 
@@ -101,6 +141,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.App = App;
 	BB.Channel = Channel;
 	BB.Event = Event;
+	BB.Detail = Detail;
 	BB.Article = Article;
 	BB.Comment = Comment;
 	BB.Chat = Chat;

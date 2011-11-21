@@ -70,8 +70,8 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 #listDetail header {border-bottom:1px solid #e6e6e6}
 #listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
 
-#listDetail article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
-#listDetail article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
+#listDetail .content article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
+#listDetail .content article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
 	#listDetail article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
 	#listDetail article img {max-width: 100%}
 	#listDetail article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}

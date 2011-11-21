@@ -51,8 +51,8 @@ section#OnsideApp
 					p filter options
 
 				div#navSearch.block
-					form(action="/")
-						input#groupSearch(type="search", placeholder="search")
+					form(action="/search")
+						input#groupSearch(type="search", placeholder="search", name="q")
 
 			section.content
 
@@ -63,15 +63,7 @@ section#OnsideApp
 						span.channel channels
 						span.event events
 
-		section.page#listArticle
-			header
-				h1 Here are the highlights
-				nav
-					span.buttonGroup
-						a.filter(href="#") filter page
-						a.refresh(href="#") refresh
-					
-			section.content
+		section.page#listDetail
 		
 		section.page#detailArticle
 		
@@ -97,24 +89,24 @@ section#OnsideApp
 
 // templates
 #channelListTemplate.tmpl
-	h1(data-id='{{UID}}') {{name}}
+	h1(data-id='{{id}}') {{name}}
 
 #eventListTemplate.tmpl
-	h1(data-id='{{UID}}') {{name}}
+	h1(data-id='{{id}}') {{name}}
 
 #detailTemplate.tmpl
 	header
 		h1 {{name}}
 		nav
 			span.buttonGroup
-				a.share(href="#") share
-				a.save(href="#") save
+				a.filter(href="#") filter page
+				a.refresh(href="#") refresh
 				
 			a.button.close(href="#") close
 
 #articleTemplate.tmpl
 	a.readMore(href="#")
-		h2{{title}}
+		h2{{name}}
 		
 	{{#o_img}} img(src="{{url}}") {{/o_img}}
 	p {{o_shortDesc}}
@@ -125,8 +117,13 @@ section#OnsideApp
 	nav
 
 #articleDetail.tmpl
-	h2 {{name}}
+	header
+		h1 {{name}}
+		nav
+			span.buttonGroup
+				a.share(href="#") share
+				a.save(href="#") save
 
-{{#o_img}} <img src="{{url}}" /> {{/o_img}}
-div {{{o_longDesc}}}
+		{{#o_img}} <img src="{{url}}" /> {{/o_img}}
+		div {{{o_longDesc}}}
 

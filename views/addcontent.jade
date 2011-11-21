@@ -1,0 +1,47 @@
+h2= title
+
+	form#addChannel(method="post", action="/channel")
+		label Create New Channel
+		input(type="text", name="name", placeholder="Channel Name")
+		input(type="text", name="description", placeholder="description")
+		select(name="sport")
+			option(value="football") football
+			option(value="tennis") tennis
+			option(value="rugby") rugby
+		input(type="text", name="type", placeholder="type")
+		input(type="text", name="level", placeholder="level")
+		input(type="text", name="keywords", placeholder="keywords, comma separated")
+		input(type="text", name="geolat", placeholder="geolat")
+		input(type="text", name="geolng", placeholder="geolng")
+		button(type="submit") create channel
+
+	form#addEvent
+		label Create New Event
+		input(type="text", name="name", placeholder="Event Name")
+		select(name="sport")
+			option(value="football") football
+			option(value="tennis") tennis
+			option(value="rugby") rugby
+		select(name="type")
+			option(value="team") team
+			option(value="league") league
+			option(value="tournament") tournament
+		input(type="text", name="keywords", placeholder="keywords, comma separated")
+		input(type="text", name="parent", placeholder="parent event")
+		input(type="text", name="location", placeholder="location")
+		input(type="text", name="geolat", placeholder="geolat")
+		input(type="text", name="geolng", placeholder="geolng")
+		
+		fieldset
+			label Time
+			input(type="time", name="start", placeholder="start time")
+			input(type="time", name="finish", placeholder="finish time")
+			input(type="time", name="duration", placeholder="duration")
+		
+		fieldset
+			label Participants
+			input(type="text", name="name", placeholder="name")
+			input(type="text", name="position", placeholder="position")
+			input(type="text", name="score", placeholder="score")
+
+		button(type="submit") create event
