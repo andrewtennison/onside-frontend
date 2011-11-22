@@ -10,7 +10,7 @@ on.c = {};
 on.v = {};
 
 on.env = {
-	internetConnection : false
+	internetConnection : true
 };
 
 on.path = {
@@ -34,9 +34,7 @@ $LAB
 )
 .wait(function(){
 	
-	_.templateSettings = {
-		interpolate : /\{\{(.+?)\}\}/g
-	};		
+	//_.templateSettings = { interpolate : /\{\{(.+?)\}\}/g };		
 	
 	_.extend(Backbone.Collection.prototype, Backbone.Events, {
 		checkFetch : function(options){

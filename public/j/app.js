@@ -33,20 +33,23 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Search view
 		on.v.search = new BB.SearchView({ app: on.m.app });
+
+		// Comment view
+		on.v.comment = new BB.CommentListView({ app: on.m.app });
 		
 	},
 	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
 		
-		on.m.app.set({currentUrl : null});
-		on.m.app.set({currentListName : 'channels'});
-		on.m.app.trigger('change:currentUrl');
+		on.m.app.set({selectedUrl : null});
+		on.m.app.set({selectedServiceName : 'channels'});
+		on.m.app.trigger('change:selectedUrl');
 	},
 	
 	events: function(){
 		console.log('// Routes = "/events"');
-		on.m.app.set({currentListName : 'events'});
+		on.m.app.set({selectedServiceName : 'events'});
 	},
 	
 	getEvent: function( id ){

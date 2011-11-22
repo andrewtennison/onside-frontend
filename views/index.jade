@@ -87,16 +87,17 @@ section#OnsideApp
 				a(href="#") SEE MORE DISCUSSIONS
 
 
+
 // templates
-#channelListTemplate.tmpl
-	h1(data-id='{{id}}') {{name}}
+script#channelListTemplate.tmpl(type="text/template")
+	h1 <%= name %>
 
-#eventListTemplate.tmpl
-	h1(data-id='{{id}}') {{name}}
+script#eventListTemplate.tmpl(type="text/template")
+	h1 <%= name %>
 
-#detailTemplate.tmpl
+script#detailTemplate.tmpl(type="text/template")
 	header
-		h1 {{name}}
+		h1 <%= title %>
 		nav
 			span.buttonGroup
 				a.filter(href="#") filter page
@@ -104,26 +105,42 @@ section#OnsideApp
 				
 			a.button.close(href="#") close
 
-#articleTemplate.tmpl
-	a.readMore(href="#")
-		h2{{name}}
-		
-	{{#o_img}} img(src="{{url}}") {{/o_img}}
-	p {{o_shortDesc}}
-		{{#o_readMore}} a.readMore.button(href="#") read more {{/o_readMore}}
-	
-	a(href="{{link}}) view source
-	time {{o_date}}
-	nav
+script#articleTemplate.tmpl(type="text/template")
+	\<% if(images) { %> <img src='<%= images %>' /> <% } %>
 
-#articleDetail.tmpl
+	\<% if(extended) { %> <a class="readMore button" href="#">read more</a> <% } %>
+	
+	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+
+	h2 <%= title %>
+	p <%= content %>
+	\<a href='<%= link %>'>@ <%= source %></a>
+
+script#articleTemplate-twitter.tmpl(type="text/template")
+	cite <%= author %>
+	p <%= content %>
+	\<%= link %>
+
+script#articleDetail.tmpl(type="text/template")
 	header
-		h1 {{name}}
+		h1 <%= title %>
 		nav
 			span.buttonGroup
 				a.share(href="#") share
 				a.save(href="#") save
+		
+		\<% if(images) { %> <img src='<%= images %>' /> <% } %>
+		div <%= extended %>
 
-		{{#o_img}} <img src="{{url}}" /> {{/o_img}}
-		div {{{o_longDesc}}}
+script#commentTemplate.tmpl(type="text/template")
+	p <%= comment %>
+	time <%= added %>
+	\<a href='/user/<%= user %>'> <%= user %> </a>
+	
+	nav
+		a.reply(href="#") reply
+
+
+
+
 

@@ -2,116 +2,129 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 // Onside Models
 (function(BB){
+	
+	// For CORS / cross origin restriction
+	var extendAjax = {
+		beforeSend:function(xhr){
+			// xhr.setRequestHeader('Origin', 'http://dev.onside.me')
+			// xhr.setRequestHeader('Access-Control-Request-Method', 'POST,GET,DELETE');
+			// xhr.setRequestHeader('Access-Control-Request-Headers','OnsideAuth')
+			// xhr.setRequestHeader('OnsideAuth', '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648')
+		}
+	};
 
 	var App	= Backbone.Model.extend({
 		initialize: function(){
 			console.info('# Model.App.initialize');
 			
-			_.bindAll(this, 'updateUrl', 'updateModel');
+			_.bindAll(this, 'updateUrl', 'updateDetailedList', 'updateComments');
 			
 			// create + init collections for channels + events
-			this.channels = new BB.ChannelList({ appUrl: this.currentUrl });
-			this.events = new BB.EventList({ appUrl: this.currentUrl });
+			this.channels = new BB.ChannelList();
+			this.events = new BB.EventList();
 			this.detailedList = new BB.DetailList();
+			this.comments = new BB.CommentList();
 			
-			this.bind('change:currentUrl', this.updateUrl);
-			this.bind('change:currentModel', this.updateModel);
+			this.bind('change:selectedUrl', this.updateUrl);
+			this.bind('change:selectedModel', this.updateDetailedList);
+			this.bind('change:selectedModel', this.updateComments);
 		},
 		defaults: {
 			list: null,
-			currentUrl: null,
-			currentListName: null,
-			currentItemCid: null,
-			currentModel: null
+			selectedUrl: null,
+			selectedServiceName: null,
+			selectedItemCid: null,
+			selectedModel: null,
+			selectedDetailId: null,
 		},
 		updateUrl: function(){
-			this.channels.fetch({
-				beforeSend:function(xhr){
-					// xhr.setRequestHeader('Origin', 'http://dev.onside.me')
-					// xhr.setRequestHeader('Access-Control-Request-Method', 'POST,GET,DELETE');
-					// xhr.setRequestHeader('Access-Control-Request-Headers','OnsideAuth')
-					// xhr.setRequestHeader('OnsideAuth', '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648')
-				}
-			});
+			this.channels.fetch();
 			this.events.fetch();
 		},
-		updateModel: function(){
-			// add new detail.model to detailList collection
-			// this.detailedList.add({})
+		updateDetailedList: function(){
+			// check if model exists else add new to detailList collection
+			console.info('# Model.App.updateModel');
 			
+			var service = this.get('selectedServiceName'),
+				selectedModel = this.get('selectedModel'),
+				cloneModel = selectedModel.clone(),
+				currentDetailModel = this.detailedList.get( this.get('selectedDetailId') ),
+				DUID = service + '|' + selectedModel.get('id'),
+				existingModel = this.detailedList.get( DUID );
 			
-			var currentModel = this.get('currentModel'),
-				getModel = this.detailedList.get( currentModel.id );
-
-			if(getModel === undefined) {
-				this.detailedList.add(currentModel);
-				currentModel.set({detailSelected:true});
+			if(currentDetailModel !== null && currentDetailModel !== undefined) currentDetailModel.set({ selected : false});
+			
+			if(existingModel) {
+				// if exists get model
+				existingModel.set({selected:true});
+				this.set({selectedDetailId : DUID });
 			} else {
-				getModel.set({detailSelected:true});
+				// else create model
+				var detailModel = this.detailedList.createModel( service, cloneModel, DUID );
+				this.set({selectedDetailId : DUID });
 			};
 		},
+		updateComments: function(){
+			// model changes, reset comments. Set URL then .fetch
+			var newUrl = '?' + this.get('selectedServiceName') +'='+ this.get('selectedModel').id;
+			alert(newUrl)
+			this.comments.urlParams = url
+			this.comments.fetch();
+		}
 	});
 
 	var Channel = Backbone.Model.extend({
-		name: 'channels',
+		service: 'channels',
 		initialize: function(){
 			console.info('# Model.Channel.initialize');
 		},
 		defaults: {
-			selected		: false,
-			detailSelected 	: false,
-			type 			: 'channel',
+			selected	: false,
+			service		: 'channel'
 			
-			// DB model structure
-			id 				: undefined,
-			name 			: undefined,
-			description 	: undefined,
-			// type 			: undefined, duplicate - is mine used, if so rename mine
-			sport 			: undefined,
-			level 			: undefined,
-			geolat 			: null,
-			geolng 			: null
+		// DB model structure
+			// id 				: undefined,
+			// name 			: undefined,
+			// description 	: undefined,
+			// // type 			: undefined, duplicate - is mine used, if so rename mine
+			// sport 			: undefined,
+			// level 			: undefined,
+			// geolat 			: null,
+			// geolng 			: null
 		}
 	});
 	
 	var Event = Backbone.Model.extend({
-		name: 'events',
+		service: 'events',
 		initialize: function(){
 			console.info('# Model.Event.initialize');
 		},
 		defaults: {
-			selected: false,
-			detailSelected: false,
-			type: 'event',
+			selected	: false,
+			service		: 'event'
 
-			// DB model structure
-			name 			: undefined,
-			sport			: undefined,
-			type 			: undefined,
-			geolat			: null,
-			geolng			: null			
-		},
-		sync: function(method, model, options) {
-			options = _.extend({
-				beforeSend: function(xhr, settings) {
-					alert('!!!!')
-					xhr.setRequestHeader( 'OnsideAuth', '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b736482' );
-				}
-			}, options);
-			return Backbone.sync(method, model, options);
+		// DB model structure
+			// service 			: undefined,
+			// sport			: undefined,
+			// type 			: undefined,
+			// geolat			: null,
+			// geolng			: null			
 		}
 	});
+	
+	var Search = Backbone.Model.extend({
+		service: 'search'
+	})
 	
 	var Detail = Backbone.Model.extend({
 		// channels: null,
 		// events: null,
 		// articles: null,
 		initialize: function(){
-			//console.info('# Model.Detail.initialize');
 		},
 		defaults: {
-			current: false,
-			type: undefined
+			selected: false,
+			service: undefined
 		}
 	});
 
@@ -124,7 +137,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
 			console.info('# Model.Comment.initialize');
+		},
+		defaults: {
+			service	: 'comment',
+			//id		: null,
+			// article	: null,
+			// channel 	: null,
+			// event	: null,
+			// user 	: null,
+			// reply	: null,
+			// comment 	: null,
+			// added 	: null
 		}
+		
+		
 	});
 	
 	var Chat = Backbone.Model.extend({
@@ -141,6 +167,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.App = App;
 	BB.Channel = Channel;
 	BB.Event = Event;
+	BB.Search = Search;
 	BB.Detail = Detail;
 	BB.Article = Article;
 	BB.Comment = Comment;
