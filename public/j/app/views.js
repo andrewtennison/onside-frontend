@@ -362,7 +362,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				viewE = new EventListDetailView({ collection: this.model.get('events') }),
 				viewA = new ArticleListView({ collection: this.model.get('articles') });
 
-			$(this.el)
+			$(this.el).find('.contentWrapper')
 				.append(viewC.el)
 				.append(viewE.el)
 				.append(viewA.el);
@@ -420,7 +420,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					$(this.el).html(this.twitterTemplate(json));
 					break;
 				case 'youtube':
-			console.log(this.model.toJSON())
 					$(this.el).html(this.youtubeTemplate(json));
 					break;
 				case 'rss':
