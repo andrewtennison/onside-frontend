@@ -173,7 +173,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.Comment,
 	
 		url : function(opts){
-			return on.path.api + '/comment' + urlParams;
+			return on.path.api + '/comment' + this.urlParams;
 		},
 		urlParams: '', // eg. ?channel=id
 		

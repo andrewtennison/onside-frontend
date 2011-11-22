@@ -45,13 +45,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// check if model exists else add new to detailList collection
 			console.info('# Model.App.updateModel');
 			
-			var service = this.get('selectedServiceName'),
-				selectedModel = this.get('selectedModel'),
-				cloneModel = selectedModel.clone(),
+			var selectedModel = this.get('selectedModel'),
 				currentDetailModel = this.detailedList.get( this.get('selectedDetailId') ),
-				DUID = service + '|' + selectedModel.get('id'),
+				DUID = this.get('selectedServiceName') + '|' + selectedModel.get('id'),
 				existingModel = this.detailedList.get( DUID );
-			
+
 			if(currentDetailModel !== null && currentDetailModel !== undefined) currentDetailModel.set({ selected : false});
 			
 			if(existingModel) {
@@ -60,15 +58,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				this.set({selectedDetailId : DUID });
 			} else {
 				// else create model
-				var detailModel = this.detailedList.createModel( service, cloneModel, DUID );
+				var detailModel = this.detailedList.createModel( this.get('selectedServiceName'), selectedModel.clone(), DUID );
 				this.set({selectedDetailId : DUID });
 			};
 		},
 		updateComments: function(){
 			// model changes, reset comments. Set URL then .fetch
 			var newUrl = '?' + this.get('selectedServiceName') +'='+ this.get('selectedModel').id;
-			alert(newUrl)
-			this.comments.urlParams = url
+			this.comments.urlParams = newUrl
 			this.comments.fetch();
 		}
 	});
@@ -137,6 +134,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
 			console.info('# Model.Comment.initialize');
+		},
+		parse: function(resp, xhr){
+			return resp.resultset.comments[0];
 		},
 		defaults: {
 			service	: 'comment',

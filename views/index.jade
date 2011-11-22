@@ -79,7 +79,7 @@ section#OnsideApp
 
 				div.addBlock
 					form(action="/")
-						input#commentAdd(type="text", placeholder="add your comment")
+						input#commentAdd(type="text", placeholder="add your comment", name="comment")
 
 			section.content
 
@@ -89,10 +89,16 @@ section#OnsideApp
 
 
 // templates
-script#channelListTemplate.tmpl(type="text/template")
+script#channelItemTemplate.tmpl(type="text/template")
 	h1 <%= name %>
 
-script#eventListTemplate.tmpl(type="text/template")
+script#channelDetailItemTemplate.tmpl(type="text/template")
+	h1 <%= name %>
+
+script#eventItemTemplate.tmpl(type="text/template")
+	h1 <%= name %>
+
+script#eventDetailItemTemplate.tmpl(type="text/template")
 	h1 <%= name %>
 
 script#detailTemplate.tmpl(type="text/template")
@@ -121,6 +127,13 @@ script#articleTemplate-twitter.tmpl(type="text/template")
 	p <%= content %>
 	\<%= link %>
 
+script#articleTemplate-youtube.tmpl(type="text/template")
+	h2 <%= author %>: <%= title %>
+	p <%= content %>
+	\<input type="hidden" value="<%= link %>" name="videoData" />
+	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	\<a href='<%= videos %>'>see video</a>
+
 script#articleDetail.tmpl(type="text/template")
 	header
 		h1 <%= title %>
@@ -134,8 +147,9 @@ script#articleDetail.tmpl(type="text/template")
 
 script#commentTemplate.tmpl(type="text/template")
 	p <%= comment %>
-	time <%= added %>
-	\<a href='/user/<%= user %>'> <%= user %> </a>
+
+	\<% if(user) { %> <a href='/user/<%= user %>' > user id: <%= user %> </a> <% } %>
+	\<% if(added) { %> <time> <%= added %> </time> <% } %>
 	
 	nav
 		a.reply(href="#") reply

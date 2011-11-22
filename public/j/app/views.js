@@ -69,8 +69,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			_.bindAll(this, 'updateView', 'changeGroup', 'toggleBlocks');
 			
-			// BIND: if model.app.currentListName changes this view will get updated
-			this.app.bind('change:currentListName', this.updateView);
+			// BIND: if model.app.selectedServiceName changes this view will get updated
+			this.app.bind('change:selectedServiceName', this.updateView);
 			
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
 			var channelList = new ChannelListView({ collection: this.app.channels, app: this.options.app }),
@@ -107,13 +107,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channel' : 'event';
 			
-			this.app.set({currentListName: val });
+			this.app.set({selectedServiceName: val });
 		},
 		
 		updateView: function(){
 			console.log('* View.Nav.updateView');
 			
-			switch(this.app.get('currentListName')){
+			switch(this.app.get('selectedServiceName')){
 				case 'event':
 				case 'events':
 					this.$content.append(this.$events);
@@ -131,7 +131,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				
 				default:
-					console.error('!! view.NavView.updateView: this.app.get(currentList) value = ' + this.app.get('currentListName'))
+					console.error('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'))
 					break;
 			}
 		},
@@ -171,16 +171,24 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				searchUrl = (on.env.internetConnection)? ( on.path.api + '/search/q=' + value ) : '/stubs/api.search.js';
 
 			$.get(searchUrl, function(json) {
-				var obj = {
+				var model = new BB.Search();
+				
+				model.set({
 					service		: json.service,
 					title		: value,
 					channels	: json.resultset.channels,
 					events		: json.resultset.events,
-					articles	: json.resultset.articles
-				};
-				
+					articles	: json.resultset.articles,
+				});
+				model.set({id: model.escape('title').replace(' ', '_')});
+
 				// add object to detailList
-				that.app.detailedList.create('search', obj);
+				//that.app.detailedList.create('search', obj);
+				that.app.set({
+					selectedItemCid		: false,
+					selectedServiceName : json.service.toLowerCase(),
+					selectedModel 		: model
+				});
 				
 			}, 'json');
 		}
@@ -222,11 +230,27 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			$(this.el).append(view.render().el);
 		}
 	});
+	var ChannelListDetailView = ChannelListView.extend({
+		tagName: 'section',
+		className: 'content channelList',
+		addOne: function(channel){
+			var view = new ChannelDetailView({model:channel, app:this.options.app})
+			$(this.el).append(view.render().el);
+		}
+	});
 	var EventListView 	= _ListView.extend({
 		className: 'eventList',
 		addOne: function(event){
 	//		console.log('=> View.EventListView.addOne');
 			var view = new EventView({model:event, app:this.options.app})
+			$(this.el).append(view.render().el);
+		}
+	});
+	var EventListDetailView = EventListView.extend({
+		tagName: 'section',
+		className: 'content articleList',
+		addOne: function(event){
+			var view = new EventDetailView({model:event, app:this.options.app})
 			$(this.el).append(view.render().el);
 		}
 	});
@@ -242,15 +266,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		initialize: function(){
 			this.app = this.options.app;
 			_.bindAll(this, 'render', 'updateItem');
-			this.app.bind('change:currentItemCid', this.updateItem)
+			this.app.bind('change:selectedItemCid', this.updateItem)
 		},
 		render: function(){
-			console.log(this.model.toJSON())
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		},
 		updateItem: function(){
-			if( this.model.cid === this.app.get('currentItemCid')){
+			if( this.model.cid === this.app.get('selectedItemCid')){
 				$(this.el).addClass('active');
 				this.model.selected = true;
 			}else if ( this.model.selected ){
@@ -261,25 +284,29 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			e.preventDefault();			
 			console.log('! View.listItem.selectItem => click');
 
-			// add object to detailList
-			this.app.detailedList.create( this.model.name, this.model.toJSON() );
-
 			this.app.set({
-//				currentItemCid	: this.model.cid,
-//				currentList 	: this.model.name,
-//				currentModel 	: this.model
+				selectedItemCid		: this.model.cid,
+				selectedServiceName : this.model.get('service'),
+				selectedModel 		: this.model
 			});
 		}
 	});
 	var ChannelView 	= _ListItemView.extend({
 		className:'channelItem',
-		template: _.template( $('#channelListTemplate').html() )
+		template: _.template( $('#channelItemTemplate').html() )
+	});
+	var ChannelDetailView 	= ChannelView.extend({
+		template: _.template( $('#channelDetailItemTemplate').html() )
 	});
 	var EventView 		= _ListItemView.extend({
 		className:'eventItem',
-		template: _.template( $('#eventListTemplate').html() )
+		template: _.template( $('#eventItemTemplate').html() )
+	});
+	var EventDetailView = EventView.extend({
+		template: _.template( $('#eventDetailItemTemplate').html() )
 	});
 	
+	// Detail views
 	var DetailListView 	= Backbone.View.extend({
 		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
 		el: $('#listDetail'),
@@ -295,80 +322,75 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
-			_.bindAll(this, 'addOne', 'addAll', 'removeOne', 'show');
+			_.bindAll(this, 'addOne', 'addAll', 'removeOne');
 			
 			// BIND Collection
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('remove', this.removeOne);
-			
-			//this.app.bind('change:currentItemCid', this.show);
 		},
 		
 		addOne: function(model){
-			console.log('View.DetailList.addOne');
+			console.log('# View.DetailList.addOne');
 			var view = new DetailView({model:model, app:this.options.app});
-			//model.view = view.render().el;
-			this.show(view);
+			this.el.append(view.render().el);
 		},
 		addAll: function(models){
 			console.log('View.DetailList.addAll');
 		},
 		removeOne: function(){
 			console.log('View.DetailList.removeOne');
-		},
-		show: function(view){
-			console.log('View.DetailList.show');
-			var cid = this.app.get('currentItemCid'),
-				model = this.collection.getByCid(cid);
-			//t = this.collection
-			console.log(this.collection)
-			console.log(model)
-			console.log(cid)
-			
-			console.log(this.collection)
-			this.el.append(view.render().el);
-			
 		}
 	});
-
 	var DetailView		= Backbone.View.extend({
 		tagName: 'article',
 		className: 'detailItem',
 		template: _.template( $('#detailTemplate').html() ),
-		events: function(){},
 		
 		initialize: function(){
 			console.info('# View.Detail.initialize');
-			_.bindAll(this, 'render');
+			_.bindAll(this, 'render', 'toggleDisplay');
+			this.model.bind('change:selected', this.toggleDisplay);
 		},
 		
 		render: function(){
 			console.log('# View.Detail.render');
+
 			$(this.el).html(this.template(this.model.toJSON()));
-			var view = new ArticleListView({ model: this.model });
-			$(this.el).append(view.el);
 			
+			var viewC = new ChannelListDetailView({ collection: this.model.get('channels') }),
+				viewE = new EventListDetailView({ collection: this.model.get('events') }),
+				viewA = new ArticleListView({ collection: this.model.get('articles') });
+
+			$(this.el)
+				.append(viewC.el)
+				.append(viewE.el)
+				.append(viewA.el);
+
 		    return this;
+		},
+		
+		toggleDisplay: function(){
+			if(this.model.get('selected')) {
+				$(this.el).show();
+			}else{
+				$(this.el).hide();
+			}
 		}
 	});
 
+	// Article views
 	var ArticleListView = Backbone.View.extend({
 		tagName: 'section',
-		className: 'content',
+		className: 'content articleList',
 		initialize: function(){
 			console.log('# View.ArticleList.initialize');
 			_.bindAll(this, 'addAll', 'addOne');
 			
-			this.collection = new BB.ArticleList();
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('add', this.addOne);
 
-			//this.collection.fetchRSS({
-			//	keywords : this.model.get('keywords')
-			//})
 			this.collection.fetch();
-
 		},
 		
 		addAll: function(){
@@ -379,25 +401,38 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			$(this.el).append(view.render().el);
 		}
 	});
-	
 	var ArticleView 	= Backbone.View.extend({
 		tagName: 'article',
-		template: _.template( '<h2>{{title}}</h2>' ),
-//		template: _.template( $('#articleTemplate').html() ),
+		template: _.template( $('#articleTemplate').html() ),
+		twitterTemplate: _.template( $('#articleTemplate-twitter').html() ),
+		youtubeTemplate: _.template( $('#articleTemplate-youtube').html() ),
 		
 		initialize: function(){
-			console.info('# View.Article.initialize')
 			_.bindAll(this, 'render');
 		},
 		
 		render: function(){
-			console.log(this.model.toJSON())
+			var json = this.model.toJSON(),
+				type = json.type;
 			
-			$(this.el).html(this.template(this.model.toJSON()));
+			switch(type){
+				case 'twitter':
+					$(this.el).html(this.twitterTemplate(json));
+					break;
+				case 'youtube':
+			console.log(this.model.toJSON())
+					$(this.el).html(this.youtubeTemplate(json));
+					break;
+				case 'rss':
+				default:
+					$(this.el).html(this.template(json));
+					break;
+			};
+			$(this.el).addClass(type);
+			
 		    return this;
 		}
 	});
-	
 	var ArticleDetailView = Backbone.View.extend({
 		el: $('#detailArticle'),
 		template: $('#articleDetail'),
@@ -412,19 +447,92 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 		
 	});
-	
 	var iframeView		= Backbone.View.extend({});
 	
-	
-	// on.m.app.change, CommentList.reset()
-	var CommentListView = Backbone.View.extend({});
-	var CommentView 	= Backbone.View.extend({});
+	// Comment views
+	var CommentPostView = Backbone.View.extend({
+		el: $('#listChat form'),
+		
+		events: {
+			'focus input[name="comment"]' 	: 'focus',
+			'blur input[name="comment"]' 	: 'blur',
+			'submit'						: 'submit'
+		},
+		
+		initialize : function(){
+			this.app = this.options.app;
+			this.collection = this.app.comments;
+			//_.bindAll(this, 'updatePostParams');
+		},
+		
+		focus: function(){
+			console.log('focus')
+		},
+		blur: function(){
+			console.log('blur')
+		},
+		submit: function(e){
+		    e.preventDefault();
+		    		    
+		    var selectedDetailId = this.app.get('selectedDetailId'),
+		    	val = this.$('input#commentAdd').val(),
+		    	postParams = {comment:val};
+		    
+		    if(selectedDetailId) {
+		    	var a = selectedDetailId.split('|');
+		    	postParams[a[0]] = a[1];
+		    }
+		    this.collection.urlParams = '';
+		    this.collection.create(postParams);
+		    
+		    this.$('input[name="comment"]').val('');
+
+		}
+		
+	});	
+	var CommentListView = Backbone.View.extend({
+		el : $('#listChat > .content'),
+		initialize: function(){
+			this.app = this.options.app;
+			_.bindAll(this, 'addOne', 'addAll');
+			
+			this.collection = this.app.comments;
+			
+			this.collection.bind('add', this.addOne);
+			this.collection.bind('reset', this.addAll);
+
+		},
+		
+		addOne: function(comment){
+			var view = new CommentView({model:comment, app:this.options.app})
+			$(this.el).append(view.render().el);
+		},
+		addAll: function(comment){
+			this.el.empty();
+			this.collection.each(this.addOne);
+		}
+		
+	});
+	var CommentView 	= Backbone.View.extend({
+		tagName: 'article',
+		className: 'comment',
+		template:  _.template( $('#commentTemplate').html() ),
+		initialize: function(){
+			_.bindAll(this, 'render');
+		},
+		render: function(){
+			$(this.el).html(this.template(this.model.toJSON()));
+		    return this;
+		}
+	});
 	
 	// Assign private var to namespace (_var only used as base for other objects)
 	BB.AppView 			= AppView;		
 	BB.NavView 			= NavView;
 	BB.SearchView		= SearchView;
 	BB.DetailListView 	= DetailListView;
-	
+	BB.CommentPostView 	= CommentPostView; 
+	BB.CommentListView 	= CommentListView; 
+
 })(this.BB);
 

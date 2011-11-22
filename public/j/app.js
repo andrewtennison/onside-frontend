@@ -33,7 +33,10 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Search view
 		on.v.search = new BB.SearchView({ app: on.m.app });
-
+		
+		// Post Comment view
+		on.v.postComment = new BB.CommentPostView({ app: on.m.app });
+		
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
 		

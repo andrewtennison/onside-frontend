@@ -95,6 +95,28 @@ app.get('/article', function(req,res){
 		res.json(data);
 	});
 });
+app.get('/comment', function(req,res){
+	rest.get('http://onside.mini-apps.co.uk:80' + req.url ,{
+		headers:{
+			OnsideAuth : onsideAuthKey,
+			Origin: 'http://dev.onside.me:1234',
+			'Access-Control-Request-Method' : 'POST,GET,DELETE',
+			'Access-Control-Request-Headers': 'OnsideAuth'
+		}
+	}).on('complete', function(data) {
+		res.json(data);
+	});
+});
+app.post('/comment', function(req,res){
+	rest.post('http://onside.mini-apps.co.uk:80/comment', req.body).on('complete', function(data){
+		console.log('res.statusCode = ' + res.statusCode);
+		res.json(data)
+		//res.send(req.body);
+		//util.puts(data)
+		//console.log(data)
+	});
+});
+
 app.get('/search/:query', function(req,res){
 	console.log(req.params.query);
 	rest.get('http://onside.mini-apps.co.uk:80/search?' + req.params.query,{
