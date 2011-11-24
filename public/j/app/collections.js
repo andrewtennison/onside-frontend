@@ -51,50 +51,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		parse: function(resp, xhr) {
 			return resp.resultset.articles;
 		},
-	
-		filterJSON : function(JSON){
-			_.each(JSON,function(num,key){
-				var J = JSON[key];
-				if(J.pubDate || J.publishedDate) J['o_date'] = J.publishedDate || J.pubDate;
-	
-				var text = $('<span>'+J.description+'</span>').text();
-				if(text.length > 200){
-					J['o_shortDesc'] = text.slice(0,140);
-					J['o_longDesc'] = J.description;
-					J['o_readMore'] = true;
-				}else{
-					J['o_shortDesc'] = J.description;
-					J['o_longDesc'] = J.description;
-					J['o_readMore'] = false;
-				}
-				if ( J['media:content'] ) {
-					if( J['media:content'].type === 'image/jpeg'){
-						J['o_img'] = {
-							width: J['media:content'].width,
-							height: J['media:content'].height,
-							url: J['media:content'].url
-						}
-					}else if(_.isArray(J['media:content']) && J['media:content'][0].type === 'image/jpeg'){
-						J['o_img'] = {
-							width: J['media:content'][0].width,
-							height: J['media:content'][0].height,
-							url: J['media:content'][0].url
-						}
-					}
-				}
-			});
-			return JSON;
-		},
-	
-		
-		fetchRSS : function(options){
-			var collection = this,
-				url = this.url(options);
-			
-			$.getJSON(url,function(data){
-				var content = collection.filterJSON( data.value.items );
-				collection.reset(content);
-			});
+		comparator : function(Article) {
+			// var P = Article.get("publish"),
+				// D = new Date(P.replace(' ', 'T'));
+			// return - D.getTime();
 		}
 	});
 
@@ -183,7 +143,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		comparator : function(Comment) {
 			//return Comment.get("created_at");
 		}
-	
 	});
 	var ChatList = Backbone.Collection.extend({});
 

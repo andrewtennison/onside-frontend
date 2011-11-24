@@ -31,7 +31,7 @@
 
 #OnsideApp {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden}
 #main {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden;-webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
-	#main > .page {position:absolute; display:block; top:0; bottom:0; left:0; right:0; overflow-y:auto; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {position:absolute; display:block; top:0; bottom:0; left:0; right:0; overflow-y:hidden; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
 	#main > .page {display: -moz-box; display: -webkit-box; display: box; -moz-box-orient: vertical; -webkit-box-orient: vertical; box-orient: vertical;}
 
 	#leftArrow, #rightArrow {position:absolute; display:block; top:0; width:30px; height:30px; background:#000; z-index:5}

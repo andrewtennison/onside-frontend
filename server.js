@@ -5,13 +5,19 @@
 
 var express 	= require('express'),
 	routes 		= require('./routes'),
+	util 		= require('util'),
+	rest 		= require('restler'),
+
+	// for Auth
 	everyauth 	= require('everyauth'),
 	graph 		= require('fbgraph'),	
-	util 		= require('util'),
-	rest 		= require('restler');
-    
-// Load Authentication code - doesnt need to be set to var
-var onsideAuth 	= require('./lib/auth')(app);
+	login		= require('./lib/login');
+
+everyauth.debug = true;
+
+// manages all login scripts
+login.all()
+
 
 process.on('uncaughtException', function (err) {
   console.error(err);
@@ -24,15 +30,15 @@ var app = module.exports = express.createServer();
 
 // Configuration
 app.configure(function(){
-	app.use(express.logger());
+	//app.use(express.logger());
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({ secret : "changeToSomething!"}));
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
+	app.use(app.router);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'jade');
-	app.use(app.router);
 	app.use(express.static(__dirname + '/public'));
 	everyauth.helpExpress(app);
 });
@@ -48,15 +54,25 @@ app.configure('production', function(){
 
 
 // Routes
+app.get('*', function(req, res, next){
+	if(req.headers.host == 'dev2.onside.me') {
+		routes.demo1();
+	}else{
+		next();
+	}
+}); 
+
 app.get('/', routes.index);
+app.get('/demo', routes.demo1);
+
 app.get('/events', routes.index);
 
 app.get('/login', function(req,res){
-	res.render('login', { title: 'Log In' });
+	res.render('login', { title: 'Log In', cssPath: '' });
 });
 
 app.get('/addcontent', function(req,res){
-	res.render('addcontent', { title: 'Add Content' });
+	res.render('addcontent', { title: 'Add Content', cssPath: '' });
 });
 
 var onsideAuthKey = '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648';
@@ -111,9 +127,6 @@ app.post('/comment', function(req,res){
 	rest.post('http://onside.mini-apps.co.uk:80/comment', req.body).on('complete', function(data){
 		console.log('res.statusCode = ' + res.statusCode);
 		res.json(data)
-		//res.send(req.body);
-		//util.puts(data)
-		//console.log(data)
 	});
 });
 
@@ -130,7 +143,6 @@ app.get('/search/:query', function(req,res){
 		res.json(data);
 	});
 });
-
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

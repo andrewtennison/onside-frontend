@@ -5,16 +5,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 (function(BB){
 		
 	var AppView 		= Backbone.View.extend({
-		el: $('#OnsideApp'),
+		el: $(window),
 		
 		events: {
-			'resize' 			: 'onResize',
 			'click .login' 		: 'login'
 		},
 		
 		initialize: function(){
 			console.info('# View.Appview.initialize');
+
+			_.bindAll(this, 'onResize');
 			this.app = this.options.app;
+
+			$(window).bind('resize', this.onResize);
+			this.onResize();
 		},
 				
 		login: function(){
@@ -45,7 +49,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					f = $('footer',$p).height() | 0,
 					nh = $p.height() - h - f;
 					
-				$c.css('height', nh)
+				//$c.css('height', nh)
 			});
 			
 		}
@@ -394,6 +398,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		addAll: function(){
+			this.collection.sort();
 			this.collection.each(this.addOne);
 		},
 		addOne: function(article){
@@ -420,6 +425,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					$(this.el).html(this.twitterTemplate(json));
 					break;
 				case 'youtube':
+					json.videoId = json.link.substring(json.link.lastIndexOf('/') + 1,json.link.length)
 					$(this.el).html(this.youtubeTemplate(json));
 					break;
 				case 'rss':

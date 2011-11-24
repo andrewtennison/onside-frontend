@@ -25,7 +25,8 @@ $LAB
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.6.4.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js',
-	on.path.js + 'lib/backbone-0.5.3.min.js'
+	on.path.js + 'lib/backbone-0.5.3.min.js',
+	on.path.js + 'lib/pretty.js'
 )
 .wait()
 .script(

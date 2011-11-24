@@ -1,0 +1,221 @@
+/*
+   layout.css
+   site
+   
+   Created by andrew tennison on 2011-09-08.
+   Copyright 2011 andrew tennison. All rights reserved.
+*/
+
+
+/* ==|== normalise ====================================================== */
+@import "/c/style.css";
+/* ==|== typography ====================================================== */
+@import "/c/type.css";
+
+
+input[type=text] {position:relative; display:block; font-size:1.4em; padding:4px 2px; border-radius:14px; border:1px solid #000; box-shadow:inset 0 2px 3px rgba(0,0,0,0.5)}
+input[type=search] {background:#323132; color:#fff; padding:5px; border-radius: 2px; border:1px solid #000; box-shadow: none; font-size:1.2em; height:16px}
+button[type=submit] {
+	position:relative; display:inline-block; height:26px; text-indent:-999px; overflow:hidden; border-radius:2px; border:0px none; margin:1px; width:50px;
+	background: #05d2f1; /* Old browsers */background: -moz-linear-gradient(top,  #05d2f1 0%, #039adf 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#05d2f1), color-stop(100%,#039adf)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #05d2f1 0%,#039adf 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #05d2f1 0%,#039adf 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #05d2f1 0%,#039adf 100%); /* IE10+ */background: linear-gradient(top,  #05d2f1 0%,#039adf 100%); /* W3C */
+}
+.toggleButton2 {display:block}
+.toggleButton2 span {
+	position:relative; display:inline-block; width:95px; text-align: center; margin: 10px; border-radius:11px; height:20px; line-height: 22px; border:0px none;
+	text-transform:uppercase; color:#fff; font-size:1em;
+	box-shadow:0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.2);
+	background: #404040; /* Old browsers */background: -moz-linear-gradient(top,  #404040 0%, #212121 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#404040), color-stop(100%,#212121)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #404040 0%,#212121 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #404040 0%,#212121 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #404040 0%,#212121 100%); /* IE10+ */background: linear-gradient(top,  #404040 0%,#212121 100%); /* W3C */
+	}
+.toggleButton2 span.on {
+	color:#34ccff; box-shadow:inset 0 -1px 2px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.2);
+ 	background: #111111; /* Old browsers */background: -moz-linear-gradient(top,  #111111 0%, #222222 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#111111), color-stop(100%,#222222)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #111111 0%,#222222 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #111111 0%,#222222 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #111111 0%,#222222 100%); /* IE10+ */background: linear-gradient(top,  #111111 0%,#222222 100%); /* W3C */
+	}
+
+
+/* ==|== media queries ====================================================== 
+@import "/c/lessframework.css";*/
+
+/* ==|== templating overide ====================================================== */ 
+.tmpl {display:none !important}
+
+
+/* ==|== generic styles ===================================================== */
+.showBlock {position:relative; margin-right:20px !important}
+.showBlock:after {content:''; position:absolute; top:50%; right:0px; margin-top:-3px; width:1px; height:1px; background:transparent; border:5px solid transparent; border-top-color: #fff;}
+
+/* ==|== primary styles ===================================================== */
+
+body {background:url(/i/sprites/bg_pattern.png) 0 0 repeat; }
+
+#OnsideApp {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden}
+
+#OnsideApp > header {position: absolute; left:0; right:0; top:0; height:52px; background:#151515; border-bottom:1px solid #000}
+	#OnsideApp > header .inner {position:relative; display:block}
+	#OnsideApp > header h1 {position:absolute; top:0; left:0; width:131px; height:52px; margin:0; background:url(/i/sprites/d1_logo.png) left center no-repeat; text-indent:-999px; overflow:hidden}
+	#OnsideApp > header nav {float:right; height:52px}
+	#OnsideApp > header nav > * {display:inline-block; border-left:1px solid #2a2b2d; float:left; height:28px; line-height: 28px; margin:12px 0; }
+	#OnsideApp > header nav > a {color:#fff; padding:0 20px; font-size:1.2em; text-decoration: none}
+	#OnsideApp > header .block {display:none}
+	#navSearch {padding:0 0 0 20px}
+	#navSearch input[type=search] {display:inline-block; width:190px; margin:0 4px 0 0; float:left}
+	#navSearch button {float:left; border:1px solid #151515}
+
+#main {position:absolute; display:block; z-index:1; top:52px; left:0; right:0; bottom:0; overflow:hidden;-webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {position:absolute; display:block; top:8px; bottom:0; left:0; right:0; overflow-y:hidden; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {display: -moz-box; display: -webkit-box; display: box; -moz-box-orient: vertical; -webkit-box-orient: vertical; box-orient: vertical;}
+
+	#leftArrow, #rightArrow {position:absolute; display:block; top:0; width:30px; height:30px; background:#000; z-index:5}
+
+.page > section.content { -moz-box-flex: 1; -webkit-box-flex: 1; box-flex: 1; overflow-y: auto}
+
+header {}
+header > [class*='block'] {position:relative; display:none; padding:6px;}
+header > [class*='block'] input {width:230px}
+
+/* ==|== listGroups styles ===================================================== */
+#main #listGroups {width:247px; right:auto; background:#2a2a2a; z-index:3; border:1px solid #111; border-radius:4px; bottom:8px}
+#listGroups header {position:relative; display:block; padding:8px}
+#listGroups header .toggleButton2 {}
+#listGroups .content {position:relative; display:block;}
+
+#listGroups header h1, 
+#listGroups footer {border-bottom:1px solid #cbcbcb; background: #ffffff; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #fdfdfd 50%, #e5e5e5 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#fdfdfd), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */background: -o-linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* Opera11.10+ */background: linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* W3C */}
+#listGroups footer {box-shadow:0 0 20px rgba(0,0,0,0.2);}
+#listGroups footer a {position:relative; display:inline-block; vertical-align:middle}
+#listGroups footer .settings, 
+#listGroups footer .wiggle {position:relative; display:inline-block; height:52px; text-indent:-999px; overflow:hidden}
+#listGroups footer .settings {background:url(/i/sprites/icon_gear.png) center center no-repeat; width:52px; border-right:1px solid #c6c8cd}
+#listGroups footer .wiggle {background:url(/i/sprites/icon_wiggle.png) center center no-repeat; width:58px; border-left:1px solid #c6c8cd}
+#listGroups footer .toggleButton {margin:0 20px; float:none}
+
+#listGroups h2 {color:#fff; font-weight:normal; font-size:1.1em; padding:4px 10px 2px; background: #595959; /* Old browsers */background: -moz-linear-gradient(top, #595959 0%, #020202 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(100%,#020202)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #595959 0%,#020202 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #595959 0%,#020202 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #595959 0%,#020202 100%); /* IE10+ */background: linear-gradient(top, #595959 0%,#020202 100%); /* W3C */}
+#listGroups article {
+	position:relative; display:block; border-top:1px solid #414141; border-bottom:1px solid #222; height:43px; padding:10px;
+	background: #353535; /* Old browsers */background: -moz-linear-gradient(top,  #353535 0%, #2f2f2f 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#353535), color-stop(100%,#2f2f2f)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* IE10+ */background: linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* W3C */
+	}
+#listGroups article.active {
+	border-bottom-color:#414141; border-top-color:#161616; box-shadow:inset 0 1px 2px rgba(0,0,0,0.4);
+	background: #1b1b1b; /* Old browsers */background: -moz-linear-gradient(top,  #1b1b1b 0%, #222222 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1b1b1b), color-stop(100%,#222222)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* IE10+ */background: linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* W3C */
+	}
+#listGroups article img {position:relative; display:inline-block; margin:0 10px 0 0; border-radius:8px; box-shadow:0 1px 3px rgba(0, 0, 0, 0.3); vertical-align: top}
+#listGroups article.active img {box-shadow:0 2px 5px rgba(0, 0, 0, 0.7)}
+#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 45px; font-size:1.4em; margin:0; font-weight:normal; text-transform:uppercase}
+
+/* ==|== listDetail styles ===================================================== */
+#main #listDetail {left:260px; right:216px; z-index:2;}
+#main #listDetail .detailItem {position:absolute; top:0; left:0; right:0; bottom:0}
+
+#listDetail.shut {-moz-transform:translateX(-95%); -webkit-transform:translateX(-97.5%)}
+
+#listDetail header {
+	position:relative; border-top-left-radius:5px; border-top-right-radius:5px; margin-bottom:10px; height:65px;
+	background: #ec0643; /* Old browsers */background: -moz-linear-gradient(top,  #ec0643 0%, #db0336 23%, #c2032e 24%, #a30226 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ec0643), color-stop(23%,#db0336), color-stop(24%,#c2032e), color-stop(100%,#a30226)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* IE10+ */background: linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* W3C */
+	}
+#listDetail header h1 {color:#fff}
+#listDetail header nav {position:absolute; right:15px; bottom:15px;}
+#listDetail .contentWrapper {position:absolute; top:75px; left:0; right:0; bottom:0; overflow-y: auto}
+
+#listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
+#listDetail .content  {}
+#listDetail .content:after {content:''; position:relative; display:block; width:1px; height:1px; clear:both}
+
+#listDetail .content article:first-child {position:relative; display:block; width:99.2%; float:none; min-height: 50px}
+#listDetail .content article {position:relative; display:inline-block; width:49.5%; height:220px; float:left; background:#fff; margin:0 1px 1px 0;}
+#listDetail .content article .pad {padding:20px}
+	#listDetail .detailItem article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
+	#listDetail .detailItem article img {max-width: 100%}
+	#listDetail .detailItem article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
+	#listDetail .detailItem article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
+	#listDetail .detailItem article a {margin:0 5px 0 0; font-size:1.1em}
+	#listDetail .detailItem article a.readMore {}
+
+#listDetail .content article.twitter {background:#000}
+#listDetail .content article.twitter p {color:#fff; font-size:1.8em; line-height: 1.5em; padding:10px 0}
+#listDetail .content article.twitter p:before,
+#listDetail .content article.twitter p:after {position:relative; display:block; background:url(/i/placeholder/demo_quotes.png) 0 0 no-repeat; content:''; width:28px; height:21px; top:-10px}
+#listDetail .content article.twitter p:after {background-position: -28px 0; position:relative; left:90%; top:10px}
+#listDetail .content article.twitter cite {color:#ccc; position: relative; top:-15px}
+
+/* ==|== detailArticle styles ===================================================== */
+#main #detailArticle {left:280px; right:280px; background:#fff; z-index:1; display:none}
+#detailArticle header {margin:0 0 0 0%; border-bottom:1px solid #e6e6e6}
+#detailArticle header h1{padding:16px 150px 16px 16px}
+#detailArticle section {margin:0 0 0 5%; padding:16px; font-size:1.2em}
+#detailArticle section h2 {font-size:1.2em; padding: 0 0 10px 0}
+#detailArticle section p {padding:0 0 10px 0}
+
+#detailArticle .detailItem {position:relative; display:block; clear:both}
+
+/* ==|== listChat styles ===================================================== */
+#main #listChat {width:206px; left:auto; background:none; z-index:1}
+#listChat header {border-bottom:1px solid #dee3e7}
+#listChat header h1 {margin-left:10px; padding-left:30px; background:url(/i/sprites/icon_comment.png) left center no-repeat}
+#listChat header h1 span {position:absolute; top:8px; left:20px; font-size:0.5em; font-weight:normal; display:block; background:#3b97fe; color:#fff; border:2px solid #fff; border-radius:10px; padding:2px 4px 1px 4px; box-shadow:0 2px 3px rgba(0,0,0,0.5)}
+
+#listChat .addBlock {position:relative; display:block; margin:0 10px 0 10px; padding:20px 18px 18px; background:#333; border-radius:5px}
+#listChat #commentAdd {background:transparent url(/i/placeholder/demo_comment.png) 0 3px no-repeat; padding:4px 0 4px 25px; width:125px; color:#fff; box-shadow:none; border-radius:0; border:0px none;}
+
+
+#listChat article {position:relative; display:block; margin:10px 10px 0 10px; padding:18px; background:#333; border-radius:5px}
+#listChat article:before {content:''; width:0; height:0; position:absolute; left:-14px; top:20%; margin-top:-3px;  border:7px solid transparent; border-right-color:#333}
+#listChat article p {font-size:1.2em; color:#696969; word-wrap: break-word; padding:0; margin:0}
+#listChat article img {position:absolute; top:8px; right:8px;}
+#listChat article time {position:relative; display:block; padding:0 0 8px 8px}
+
+#listChat footer {position:relative; display:block; margin:20px 0 0 0;}
+#listChat footer a {position:relative; display:block; color:#1b4773; text-align: center; padding:10px 0; text-decoration: none; font-size:1.2em; font-weight: bold;}
+#listChat footer a:hover {color:#D2D7DB; background:#455e6b}
+/* ==|== reused styles ===================================================== */
+
+
+
+
+
+
+/* ==|== media querys ===================================================== */
+@media only screen and (min-width: 480px) {}
+@media only screen and (min-width: 768px) {}
+
+@media only screen and (min-width: 1025px) and (max-width:1245px) {
+	#OnsideApp > header .inner {width:100%; margin:0px auto}
+	#main {width:100%; left:0;}
+}
+
+@media only screen and (min-width: 1246px) {
+	#OnsideApp > header .inner {width:1246px; margin:0px auto}
+	#main {width:1246px; left:50%; margin-left:-623px}
+}
+
+@media only screen and (min-width: 641px) and (max-width: 1024px) {
+	#main {right:-215px;}
+	#main #listDetail {right:223px}
+	#main.pageLeftCol {-webkit-transform: translateX(0px); -moz-transform: translateX(0px)}
+	#main.pageRightCol {-webkit-transform: translateX(-258px); -moz-transform: translateX(-258px);}
+
+	#leftArrow {left:250px}
+	#rightArrow {right:250px}	
+}
+
+@media only screen and (max-width: 640px) {
+	#main {right:0}
+	#main #listGroups, #main #listDetail, #main #detailArticle, #main #listChat {width:95%; right:auto;}
+	#main #listGroups {left:0}
+	#main #listDetail {left:95%;}
+	#main #detailArticle {left:95%;}
+	#main #listChat {left:190%}
+	
+	#main {overflow:visible}
+	#main.pageLeftCol {-webkit-transform: translateX(0%); -moz-transform: translateX(0%)}
+	#main.pageMidCol {-webkit-transform: translateX(-92.5%); -moz-transform: translateX(-92.5%);}
+	#main.pageRightCol {-webkit-transform: translateX(-185%); -moz-transform: translateX(-185%);}
+
+	#leftArrow {left:92.5%}
+	#rightArrow {left:187.5%}
+
+	#listDetail article {width:96%}
+
+}
+
+
+
+

@@ -77,7 +77,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaults: {
 			selected	: false,
-			service		: 'channel'
+			service		: 'channel',
+			img			: '/i/placeholder/listIcon2.png'
 			
 		// DB model structure
 			// id 				: undefined,
@@ -98,7 +99,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaults: {
 			selected	: false,
-			service		: 'event'
+			service		: 'event',
+			img			: '/i/placeholder/listIcon2.png'
 
 		// DB model structure
 			// service 			: undefined,

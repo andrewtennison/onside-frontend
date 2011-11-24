@@ -1,31 +1,19 @@
 
 section#OnsideApp
-	div#main(role='main')
-		section.page#listGroups
-			header
-				hgroup
+	header
+		div.inner
+			h1 Onside
 				
-					- if (everyauth.loggedIn)
-						h1= everyauth.user.name
-							span(style='display:none')= JSON.stringify(everyauth)
-					- else
-						h1 #{title}
-
-				nav
-					span.buttonGroup
-						- if (everyauth.loggedIn)
-							a.account.toggleBlock(href="#navAccounts") profile
-						-else 
-							a.login.toggleBlock(href="#navLogin") Sign In
-					
-					a.filter.button.toggleBlock(href="#navFilters") filter
-				
+			nav
 				- if (everyauth.loggedIn)
+					a.settings
+					a.account= everyauth.user.name
 					div#navAccounts.block
 							a.logout(href="/logout") Sign out
 							p= JSON.stringify(everyauth.user)
-
-				-else
+	
+				- else
+					a.login.showBlock(href="#navLogin") join Onside
 					div#navLogin.block
 						a(href='/register') Register
 						a(href='/login', style='border: 0px') Login with Password					
@@ -46,40 +34,31 @@ section#OnsideApp
 						
 						a(href='/auth/google')
 							img(style='border: 0px', src='https://www.google.com/favicon.ico')
-
-				div#navFilters.block
-					p filter options
-
-				div#navSearch.block
+	
+				div#navSearch
 					form(action="/search")
 						input#groupSearch(type="search", placeholder="search", name="q")
-
-			section.content
-
-			footer
+						button#searchSubmit(type="submit", name="submit") search all sports
+			
+	
+	div#main(role='main')
+		section.page#listGroups
+			header
 				nav
-					a.settings.icon(href="#") settings
-					a.toggleList.toggleButton(href="#")
+					a.toggleList.toggleButton2(href="#")
 						span.channel channels
 						span.event events
+
+			section.content
 
 		section.page#listDetail
 		
 		section.page#detailArticle
 		
 		section.page#listChat
-			header
-				h1
-					span 0
-					Chatter
-				
-				nav
-					a.button.filter(href="#") filter
-					a.button.add(href="#") Add
-
-				div.addBlock
-					form(action="/")
-						input#commentAdd(type="text", placeholder="add your comment", name="comment")
+			div.addBlock
+				form(action="/")
+					input#commentAdd(type="text", placeholder="write a message_", name="comment")
 
 			section.content
 
@@ -90,12 +69,14 @@ section#OnsideApp
 
 // templates
 script#channelItemTemplate.tmpl(type="text/template")
+	\<img src="<%= img %>" />
 	h1 <%= name %>
 
 script#channelDetailItemTemplate.tmpl(type="text/template")
 	h1 <%= name %>
 
 script#eventItemTemplate.tmpl(type="text/template")
+	img(src="/i/placeholder/listIcon2.png")
 	h1 <%= name %>
 
 script#eventDetailItemTemplate.tmpl(type="text/template")
@@ -114,27 +95,35 @@ script#detailTemplate.tmpl(type="text/template")
 	div.contentWrapper
 
 script#articleTemplate.tmpl(type="text/template")
-	\<% if(images) { %> <img src='<%= images %>' /> <% } %>
-
-	\<% if(extended) { %> <a class="readMore button" href="#">read more</a> <% } %>
+	div.pad
+		\<% if(images) { %> <img src='<%= images %>' /> <% } %>
 	
-	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
-
-	h2 <%= title %>
-	p <%= content %>
-	\<a href='<%= link %>'>@ <%= source %></a>
+		\<% if(extended) { %> <a class="readMore button" href="#">read more</a> <% } %>
+		
+		\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	
+		h2 <%= title %>
+		p <%= content %>
+		\<a href='<%= link %>'>@ <%= source %></a>
 
 script#articleTemplate-twitter.tmpl(type="text/template")
-	cite <%= author %>
-	p <%= content %>
-	\<%= link %>
+	div.pad
+		p <%= content %>
+		cite <%= author %>
+		//\<%= link %>
 
 script#articleTemplate-youtube.tmpl(type="text/template")
-	h2 <%= author %>: <%= title %>
-	p <%= content %>
-	\<input type="hidden" value="<%= link %>" name="videoData" />
-	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
-	\<a href='<%= videos %>'>see video</a>
+	//
+		h2 <%= author %>: <%= title %>
+		p <%= content %>
+		\<input type="hidden" value="<%= link %>" name="videoData" />
+		\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+		\<a href='<%= videos %>'>see video</a>
+	
+	//\<iframe class="youtube-player" type="text/html" width="373" height="220" src="http://www.youtube.com/embed/<%= videoId%>" frameborder="0"></iframe>
+	\<object style="height: 245; width: 373">
+	\<param name="movie" value="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	\<embed src="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
 
 script#articleDetail.tmpl(type="text/template")
 	header
