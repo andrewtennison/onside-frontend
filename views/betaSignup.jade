@@ -1,0 +1,20 @@
+
+img#bgImg(src="/i/placeholder/signup.jpg")
+
+
+div#container
+	div.box
+		h1 Onside
+			span brivate \<br> beta
+		
+		div.inner
+			-if(loggedIn === false)
+				p delivering fans personalised sports content from across the web
+				h2 Sign up now to be one of the first to KeepItOnside
+				p Onside.me is launching soon. Enter your email to join our invite list and bring along your friends and fellow fans to experience the future of sports news.
+		
+				a.twitter(href="/auth/twitter") Signup with twitter
+				a.facebook(href="/auth/twitter") Signup with facebook
+				
+			-else
+				p Thank you for registering. We will email an invite when soon

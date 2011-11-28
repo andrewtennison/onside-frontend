@@ -73,10 +73,10 @@ header > [class*='block'] {position:relative; display:none; padding:6px;}
 header > [class*='block'] input {width:230px}
 
 /* ==|== listGroups styles ===================================================== */
-#main #listGroups {width:247px; right:auto; background:#2a2a2a; z-index:3; border:1px solid #111; border-radius:4px; bottom:8px}
+#main #listGroups {width:247px; right:auto; background:#2a2a2a; z-index:3; border:1px solid #111; border-radius:4px; bottom:8px; left:5px}
 #listGroups header {position:relative; display:block; padding:8px}
 #listGroups header .toggleButton2 {}
-#listGroups .content {position:relative; display:block;}
+#listGroups .content {position:relative; display:block; overflow:visible}
 
 #listGroups header h1, 
 #listGroups footer {border-bottom:1px solid #cbcbcb; background: #ffffff; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #fdfdfd 50%, #e5e5e5 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#fdfdfd), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */background: -o-linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* Opera11.10+ */background: linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* W3C */}
@@ -90,30 +90,30 @@ header > [class*='block'] input {width:230px}
 
 #listGroups h2 {color:#fff; font-weight:normal; font-size:1.1em; padding:4px 10px 2px; background: #595959; /* Old browsers */background: -moz-linear-gradient(top, #595959 0%, #020202 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(100%,#020202)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #595959 0%,#020202 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #595959 0%,#020202 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #595959 0%,#020202 100%); /* IE10+ */background: linear-gradient(top, #595959 0%,#020202 100%); /* W3C */}
 #listGroups article {
-	position:relative; display:block; border-top:1px solid #414141; border-bottom:1px solid #222; height:43px; padding:10px;
+	position:relative; display:block; border-top:1px solid #414141; border-bottom:1px solid #222; height:43px; padding:8px;
 	background: #353535; /* Old browsers */background: -moz-linear-gradient(top,  #353535 0%, #2f2f2f 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#353535), color-stop(100%,#2f2f2f)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* IE10+ */background: linear-gradient(top,  #353535 0%,#2f2f2f 100%); /* W3C */
 	}
 #listGroups article.active {
 	border-bottom-color:#414141; border-top-color:#161616; box-shadow:inset 0 1px 2px rgba(0,0,0,0.4);
 	background: #1b1b1b; /* Old browsers */background: -moz-linear-gradient(top,  #1b1b1b 0%, #222222 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#1b1b1b), color-stop(100%,#222222)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* IE10+ */background: linear-gradient(top,  #1b1b1b 0%,#222222 100%); /* W3C */
 	}
-#listGroups article img {position:relative; display:inline-block; margin:0 10px 0 0; border-radius:8px; box-shadow:0 1px 3px rgba(0, 0, 0, 0.3); vertical-align: top}
+#listGroups article img {position:relative; display:inline-block; margin:0; border-radius:8px; box-shadow:0 1px 3px rgba(0, 0, 0, 0.3); vertical-align: top}
 #listGroups article.active img {box-shadow:0 2px 5px rgba(0, 0, 0, 0.7)}
-#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 45px; font-size:1.4em; margin:0; font-weight:normal; text-transform:uppercase}
+#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 45px; font-size:1.4em; margin:0 0 0 10px; font-weight:normal; text-transform:uppercase}
 
 /* ==|== listDetail styles ===================================================== */
-#main #listDetail {left:260px; right:216px; z-index:2;}
+#main #listDetail {left:260px; width:768px; right:auto; z-index:2;}
 #main #listDetail .detailItem {position:absolute; top:0; left:0; right:0; bottom:0}
 
 #listDetail.shut {-moz-transform:translateX(-95%); -webkit-transform:translateX(-97.5%)}
 
 #listDetail header {
-	position:relative; border-top-left-radius:5px; border-top-right-radius:5px; margin-bottom:10px; height:65px;
+	position:relative; border-top-left-radius:5px; border-top-right-radius:5px; height:65px;
 	background: #ec0643; /* Old browsers */background: -moz-linear-gradient(top,  #ec0643 0%, #db0336 23%, #c2032e 24%, #a30226 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ec0643), color-stop(23%,#db0336), color-stop(24%,#c2032e), color-stop(100%,#a30226)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* IE10+ */background: linear-gradient(top,  #ec0643 0%,#db0336 23%,#c2032e 24%,#a30226 100%); /* W3C */
 	}
 #listDetail header h1 {color:#fff}
 #listDetail header nav {position:absolute; right:15px; bottom:15px;}
-#listDetail .contentWrapper {position:absolute; top:75px; left:0; right:0; bottom:0; overflow-y: auto}
+#listDetail .contentWrapper {position:absolute; top:70px; left:0; right:0; bottom:0; overflow-y: auto}
 
 #listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
 #listDetail .content  {}
@@ -173,47 +173,58 @@ header > [class*='block'] input {width:230px}
 
 
 /* ==|== media querys ===================================================== */
-@media only screen and (min-width: 480px) {}
-@media only screen and (min-width: 768px) {}
 
-@media only screen and (min-width: 1025px) and (max-width:1245px) {
-	#OnsideApp > header .inner {width:100%; margin:0px auto}
-	#main {width:100%; left:0;}
+/* full width */
+@media only screen and (min-width: 1236px) {
 }
 
-@media only screen and (min-width: 1246px) {
-	#OnsideApp > header .inner {width:1246px; margin:0px auto}
-	#main {width:1246px; left:50%; margin-left:-623px}
+/* collapse left nav */
+@media only screen and (min-width: 1051px) and (max-width:1245px) {
 }
 
-@media only screen and (min-width: 641px) and (max-width: 1024px) {
-	#main {right:-215px;}
-	#main #listDetail {right:223px}
-	#main.pageLeftCol {-webkit-transform: translateX(0px); -moz-transform: translateX(0px)}
-	#main.pageRightCol {-webkit-transform: translateX(-258px); -moz-transform: translateX(-258px);}
-
-	#leftArrow {left:250px}
-	#rightArrow {right:250px}	
+/* hide comments */
+@media only screen and (min-width: 837px) and (max-width:1050px) {
+	#main #listChat {right:-210px;}
 }
 
-@media only screen and (max-width: 640px) {
-	#main {right:0}
-	#main #listGroups, #main #listDetail, #main #detailArticle, #main #listChat {width:95%; right:auto;}
-	#main #listGroups {left:0}
-	#main #listDetail {left:95%;}
-	#main #detailArticle {left:95%;}
-	#main #listChat {left:190%}
+@media only screen and (min-width: 768px) and (max-width:836px) {
+	#main #listChat {right:-210px;}
 	
-	#main {overflow:visible}
-	#main.pageLeftCol {-webkit-transform: translateX(0%); -moz-transform: translateX(0%)}
-	#main.pageMidCol {-webkit-transform: translateX(-92.5%); -moz-transform: translateX(-92.5%);}
-	#main.pageRightCol {-webkit-transform: translateX(-185%); -moz-transform: translateX(-185%);}
+}
 
-	#leftArrow {left:92.5%}
-	#rightArrow {left:187.5%}
 
-	#listDetail article {width:96%}
 
+/* collapse left nav */
+@media only screen and (min-width: 0px) and (max-width:1245px) {
+	#main #listDetail {left:72px}
+	#main #listGroups {width:59px; overflow:visible}
+	#listGroups header {padding:5px}
+	#listGroups .toggleButton2 span {width:20px; text-indent:-999px; overflow:hidden; margin:2px}
+	#listGroups .toggleButton2 span:after {position:absolute; top:0; left:0; width:20px; height:20px; text-indent: 0px}
+	#listGroups .toggleButton2 span.channel:after {content:'C'}
+	#listGroups .toggleButton2 span.event:after {content:'E'}
+	#listGroups article h1 {width:0px; overflow: hidden}
+}
+
+/* nav to bottom */
+@media only screen and (min-width: 0px) and (max-width:836px) {
+	#main #listDetail {left:0; bottom:71px; width:auto; right:0}
+	#main #listGroups {bottom:1px; left:1px; height:60px; top:auto; width:70%}
+		#listGroups header {display:inline-block; padding:20px 5px;}
+		#listGroups .content {display:inline-block; vertical-align: top}
+		#listGroups article h1 {display:none}
+		#listGroups article {border:0px none; border-left:1px solid #414141; border-right:1px solid #222222}
+		
+	#main #listChat {top:auto; bottom:2px; right:0; width:30%; height:61px; overflow:hidden}
+		#listChat .addBlock {margin:0 2px 0 6px;  border:1px solid #111}
+}
+
+
+@media only screen and (max-width: 767px) {
+	#listDetail .content article {width:99.2%}
+}
+@media only screen and (max-width: 543px) {
+	#OnsideApp > header nav > a {text-indent:-999px; overflow: hidden; padding:0 14px}
 }
 
 

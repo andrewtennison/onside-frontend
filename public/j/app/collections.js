@@ -42,7 +42,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			if(searchTerms) url += '&SearchFor='+searchTerms+'&';
 			//if(twitterUsername) url += '&Twittername=' +twitterUsername+ '.rss&';
 			url += '_id=b9b673bf19353ce78c8912180c1b414e&_render=json';
-	
+
 			return url;
 		},
 		
@@ -52,9 +52,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			return resp.resultset.articles;
 		},
 		comparator : function(Article) {
-			// var P = Article.get("publish"),
-				// D = new Date(P.replace(' ', 'T'));
-			// return - D.getTime();
+			var P = Article.get("publish"),
+				D = new Date(P.replace(' ', 'T'));
+			return - D.getTime();
 		}
 	});
 

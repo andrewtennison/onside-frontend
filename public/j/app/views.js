@@ -398,7 +398,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		addAll: function(){
-			this.collection.sort();
 			this.collection.each(this.addOne);
 		},
 		addOne: function(article){
