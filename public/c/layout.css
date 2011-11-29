@@ -70,6 +70,8 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 #listDetail header {border-bottom:1px solid #e6e6e6}
 #listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
 
+#listDetail .detailItem {position:absolute; top:0; left:0; right:0; bottom:0; overflow-x: hidden; overflow-y: auto}
+#listDetail .content {position:relative; display:block; clear:both; border-bottom:1px dotted #333}
 #listDetail .content article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
 #listDetail .content article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
 	#listDetail .detailItem article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
@@ -78,6 +80,7 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 	#listDetail .detailItem article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
 	#listDetail .detailItem article a {margin:0 5px 0 0; font-size:1.1em}
 	#listDetail .detailItem article a.readMore {}
+	
 
 /* ==|== detailArticle styles ===================================================== */
 #main #detailArticle {left:280px; right:280px; background:#fff; z-index:1}

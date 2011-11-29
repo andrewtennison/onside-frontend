@@ -2,8 +2,10 @@
 /**
  * Module dependencies.
  */
+var apiPath;
 
 var express 	= require('express'),
+	resource 	= require('express-resource'),   
 	routes 		= require('./routes'),
 	util 		= require('util'),
 	rest 		= require('restler'),
@@ -45,15 +47,19 @@ app.configure(function(){
 
 app.configure('development', function(){
 	app.use(express.logger());
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	apiPath = 'http://onside.mini-apps.co.uk:80';
 });
 
 app.configure('production', function(){
 	app.use(express.errorHandler()); 
+	apiPath = 'http://onside.mini-apps.co.uk:80';
 });
 
 
 // Routes
+//app.resource('channels', require('./routes/channels'));
+
 app.get('*', function(req, res, next){
 	if(req.headers.host == 'dev2.onside.me') {
 		routes.demo1();
@@ -65,64 +71,24 @@ app.get('*', function(req, res, next){
 app.get('/', routes.index);
 app.get('/demo', routes.demo1);
 
-app.get('/events', routes.index);
-
 app.get('/login', function(req,res){
 	res.render('login', { title: 'Log In', cssPath: '' });
 });
 
 app.get('/addcontent', function(req,res){
-	res.render('addcontent', { title: 'Add Content', cssPath: '' });
+	res.render('addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
 });
 
 var onsideAuthKey = '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648';
-app.get('/channel', function(req,res){
-	rest.get('http://onside.mini-apps.co.uk:80/channel',{
-		headers:{
-			OnsideAuth : onsideAuthKey,
-			'OnsideAuth' : onsideAuthKey
-		}
-	}).on('complete', function(data) {
-		res.json(data);
-	});
-	console.log(rest)
-});
-app.get('/event', function(req,res){
-	rest.get('http://onside.mini-apps.co.uk:80/event',{
-		headers:{
-			OnsideAuth : onsideAuthKey,
-			Origin: 'http://dev.onside.me:1234',
-			'Access-Control-Request-Method' : 'POST,GET,DELETE',
-			'Access-Control-Request-Headers': 'OnsideAuth'
-		}
-	}).on('complete', function(data) {
-		res.json(data);
-	});
-});
-app.get('/article', function(req,res){
-	rest.get('http://onside.mini-apps.co.uk:80/article',{
-		headers:{
-			OnsideAuth : onsideAuthKey,
-			Origin: 'http://dev.onside.me:1234',
-			'Access-Control-Request-Method' : 'POST,GET,DELETE',
-			'Access-Control-Request-Headers': 'OnsideAuth'
-		}
-	}).on('complete', function(data) {
-		res.json(data);
-	});
-});
-app.get('/comment', function(req,res){
-	rest.get('http://onside.mini-apps.co.uk:80' + req.url ,{
-		headers:{
-			OnsideAuth : onsideAuthKey,
-			Origin: 'http://dev.onside.me:1234',
-			'Access-Control-Request-Method' : 'POST,GET,DELETE',
-			'Access-Control-Request-Headers': 'OnsideAuth'
-		}
-	}).on('complete', function(data) {
-		res.json(data);
-	});
-});
+
+app.post('/api/search/save', routes.searchSave);
+
+app.get('/api/search/:query', routes.searchQuery);
+
+app.get('/api/*', routes.getApi);
+app.post('/api/*', routes.postApi);
+app.del('/api/*', routes.delApi);
+
 app.post('/comment', function(req,res){
 	rest.post('http://onside.mini-apps.co.uk:80/comment', req.body).on('complete', function(data){
 		console.log('res.statusCode = ' + res.statusCode);
@@ -130,19 +96,6 @@ app.post('/comment', function(req,res){
 	});
 });
 
-app.get('/search/:query', function(req,res){
-	console.log(req.params.query);
-	rest.get('http://onside.mini-apps.co.uk:80/search?' + req.params.query,{
-		headers:{
-			OnsideAuth : onsideAuthKey,
-			Origin: 'http://dev.onside.me:1234',
-			'Access-Control-Request-Method' : 'POST,GET,DELETE',
-			'Access-Control-Request-Headers': 'OnsideAuth'
-		}
-	}).on('complete', function(data) {
-		res.json(data);
-	});
-});
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

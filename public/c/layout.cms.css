@@ -1,0 +1,56 @@
+/*
+   layout.css
+   site
+   
+   Created by andrew tennison on 2011-09-08.
+   Copyright 2011 andrew tennison. All rights reserved.
+*/
+
+
+/* ==|== normalise ====================================================== */
+@import "/c/style.css";
+/* ==|== typography ====================================================== */
+@import "/c/type.css";
+a, a:hover, a:active, a:focus, a:visited {color:#fff}
+::-webkit-input-placeholder {color: red;}
+:-moz-placeholder {color: red;}
+
+
+header {position:absolute; display:block; top:0; bottom:0; left:0; width:200px; background:#555; box-shadow:inset -4px 0 4px rgba(0,0,0,0.5);}
+section.list {position:absolute; display:block; top:0; bottom:0; left:200px; width:200px; border-right:1px solid #bbb}
+section.form {position:absolute; display:block; top:0; bottom:0; left:400px; right:0; overflow-y:auto}
+section.hiddenForms {display:none}
+
+header h1 {padding:15px 20px;  margin:0; border-bottom:1px solid #333; color:#fff; font-weight:normal}
+header nav {border-top:1px solid #777}
+header nav a {position:relative; display:block; padding:7px 10px; text-decoration: none; border-bottom:1px dotted #777; font-size:1.2em}
+header nav a:hover {background:#444}
+header nav a.on {background:#fff; color:#555}
+
+section.list ul {list-style: none; margin:0; padding:20px 0}
+section.list li {position:relative; display:block; padding:7px 20px; margin:0; border-bottom:1px dotted #999; font-size:1.2em; cursor: pointer}
+section.list li:hover {background:#eee;} 
+
+section.form form {position:relative;}
+section.form form h2 {position:relative; display:block; padding:20px; font-size:2em; border-bottom:1px solid #eee; margin:0 0 20px 0}
+section.form form input[type=text] {position:relative; display:inline-block; border:1px solid #999; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3); border-radius:3px; margin:0 0 10px 20px; width:300px; padding:7px 10px 5px 10px}
+section.form form select {border:1px solid #999;border-radius:3px; margin:0 0 10px 20px; width:322px; padding:0; font-size:1.4em; padding:5px 5px 5px 10px; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3);}
+section.form form footer {position:relative; display:block; margin:20px}
+section.form form button {border-radius:4px; color:#fff; padding:8px 15px; font-size: 1.6em; border:0px none; background:#a10227}
+section.form form a.delete {border-radius:4px; color:#fff; padding:8px 15px; font-size: 1.6em; border:0px none; background:#ccc; margin:0 0 0 20px; text-decoration: none}
+
+
+fieldset {position:relative; display: block;}
+fieldset label {position:relative; display:block; padding:7px 20px; font-size:1.4em; margin:20px 0 10px 1px; border-bottom:1px solid #eee}
+section.form form input[type=time] {position:relative; display:inline-block; border:1px solid #999; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3); margin:0 0 10px 0; width:100px; padding:7px 10px 5px 10px; font-size:1.4em}
+section.form form fieldset > input[type="time"]:first-of-type {margin-left:20px; border-bottom-left-radius: 3px; border-top-left-radius: 3px}
+section.form form fieldset > input[type="time"]:last-of-type {border-bottom-right-radius: 3px; border-top-right-radius: 3px}
+
+section.form form input.filled,
+section.form form select.filled {border-color:#000}
+
+section.form form .participants span {display:block}
+section.form form .participants {padding:20px}
+section.form form .participants .add {background:#666; padding:4px 8px; border-radius:3px; margin:0 0 0 10px; text-decoration:none}
+section.form form .participants input[type=text] {width:20%; margin:0 10px 10px 0}
+

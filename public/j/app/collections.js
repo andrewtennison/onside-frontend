@@ -21,7 +21,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			return resp.resultset.channels;
 		}
     });
-	
+
 	var EventList = _Lists.extend({
 		model : BB.Event,
 		defaultUrl: (on.env.internetConnection)? ( on.path.api + '/event' ) : '/stubs/api.event.js',
@@ -73,7 +73,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		createModel: function(service, obj, DUID){
 			console.info('# Collection.DetailList.create - ' + DUID)
-			var cleanService;
 			
 			switch (service.toLowerCase()){
 				case 'channel':
@@ -95,7 +94,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						selected	: true,
 						channels 	: channelList,
 						events 		: eventList,
-						articles 	: articleList
+						articles 	: articleList,
+						getContent	: function(){
+							thisModel.events.fetch();
+							thisModel.channels.fetch();
+							thisModel.articles.fetch();
+						}
 					};
 					
 					_.extend(obj, thisModel);
@@ -111,11 +115,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						title 			: obj.escape('title'),
 						selected		: true,
 						channels 		: new ChannelList(),
-						channelJson		: obj.get('channels'),
+						//channelJson		: obj.get('channels'),
 						events 			: new EventList(),
-						eventJson		: obj.get('events'),
+						//eventJson		: obj.get('events'),
 						articles 		: new ArticleList(),
-						articleJson		: obj.get('articles')
+						//articleJson		: obj.get('articles'),
+						getContent		: function(){
+							thisModel.events.reset(obj.get('events'));
+							thisModel.channels.reset(obj.get('channels'));
+							thisModel.articles.reset(obj.get('articles'));
+						}
 					};
 					this.add(thisModel);
 					return thisModel;

@@ -112,7 +112,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Search = Backbone.Model.extend({
-		service: 'search'
+		service: 'search',
+		initialize: function(){
+			console.info('# Model.Search.initialize');
+		}
 	})
 	
 	var Detail = Backbone.Model.extend({
@@ -135,7 +138,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
-			console.info('# Model.Comment.initialize');
+			//console.info('# Model.Comment.initialize');
 		},
 		parse: function(resp, xhr){
 			return resp.resultset.comments[0];

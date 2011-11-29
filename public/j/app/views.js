@@ -172,7 +172,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		search: function(value){
 			var that = this,
-				searchUrl = (on.env.internetConnection)? ( on.path.api + '/search/q=' + value ) : '/stubs/api.search.js';
+				searchUrl = (on.env.internetConnection)? ( on.path.api + '/search?q=' + value ) : '/stubs/api.search.js';
 
 			$.get(searchUrl, function(json) {
 				var model = new BB.Search();
@@ -238,8 +238,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		tagName: 'section',
 		className: 'content channelList',
 		addOne: function(channel){
-			var view = new ChannelDetailView({model:channel, app:this.options.app})
-			$(this.el).append(view.render().el);
+			var view = new ChannelDetailView({model:channel, app:this.options.app}),
+				render = view.render().el;
+			
+			$(this.el).append(render);
 		}
 	});
 	var EventListView 	= _ListView.extend({
@@ -252,7 +254,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var EventListDetailView = EventListView.extend({
 		tagName: 'section',
-		className: 'content articleList',
+		className: 'content eventList',
 		addOne: function(event){
 			var view = new EventDetailView({model:event, app:this.options.app})
 			$(this.el).append(view.render().el);
@@ -268,7 +270,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 	
 		initialize: function(){
-			this.app = this.options.app;
+			this.app = on.m.app;//this.options.app;
 			_.bindAll(this, 'render', 'updateItem');
 			this.app.bind('change:selectedItemCid', this.updateItem)
 		},
@@ -350,15 +352,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		tagName: 'article',
 		className: 'detailItem',
 		template: _.template( $('#detailTemplate').html() ),
+		events: {
+			'click .save': 'saveAction'
+		},
 		
 		initialize: function(){
 			console.info('# View.Detail.initialize');
-			_.bindAll(this, 'render', 'toggleDisplay');
+			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction');
+			this.app = this.options.app;
 			this.model.bind('change:selected', this.toggleDisplay);
 		},
 		
 		render: function(){
 			console.log('# View.Detail.render');
+			console.log(this.model.toJSON());
 
 			$(this.el).html(this.template(this.model.toJSON()));
 			
@@ -371,6 +378,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				.append(viewE.el)
 				.append(viewA.el);
 
+			this.model.get('getContent')();
+//			viewC.collection.reset( this.model.get('channelJson') );
+//			viewE.collection.reset( this.model.get('eventJson') );
+//			viewA.collection.reset( this.model.get('articleJson') );
+
 		    return this;
 		},
 		
@@ -379,6 +391,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				$(this.el).show();
 			}else{
 				$(this.el).hide();
+			}
+		},
+		saveAction: function(e){
+			e.preventDefault();
+			if(this.model.get('service') === 'search'){
+				var url = on.path.api + '/search/save?query=' + this.model.get('title') + '&name=' + this.model.get('title');
+				$.post(url, function(d){
+					console.log(d)
+				})
 			}
 		}
 	});
@@ -394,7 +415,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('add', this.addOne);
 
-			this.collection.fetch();
+			//this.collection.fetch();
 		},
 		
 		addAll: function(){

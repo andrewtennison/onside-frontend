@@ -17,7 +17,7 @@ on.path = {
 	js: '/j/',
 	//api: 'http://onside.mini-apps.co.uk'
 	//api: 'http://api.onside.me:8000'
-	api:''
+	api:'/api'
 };
 
 $LAB

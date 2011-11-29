@@ -1,29 +1,72 @@
-h2= title
 
-	form#addChannel(method="post", action="/channel")
-		label Create New Channel
-		input(type="text", name="name", placeholder="Channel Name")
+header
+	h1 Onside CMS
+	
+	nav
+		a.logout(href="/logout") logout
+		a.channels(href="") Channels
+		a.channelFollow(href="#") Follow channel
+		a.events(href="") Events
+		a.users(href="") Users
+		a.save(href="") Saved Searches
+		a.article(href="") Articles
+
+section.list
+	ul
+
+section.form
+
+section.hiddenForms
+	form#addUser
+		h2 Modify User
+		input(type="text", name="name", placeholder="User Name")
+		footer
+			button(type="submit") edit user
+
+	form#followChannel
+		h2 Follow Channel
+		input(type="text", name="user", placeholder="User ID")
+		input(type="text", name="channel", placeholder="Channel ID")
+		footer
+			button(type="submit") follow channel
+
+	form#saveSearch
+		h2 Save Search
+		input(type="text", name="user", placeholder="User ID")
+		input(type="text", name="query", placeholder="Search Query")
+		input(type="text", name="name", placeholder="Search Name")
+		footer
+			button(type="submit") save search
+
+	form#addChannel(method="post", action="/api/channel")
+		h2 Create or Edit Channel
+		input(type="text", name="name", placeholder="Channel Name", required="true")
 		input(type="text", name="description", placeholder="description")
 		select(name="sport")
+			option(value="") choose
 			option(value="football") football
 			option(value="tennis") tennis
 			option(value="rugby") rugby
-		input(type="text", name="type", placeholder="type")
-		input(type="text", name="level", placeholder="level")
-		input(type="text", name="keywords", placeholder="keywords, comma separated")
+		input(type="text", name="type", placeholder="type", required="true")
+		input(type="text", name="level", placeholder="level", required="true")
+		input(type="text", name="keywords", placeholder="keywords, comma separated", required="true")
 		input(type="text", name="geolat", placeholder="geolat")
 		input(type="text", name="geolng", placeholder="geolng")
-		button(type="submit") create channel
+		input(type="text", name="image", placeholder="image url on server")
+		input(type="text", name="colour", placeholder="brand default hex colour")
+		footer
+			button(type="submit") create channel
+			a.delete(href="/delete") delete channel
 
-	form#addEvent
-		label Create New Event
+	form#addEvent(method="post", action="/api/event")
+		h2 Create New Event
 		input(type="text", name="name", placeholder="Event Name")
 		select(name="sport")
 			option(value="football") football
 			option(value="tennis") tennis
 			option(value="rugby") rugby
 		select(name="type")
-			option(value="team") team
+			option(value="match") match
 			option(value="league") league
 			option(value="tournament") tournament
 		input(type="text", name="keywords", placeholder="keywords, comma separated")
@@ -38,10 +81,37 @@ h2= title
 			input(type="time", name="finish", placeholder="finish time")
 			input(type="time", name="duration", placeholder="duration")
 		
-		fieldset
+		fieldset.participants
 			label Participants
-			input(type="text", name="name", placeholder="name")
-			input(type="text", name="position", placeholder="position")
-			input(type="text", name="score", placeholder="score")
+				a.add(href="#") +
+			
+			span#p0
+				input(type="text", name="p_name", placeholder="name")
+				input(type="text", name="p_position", placeholder="position")
+				input(type="text", name="p_score", placeholder="score")
+			
 
-		button(type="submit") create event
+		footer
+			button(type="submit") create event
+			a.delete(href="/delete") delete channel
+		
+	form#addArticle(metho="post", action="/api/article")
+		select(name="type")
+			option(value="rss") RSS
+			option(value="twitter") twitter
+			option(value="custom") custom
+			option(value="result") result
+			option(value="stats") stats
+		
+		input(type="text", name="title", placeholder="title")
+		input(type="text", name="content", placeholder="content")
+		input(type="text", name="images", placeholder="image path")
+		input(type="text", name="author", placeholder="author")
+		input(type="text", name="source", placeholder="article source")
+		input(type="text", name="link", placeholder="link to the source")
+		input(type="text", name="extended", placeholder="extended content")
+		input(type="text", name="keywords", placeholder="comma separated keywords")
+
+		footer
+			button(type="submit") create event
+			a.delete(href="/delete") delete channel
