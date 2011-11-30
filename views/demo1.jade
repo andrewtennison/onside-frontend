@@ -14,6 +14,11 @@ section#OnsideApp
 	
 				- else
 					a.login.showBlock(href="#navLogin") join Onside
+						span +
+					a.feedback(href="#blockHelp") feedback
+						span +
+					a.help(href="#blockHelp") help
+						span +
 					div#navLogin.block
 						a(href='/register') Register
 						a(href='/login', style='border: 0px') Login with Password					
@@ -35,10 +40,10 @@ section#OnsideApp
 						a(href='/auth/google')
 							img(style='border: 0px', src='https://www.google.com/favicon.ico')
 	
-				div#navSearch
-					form(action="/search")
-						input#groupSearch(type="search", placeholder="search", name="q")
-						button#searchSubmit(type="submit", name="submit") search all sports
+			div#navSearch
+				form(action="/search")
+					input#groupSearch(type="search", placeholder="search", name="q")
+					button#searchSubmit(type="submit", name="submit") search all sports
 			
 	
 	div#main(role='main')

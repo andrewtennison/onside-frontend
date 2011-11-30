@@ -133,3 +133,11 @@ exports.delApi = function(req,res){
 		res.redirect('/');
 	}
 };
+
+exports.cms = function(req,res){
+	if(req.loggedIn && req.user.admin === '1'){
+		res.render('addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
+	} else {
+		res.redirect('/', 401);
+	}
+}

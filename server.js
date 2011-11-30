@@ -2,7 +2,8 @@
 /**
  * Module dependencies.
  */
-var apiPath;
+var apiPath = 'test//';
+apiPath2 = 'test//';
 
 var express 	= require('express'),
 	resource 	= require('express-resource'),   
@@ -32,7 +33,6 @@ var app = module.exports = express.createServer();
 
 // Configuration
 app.configure(function(){
-	//app.use(express.logger());
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({ secret : "changeToSomething!"}));
@@ -48,14 +48,13 @@ app.configure(function(){
 app.configure('development', function(){
 	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	apiPath = 'http://onside.mini-apps.co.uk:80';
+	app.set('apiPath', 'http://onside.mini-apps.co.uk:80');
 });
 
 app.configure('production', function(){
 	app.use(express.errorHandler()); 
-	apiPath = 'http://onside.mini-apps.co.uk:80';
+	app.set('apiPath', 'http://api.onside.me');
 });
-
 
 // Routes
 //app.resource('channels', require('./routes/channels'));
@@ -75,16 +74,12 @@ app.get('/login', function(req,res){
 	res.render('login', { title: 'Log In', cssPath: '' });
 });
 
-app.get('/addcontent', function(req,res){
-	res.render('addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
-});
+app.get('/addcontent', routes.cms);
 
 var onsideAuthKey = '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648';
 
 app.post('/api/search/save', routes.searchSave);
-
 app.get('/api/search/:query', routes.searchQuery);
-
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
