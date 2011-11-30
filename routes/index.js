@@ -2,7 +2,8 @@
  * GET home page.
  */
 var rest 		= require('restler'),
-	apiPath 	= apiPath = 'http://onside.mini-apps.co.uk:80',
+	//apiPath 	= apiPath = 'http://onside.mini-apps.co.uk:80',
+	apiPath		= 'http://api.onside.me',
 	onsideAuthKey = '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648';
 
 
