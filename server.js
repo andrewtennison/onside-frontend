@@ -2,31 +2,29 @@
 /**
  * Module dependencies.
  */
-var apiPath = 'test//';
-apiPath2 = 'test//';
-
 var express 	= require('express'),
 	resource 	= require('express-resource'),   
 	routes 		= require('./routes'),
 	util 		= require('util'),
 	rest 		= require('restler'),
 
-	// for Auth
+	// returns config for correct environment based on process.env.NODE_ENV
+	Config 		= require('./lib/conf'),
+	conf 		= new Config(),
+
+	// for login
 	everyauth 	= require('everyauth'),
 	graph 		= require('fbgraph'),	
 	login		= require('./lib/login');
 
+// load login	
 everyauth.debug = true;
-
-// manages all login scripts
-login.all()
-
+login.all(conf);
 
 process.on('uncaughtException', function (err) {
   console.error(err);
   console.log("Node NOT Exiting...");
 });
-
 
 // Create main server
 var app = module.exports = express.createServer();
@@ -46,15 +44,17 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
+	process.env.NODE_ENV = 'development';
 	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-	app.set('apiPath', 'http://onside.mini-apps.co.uk:80');
 });
 
 app.configure('production', function(){
+	process.env.NODE_ENV = 'staging';
 	app.use(express.errorHandler()); 
-	app.set('apiPath', 'http://api.onside.me');
 });
+
+
 
 // Routes
 //app.resource('channels', require('./routes/channels'));
@@ -75,8 +75,6 @@ app.get('/login', function(req,res){
 });
 
 app.get('/addcontent', routes.cms);
-
-var onsideAuthKey = '01a2e0d73218f42d1495c3670b79f1bd44d7afa316340679bcd365468b73648';
 
 app.post('/api/search/save', routes.searchSave);
 app.get('/api/search/:query', routes.searchQuery);
