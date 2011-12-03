@@ -4,6 +4,7 @@
  */
 var express 	= require('express'),
 	resource 	= require('express-resource'),   
+	RedisStore 	= require('connect-redis')(express),
 	routes 		= require('./routes'),
 	util 		= require('util'),
 	rest 		= require('restler'),
@@ -15,11 +16,9 @@ var express 	= require('express'),
 	// for login
 	everyauth 	= require('everyauth'),
 	graph 		= require('fbgraph'),	
-	login		= require('./lib/login');
+	login		= require('./lib/login').all(conf);
 
-// load login	
 everyauth.debug = true;
-login.all(conf);
 
 process.on('uncaughtException', function (err) {
   console.error(err);
@@ -33,7 +32,10 @@ var app = module.exports = express.createServer();
 app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.session({ secret : "changeToSomething!"}));
+	app.use(express.session({ 
+		secret : "testsecret",
+		store: new RedisStore({host:'127.0.0.1', port:'6379'}) 
+	}));
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
 	app.use(app.router);
@@ -60,6 +62,8 @@ app.configure('production', function(){
 //app.resource('channels', require('./routes/channels'));
 
 app.get('*', function(req, res, next){
+	//console.log(req.session);
+	
 	if(req.headers.host == 'dev2.onside.me') {
 		routes.demo1();
 	}else{
@@ -76,8 +80,6 @@ app.get('/login', function(req,res){
 
 app.get('/addcontent', routes.cms);
 
-app.post('/api/search/save', routes.searchSave);
-app.get('/api/search/:query', routes.searchQuery);
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);

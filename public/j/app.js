@@ -16,7 +16,7 @@ BB.appRoutes = Backbone.Router.extend({
 		console.info('# appRoutes.initialize');
 		
 		// App model	
-		on.m.app = new BB.App();
+		on.m.app = new BB.App(this);
 		
 		// Create main views
 		// Application view
@@ -45,8 +45,10 @@ BB.appRoutes = Backbone.Router.extend({
 	home: function(){
 		console.log('// Routes = "/"  (index)');
 		
-		on.m.app.set({selectedUrl : null});
-		on.m.app.set({selectedServiceName : 'channels'});
+		on.m.app.set({
+			selectedUrl : null,
+			selectedServiceName : 'channels'
+		});
 		on.m.app.trigger('change:selectedUrl');
 	},
 	
@@ -61,6 +63,18 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	getChannel: function( id ){
 		console.log('// Routes = "/channel/'+id+'"');
+		on.m.app.set({
+			list: null,
+			//selectedUrl: null,
+			selectedServiceName: 'channels',
+			selectedItemId: '6',
+			selectedItemCid: null,
+			selectedModel: null,
+			selectedDetailId: null
+		}) ;
+		
+		//on.m.app.channels.add('')
+		
 	},
 	
 	getAuth: function( id ){

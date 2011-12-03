@@ -7,16 +7,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var _Lists = Backbone.Collection.extend({
 		// overiden in extended objects
 		defaultUrl:'', 
-		
-		// extend to look for proper urls based on routing
-		url: function(){
-			return this.defaultUrl;
-		}
 	});
 	
 	var ChannelList = _Lists.extend({
 		model : BB.Channel,
-		defaultUrl: (on.env.internetConnection)? ( on.path.api + '/channel' ) : '/stubs/api.channel.js',
+		url: on.path.api + '/channel',
 		parse: function(resp, xhr) {
 			return resp.resultset.channels;
 		}
@@ -24,7 +19,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var EventList = _Lists.extend({
 		model : BB.Event,
-		defaultUrl: (on.env.internetConnection)? ( on.path.api + '/event' ) : '/stubs/api.event.js',
+		url: on.path.api + '/event',
 		parse: function(resp, xhr) {
 			return resp.resultset.events;
 		}
@@ -32,22 +27,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 	var ArticleList = Backbone.Collection.extend({
 		model : BB.Article,
-		oldurl : function(opts){
-			var twitterUsername = false,
-				blockTerms = false,
-				searchTerms = opts.keywords.replace(' ','+').replace(',','%2c');
-				url = 'http://pipes.yahoo.com/pipes/pipe.run?';
-				
-			//if(blockTerms) url += 'BlockTerm%28s%29='+blockTerms+'&';
-			if(searchTerms) url += '&SearchFor='+searchTerms+'&';
-			//if(twitterUsername) url += '&Twittername=' +twitterUsername+ '.rss&';
-			url += '_id=b9b673bf19353ce78c8912180c1b414e&_render=json';
-
-			return url;
-		},
-		
 		url: on.path.api + '/article',
-
 		parse: function(resp, xhr) {
 			return resp.resultset.articles;
 		},
@@ -73,6 +53,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		createModel: function(service, obj, DUID){
 			console.info('# Collection.DetailList.create - ' + DUID)
+			console.info(obj)
 			
 			switch (service.toLowerCase()){
 				case 'channel':

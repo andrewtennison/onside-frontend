@@ -159,3 +159,19 @@ $LAB
 
 	});
 })
+
+/*
+ var data = { id: '2',
+  email: 'fake.52349587@twitter.com',
+  twitter: '52349587',
+  admin: '1',
+  enabled: '1',
+  status: '1' };
+
+var data2 = 'twitter=52349587&facebook=&enabled=1&status=1'
+
+$.post('http://api.onside.me/user/2', data ,function(res){
+console.log(res)
+});
+
+ * */

@@ -14,8 +14,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	};
 
 	var App	= Backbone.Model.extend({
-		initialize: function(){
+		initialize: function(route){
 			console.info('# Model.App.initialize');
+			console.log(route);
+			this.route = route;
 			
 			_.bindAll(this, 'updateUrl', 'updateDetailedList', 'updateComments');
 			
@@ -126,7 +128,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaults: {
 			selected: false,
-			service: undefined
+			service: undefined,
+			saved: false
 		}
 	});
 

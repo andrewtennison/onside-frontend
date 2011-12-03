@@ -340,6 +340,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			console.log('# View.DetailList.addOne');
 			var view = new DetailView({model:model, app:this.options.app});
 			this.el.append(view.render().el);
+
+			// set page route
+			var route = (model.get('service') === 'search')? model.get('service') + "/" + model.get('title') : model.get('service') + "/" + model.get('originId');
+			this.app.route.navigate(route);
 		},
 		addAll: function(models){
 			console.log('View.DetailList.addAll');
@@ -358,9 +362,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		initialize: function(){
 			console.info('# View.Detail.initialize');
-			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction');
+			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton');
 			this.app = this.options.app;
 			this.model.bind('change:selected', this.toggleDisplay);
+			this.model.bind('change:saved', this.toggleButton);
+			
+			this.toggleButton();
 		},
 		
 		render: function(){
@@ -379,10 +386,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				.append(viewA.el);
 
 			this.model.get('getContent')();
-//			viewC.collection.reset( this.model.get('channelJson') );
-//			viewE.collection.reset( this.model.get('eventJson') );
-//			viewA.collection.reset( this.model.get('articleJson') );
-
 		    return this;
 		},
 		
@@ -393,13 +396,58 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				$(this.el).hide();
 			}
 		},
+		toggleButton: function(){
+			if(this.model.get('saved')) {
+				this.$('a.save').text('remove').attr('data-action','remove');
+			}else{
+				this.$('a.save').text('save').attr('data-action','save');
+			}
+		},
 		saveAction: function(e){
 			e.preventDefault();
-			if(this.model.get('service') === 'search'){
-				var url = on.path.api + '/search/save?query=' + this.model.get('title') + '&name=' + this.model.get('title');
-				$.post(url, function(d){
-					console.log(d)
-				})
+			var that = this;
+			
+			switch(this.model.get('service')){
+				case 'search':
+					if(that.model.get('saved')) return;
+					
+					var url = on.path.api + '/search/save';
+					$.post(url, {
+						query:this.model.get('title'),
+						name:this.model.get('title')
+					}, function(res){
+						console.log(res);
+						that.model.set({saved:true});
+					})
+					break;
+				case 'channel':
+					if(that.model.get('saved')){
+						// saved, so un-save
+						var url = on.path.api + '/channel/unfollow';
+						$.post(url, {
+							channel:this.model.get('originId')
+						},function(res){
+							console.log(res)
+							//  that.model.set({saved:res.saved}); - once saved is setup
+							that.model.set({saved:false});
+						})
+					}else{
+						// if not saved, then save
+						var url = on.path.api + '/channel/follow';
+						$.post(url,{
+							channel: this.model.get('originId')
+						}, function(res){
+							console.log(res)
+							//  that.model.set({saved:res.saved}); - once saved is setup
+							that.model.set({saved:true});
+						})
+					}
+					break
+				case 'event':
+					break;
+				default:
+					console.error('DetailView.save failed service = ' + this.model.get('service'))
+					break;
 			}
 		}
 	});
@@ -432,11 +480,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		twitterTemplate: _.template( $('#articleTemplate-twitter').html() ),
 		youtubeTemplate: _.template( $('#articleTemplate-youtube').html() ),
 		
+		events: {
+			'click a.fullArtilce':'openIframe'
+		},
+		
 		initialize: function(){
 			_.bindAll(this, 'render');
 		},
 		
 		render: function(){
+			//if(this.model.get('original')) { console.log( eval( "(" + this.model.get('original') + ")" ) ) };
+
 			var json = this.model.toJSON(),
 				type = json.type;
 			
@@ -456,8 +510,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			$(this.el).addClass(type);
 			
 		    return this;
+		},
+		
+		openIframe: function(e){
+			e.preventDefault();
+			var url = this.model.get('link'),
+				view = new iframeView({model:this.model});
+
+			console.log(url)
+			$('body').append(view.render().el);	
 		}
+	
 	});
+	
 	var ArticleDetailView = Backbone.View.extend({
 		el: $('#detailArticle'),
 		template: $('#articleDetail'),
@@ -472,7 +537,28 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 		
 	});
-	var iframeView		= Backbone.View.extend({});
+	
+	var iframeView		= Backbone.View.extend({
+		tagName: 'section',
+		className: 'iframe',
+		template: _.template( $('#iframeTemplate').html() ),
+		events: {
+			'click .close'	: 'remove'
+		},
+		initialize: function(){
+			_.bindAll(this, 'render' ,'remove');
+		},
+		render: function(){
+			console.log(this.model.toJSON())
+			$(this.el).html(this.template( this.model.toJSON() ));
+			return this;
+		},
+		remove: function(){
+			$(this.el).remove();
+			$(this.el).unbind();
+			return false;
+		}
+	});
 	
 	// Comment views
 	var CommentPostView = Backbone.View.extend({
