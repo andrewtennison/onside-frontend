@@ -16,59 +16,28 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var App	= Backbone.Model.extend({
 		initialize: function(route){
 			console.info('# Model.App.initialize');
-			console.log(route);
+			var app = this;
 			this.route = route;
 			
-			_.bindAll(this, 'updateUrl', 'updateDetailedList', 'updateComments');
+			_.bindAll(this, 'updateService');
 			
 			// create + init collections for channels + events
 			this.channels = new BB.ChannelList();
 			this.events = new BB.EventList();
-			this.detailedList = new BB.DetailList();
-			this.comments = new BB.CommentList();
+			this.detailedList = new BB.DetailList(app);
+			this.comments = new BB.CommentList(app);
 			
-			this.bind('change:selectedUrl', this.updateUrl);
-			this.bind('change:selectedModel', this.updateDetailedList);
-			this.bind('change:selectedModel', this.updateComments);
+			this.bind('change:selectedItemUID', this.updateService);
 		},
 		defaults: {
-			list: null,
-			selectedUrl: null,
 			selectedServiceName: null,
-			selectedItemCid: null,
-			selectedModel: null,
-			selectedDetailId: null,
+			selectedItemUID: null,
+			searchModel: null
 		},
-		updateUrl: function(){
-			this.channels.fetch();
-			this.events.fetch();
-		},
-		updateDetailedList: function(){
-			// check if model exists else add new to detailList collection
-			console.info('# Model.App.updateModel');
-			
-			var selectedModel = this.get('selectedModel'),
-				currentDetailModel = this.detailedList.get( this.get('selectedDetailId') ),
-				DUID = this.get('selectedServiceName') + '|' + selectedModel.get('id'),
-				existingModel = this.detailedList.get( DUID );
-
-			if(currentDetailModel !== null && currentDetailModel !== undefined) currentDetailModel.set({ selected : false});
-			
-			if(existingModel) {
-				// if exists get model
-				existingModel.set({selected:true});
-				this.set({selectedDetailId : DUID });
-			} else {
-				// else create model
-				var detailModel = this.detailedList.createModel( this.get('selectedServiceName'), selectedModel.clone(), DUID );
-				this.set({selectedDetailId : DUID });
-			};
-		},
-		updateComments: function(){
-			// model changes, reset comments. Set URL then .fetch
-			var newUrl = '?' + this.get('selectedServiceName') +'='+ this.get('selectedModel').id;
-			this.comments.urlParams = newUrl
-			this.comments.fetch();
+		updateService: function(){
+			this.set({
+				selectedServiceName: this.get('selectedItemUID').split('|')[0]
+			}) 
 		}
 	});
 

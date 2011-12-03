@@ -43,70 +43,69 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		comparator: function(){
 			// sort models.. by the users default order if available?
 		},
-		initialize: function(){
-			_.bindAll(this, 'manageCollection', 'create');
+		selected: false,
+		initialize: function(app){
+			this.app = app;
+			_.bindAll(this, 'manageCollection', 'create', 'checkSetCreate');
 			this.bind('add', this.manageCollection);
+			this.app.bind('change:selectedItemUID', this.checkSetCreate)
 		},
 		manageCollection: function(){
 			// possibly delete old if too many - manage memory
 			// console.log(this)
 		},
-		createModel: function(service, obj, DUID){
-			console.info('# Collection.DetailList.create - ' + DUID)
-			console.info(obj)
-			
-			switch (service.toLowerCase()){
+		createModel: function(selectedItemUID, ID){
+			console.info('# Collection.DetailList.create - ' + ID)
+//			console.info(obj)
+
+			var s = selectedItemUID.split('|');
+			if(s[1] === 'null') return;
+
+			var thisModel = {
+				id		 	: ID,
+				originUId	: selectedItemUID,
+				selected	: true,
+				channels 	: new ChannelList(),
+				events 		: new EventList(),
+				articles 	: new ArticleList(),
+			};
+
+
+			switch (s[0].toLowerCase()){
 				case 'channel':
 				case 'event':
-					var jsonObj = obj.clone().toJSON(),
-						channelList = new ChannelList(),
-						eventList = new EventList(),
-						articleList = new ArticleList();
+					var author = (s[0] === 'channel')? this.app.channels.get(s[1]) : this.app.events.get(s[1]);
+					console.log(author.toJSON());
 
-					channelList.url = on.path.api + '/channel?' + service + '=' + jsonObj.id;
-					eventList.url = on.path.api + '/event?' + service + '=' + jsonObj.id;
-					articleList.url = on.path.api + '/article?' + service + '=' + jsonObj.id;
+					thisModel.channels.url = on.path.api + '/channel?' + s[0] + '=' + s[1];
+					thisModel.events.url = on.path.api + '/event?' + s[0] + '=' + s[1];
+					thisModel.articles.url = on.path.api + '/article?' + s[0] + '=' + s[1];
 
-					var thisModel = {
-						id		 	: DUID,				// to prevent clashes between channels & events with the same ID
-						originId	: jsonObj.id,			// id reference of the original channel or event needed for urls on children
-						service 	: service,
-						title 		: jsonObj.name,
-						selected	: true,
-						channels 	: channelList,
-						events 		: eventList,
-						articles 	: articleList,
-						getContent	: function(){
-							thisModel.events.fetch();
-							thisModel.channels.fetch();
-							thisModel.articles.fetch();
-						}
+					thisModel.author = author.toJSON();
+					thisModel.title = author.get('name');
+					thisModel.getContent = function(){
+						thisModel.events.fetch();
+						thisModel.channels.fetch();
+						thisModel.articles.fetch();
 					};
 					
-					_.extend(obj, thisModel);
+					//_.extend(obj, thisModel);
 					this.add(thisModel);
 					return thisModel;
 
 					break;
 				case 'search':
-					var thisModel = {
-						id				: DUID,
-						service 		: service,
-						type	 		: obj.get('type'),
-						title 			: obj.escape('title'),
-						selected		: true,
-						channels 		: new ChannelList(),
-						//channelJson		: obj.get('channels'),
-						events 			: new EventList(),
-						//eventJson		: obj.get('events'),
-						articles 		: new ArticleList(),
-						//articleJson		: obj.get('articles'),
-						getContent		: function(){
-							thisModel.events.reset(obj.get('events'));
-							thisModel.channels.reset(obj.get('channels'));
-							thisModel.articles.reset(obj.get('articles'));
-						}
-					};
+					var author = this.app.get('searchModel');
+					
+					thisModel.author = author.toJSON();
+					thisModel.type = author.get('type');
+					thisModel.title = author.escape('title');
+					thisModel.getContent = function(){
+						thisModel.events.reset(author.get('events'));
+						thisModel.channels.reset(author.get('channels'));
+						thisModel.articles.reset(author.get('articles'));
+					}
+					
 					this.add(thisModel);
 					return thisModel;
 					
@@ -116,23 +115,67 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					return;	
 				
 			}
+		},
+		checkSetCreate: function(){
+			/* if selectedItemUID (channel|2) - has service + value
+			 *
+			 */
+			
+			var selectedItemUID = this.app.get('selectedItemUID'),
+				s = selectedItemUID.split('|'),
+				detailUID = 'detail|' + selectedItemUID,
+				existingModel = this.get( detailUID );
+			
+			// if current model selected, change to hidden
+			if(this.selected !== false) {
+				this.get(this.selected).set({ selected : false});
+			}
+
+			// service, but no item selected stop.
+			if(s[1] === 'null') return;
+						
+			if(existingModel) {
+				// if exists get model
+				existingModel.set({selected:true});
+			} else {
+				// else create model
+				this.createModel( selectedItemUID, detailUID );
+			};
+			this.selected = detailUID;
 		}
 	});
 	
 	var CommentList = Backbone.Collection.extend({
 		model : BB.Comment,
 	
-		url : function(opts){
+		url : function(){
 			return on.path.api + '/comment' + this.urlParams;
 		},
-		urlParams: '', // eg. ?channel=id
+		urlParams: '',
 		
 		parse: function(resp, xhr){
 			return resp.resultset.comments;
 		},
 		comparator : function(Comment) {
 			//return Comment.get("created_at");
+		},
+		initialize: function(app){
+			this.app = app;
+			_.bindAll(this, 'updateCollection');
+			this.app.bind('change:selectedItemUID', this.updateCollection);
+		},
+		updateCollection: function(){
+			var s = this.app.get('selectedItemUID').split('|');
+			
+			this.reset();
+			if(s[1] === 'null') {
+				console.error('Model.App.updateComments - selectedItemUID = ' + s[0] +'|'+ s[1] );
+			} else {
+				this.urlParams = '?' + s[0] +'='+ s[1];
+				this.fetch();
+			}
 		}
+		
 	});
 	var ChatList = Backbone.Collection.extend({});
 

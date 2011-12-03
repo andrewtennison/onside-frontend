@@ -3,13 +3,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''				: 'home',
-		'events'		: 'events',
-		
-		// ID could be a name or string
 		'event/:id'		: 'getEvent',
-		'channel/:id'	: 'getChannel',
-		'user/:id'		: 'getAuth'
-
+		'channel/:id'	: 'getChannel'
 	},
 	
 	initialize: function(){
@@ -40,52 +35,24 @@ BB.appRoutes = Backbone.Router.extend({
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
 		
+		on.m.app.channels.fetch();
+		on.m.app.events.fetch();
 	},
 	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		
-		on.m.app.set({
-			selectedUrl : null,
-			selectedServiceName : 'channels'
-		});
-		on.m.app.trigger('change:selectedUrl');
-	},
-	
-	events: function(){
-		console.log('// Routes = "/events"');
-		on.m.app.set({selectedServiceName : 'events'});
+		on.m.app.set({ selectedItemUID : 'channel|null' });
 	},
 	
 	getEvent: function( id ){
 		console.log('// Routes = "/events/'+id+'"');
+		on.m.app.set({ selectedItemUID : 'event|'+id });
 	},
 	
 	getChannel: function( id ){
 		console.log('// Routes = "/channel/'+id+'"');
-		on.m.app.set({
-			list: null,
-			//selectedUrl: null,
-			selectedServiceName: 'channels',
-			selectedItemId: '6',
-			selectedItemCid: null,
-			selectedModel: null,
-			selectedDetailId: null
-		}) ;
-		
-		//on.m.app.channels.add('')
-		
-	},
-	
-	getAuth: function( id ){
-		console.log('// Routes = "/user/'+id+'"');
-		
-		on.myChannel = new BB.ChannelListView({
-			collection : BB.ChannelList({ url : '/stubs/myChannels.js' })
-		});
-		
+		on.m.app.set({ selectedItemUID : 'channel|'+id });
 	}
-	
 });
 
 var onside = new BB.appRoutes();

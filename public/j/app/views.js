@@ -111,7 +111,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channel' : 'event';
 			
-			this.app.set({selectedServiceName: val });
+			this.app.set({selectedItemUID: val + '|null' });
 		},
 		
 		updateView: function(){
@@ -128,6 +128,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					
 				case 'channel':
 				case 'channels':
+				//case 'savedSearch':
 					this.$content.append(this.$channels);
 					this.$events.detach();
 					this.$channelButton.addClass('on');
@@ -168,7 +169,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		submit: function(e){
 		    e.preventDefault();
-		    this.search($('input[name="q"]').val());
+		    var escVal = on.helper.esc($('input[name="q"]').val());
+		    this.search(escVal);
 		},
 		search: function(value){
 			var that = this,
@@ -186,12 +188,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				});
 				model.set({id: model.escape('title').replace(' ', '_')});
 
-				// add object to detailList
-				//that.app.detailedList.create('search', obj);
+				// possibly get existing searchModel.destroy() it for memory issues
 				that.app.set({
-					selectedItemCid		: false,
-					selectedServiceName : json.service.toLowerCase(),
-					selectedModel 		: model
+					searchModel 		: model,
+					selectedItemUID		: json.service.toLowerCase() +'|'+value
 				});
 				
 			}, 'json');
@@ -272,18 +272,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		initialize: function(){
 			this.app = on.m.app;//this.options.app;
 			_.bindAll(this, 'render', 'updateItem');
-			this.app.bind('change:selectedItemCid', this.updateItem)
+			this.app.bind('change:selectedItemUID', this.updateItem)
 		},
 		render: function(){
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		},
 		updateItem: function(){
-			if( this.model.cid === this.app.get('selectedItemCid')){
+			if( (this.model.get('service') + '|' + this.model.id) === this.app.get('selectedItemUID')){
 				$(this.el).addClass('active');
 				this.model.selected = true;
 			}else if ( this.model.selected ){
 				$(this.el).removeClass('active');
+				this.model.selected = false;
 			}
 		},
 		selectItem: function(e){
@@ -291,8 +292,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			console.log('! View.listItem.selectItem => click');
 
 			this.app.set({
-				selectedItemCid		: this.model.cid,
-				selectedServiceName : this.model.get('service'),
+				selectedItemUID		: this.model.get('service') + '|' + this.model.id,
+				// selectedItemCid		: this.model.cid,
+				// selectedServiceName : this.model.get('service'),
 				selectedModel 		: this.model
 			});
 		}
@@ -342,7 +344,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.el.append(view.render().el);
 
 			// set page route
-			var route = (model.get('service') === 'search')? model.get('service') + "/" + model.get('title') : model.get('service') + "/" + model.get('originId');
+			var s = model.get('originUId').split('|'),
+				route = s[0] + "/" + s[1];
 			this.app.route.navigate(route);
 		},
 		addAll: function(models){
@@ -405,37 +408,40 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		saveAction: function(e){
 			e.preventDefault();
-			var that = this;
+			var that = this,
+				OUID = this.model.get('originUId').split('|'),
+				saved = this.model.get('saved'),
+				title = this.model.get('title');
 			
-			switch(this.model.get('service')){
+			switch(OUID[0]){
 				case 'search':
-					if(that.model.get('saved')) return;
+					if(saved) return;
 					
 					var url = on.path.api + '/search/save';
 					$.post(url, {
-						query:this.model.get('title'),
-						name:this.model.get('title')
+						query:title,
+						name:title
 					}, function(res){
 						console.log(res);
 						that.model.set({saved:true});
 					})
 					break;
 				case 'channel':
-					if(that.model.get('saved')){
+					if(saved){
 						// saved, so un-save
 						var url = on.path.api + '/channel/unfollow';
 						$.post(url, {
-							channel:this.model.get('originId')
+							channel:OUID[1]
 						},function(res){
 							console.log(res)
-							//  that.model.set({saved:res.saved}); - once saved is setup
+							//  that.model.set({saved:res.saved}); - once saved is setup, needs to be added to backend
 							that.model.set({saved:false});
 						})
 					}else{
 						// if not saved, then save
 						var url = on.path.api + '/channel/follow';
 						$.post(url,{
-							channel: this.model.get('originId')
+							channel: OUID[1]
 						}, function(res){
 							console.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup
@@ -585,19 +591,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		submit: function(e){
 		    e.preventDefault();
 		    		    
-		    var selectedDetailId = this.app.get('selectedDetailId'),
+		    var selectedItemUID = this.app.get('selectedItemUID'),
+	    		UID = selectedItemUID.split('|'),
 		    	val = this.$('input#commentAdd').val(),
 		    	postParams = {comment:val};
 		    
-		    if(selectedDetailId) {
-		    	var a = selectedDetailId.split('|');
-		    	postParams[a[0]] = a[1];
-		    }
-		    this.collection.urlParams = '';
-		    this.collection.create(postParams);
+		    if(UID[1] === null) return;
 		    
+		    postParams[UID[0]] = UID[1];
+			this.collection.urlParams = '';
+		    this.collection.create(postParams);
 		    this.$('input[name="comment"]').val('');
-
 		}
 		
 	});	
