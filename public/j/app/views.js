@@ -12,7 +12,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		initialize: function(){
-			console.info('# View.Appview.initialize');
+			on.helper.log('# View.Appview.initialize', 'info');
 
 			_.bindAll(this, 'onResize');
 			this.app = this.options.app;
@@ -28,7 +28,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		onResize : function(e){
-			console.log('App.onResize')
+			on.helper.log('App.onResize')
 			var $el = $('#OnsideApp'),
 				w = $el.width(),
 				h = $el.height(),
@@ -65,7 +65,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 
 		initialize: function(){
-			console.info('# View.Nav.initialize');
+			on.helper.log('# View.Nav.initialize', 'info');
 			
 			this.app = this.options.app;
 			this.$eventButton = this.$('.toggleList .event');
@@ -88,7 +88,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		toggleBlocks: function(e){
 			e.preventDefault();
-			console.log('! click.toggleBlock => View.Nav.toggleBlocks');
+			on.helper.log('! click.toggleBlock => View.Nav.toggleBlocks');
 			
 			var h = e.target.getAttribute('href');
 				block = $(h),
@@ -106,7 +106,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		changeGroup: function(e){
 			e.preventDefault();
-			console.log('! click.toggleGroup => View.Nav.changeGroup');
+			on.helper.log('! click.toggleGroup => View.Nav.changeGroup');
 	
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channel' : 'event';
@@ -115,7 +115,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		updateView: function(){
-			console.log('* View.Nav.updateView');
+			on.helper.log('* View.Nav.updateView');
 			
 			switch(this.app.get('selectedServiceName')){
 				case 'event':
@@ -136,13 +136,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				
 				default:
-					console.error('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'))
+					on.helper.log('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'), 'error')
 					break;
 			}
 		},
 		
 		expandContainer: function(){
-			console.log('* View.Nav.expandContainer')
+			on.helper.log('* View.Nav.expandContainer')
 		}
 		
 	});
@@ -162,10 +162,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		focus: function(){
-			console.log('focus')
+			on.helper.log('focus')
 		},
 		blur: function(){
-			console.log('blur')
+			on.helper.log('blur')
 		},
 		submit: function(e){
 		    e.preventDefault();
@@ -173,28 +173,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		    this.search(escVal);
 		},
 		search: function(value){
-			var that = this,
-				searchUrl = (on.env.internetConnection)? ( on.path.api + '/search?q=' + value ) : '/stubs/api.search.js';
-
-			$.get(searchUrl, function(json) {
-				var model = new BB.Search();
+			var self = this,
+				model = new BB.Search();
 				
-				model.set({
-					service		: json.service,
-					title		: value,
-					channels	: json.resultset.channels,
-					events		: json.resultset.events,
-					articles	: json.resultset.articles,
-				});
-				model.set({id: model.escape('title').replace(' ', '_')});
-
-				// possibly get existing searchModel.destroy() it for memory issues
-				that.app.set({
-					searchModel 		: model,
-					selectedItemUID		: json.service.toLowerCase() +'|'+value
-				});
-				
-			}, 'json');
+			model.query = value;
+			model.fetch({
+				success:function(searchModel){
+					console.info(searchModel)
+					self.app.set({
+						searchModel 		: searchModel,
+						selectedItemUID		: searchModel.service +'|'+value
+					});
+				},
+				error:function(){alert('search failed')}
+			})
 		}
 		
 	});
@@ -221,7 +213,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		addAll: function(){
-			console.log('# ListView.addAll = collection.reset // className = ' + this.className);
+			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
 			this.collection.each(this.addOne);
 		}
 		
@@ -229,7 +221,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var ChannelListView = _ListView.extend({
 		className: 'channelList',
 		addOne: function(channel){
-	//		console.log('=> View.ChannelListView.addOne');
+	//		on.helper.log('=> View.ChannelListView.addOne');
 			var view = new ChannelView({model:channel, app:this.options.app})
 			$(this.el).append(view.render().el);
 		}
@@ -247,7 +239,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var EventListView 	= _ListView.extend({
 		className: 'eventList',
 		addOne: function(event){
-	//		console.log('=> View.EventListView.addOne');
+	//		on.helper.log('=> View.EventListView.addOne');
 			var view = new EventView({model:event, app:this.options.app})
 			$(this.el).append(view.render().el);
 		}
@@ -289,7 +281,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		selectItem: function(e){
 			e.preventDefault();			
-			console.log('! View.listItem.selectItem => click');
+			on.helper.log('! View.listItem.selectItem => click');
 
 			this.app.set({
 				selectedItemUID		: this.model.get('service') + '|' + this.model.id,
@@ -325,7 +317,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 
 		initialize: function(){
-			console.info('# View.Detail.initialize')
+			on.helper.log('# View.Detail.initialize', 'info')
 			
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
@@ -339,7 +331,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		addOne: function(model){
-			console.log('# View.DetailList.addOne');
+			on.helper.log('# View.DetailList.addOne');
 			var view = new DetailView({model:model, app:this.options.app});
 			this.el.append(view.render().el);
 
@@ -349,10 +341,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.app.route.navigate(route);
 		},
 		addAll: function(models){
-			console.log('View.DetailList.addAll');
+			on.helper.log('View.DetailList.addAll');
 		},
 		removeOne: function(){
-			console.log('View.DetailList.removeOne');
+			on.helper.log('View.DetailList.removeOne');
 		}
 	});
 	var DetailView		= Backbone.View.extend({
@@ -364,7 +356,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		initialize: function(){
-			console.info('# View.Detail.initialize');
+			on.helper.log('# View.Detail.initialize', 'info');
 			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton');
 			this.app = this.options.app;
 			this.model.bind('change:selected', this.toggleDisplay);
@@ -374,8 +366,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		render: function(){
-			console.log('# View.Detail.render');
-			console.log(this.model.toJSON());
+			on.helper.log('# View.Detail.render');
+			on.helper.log(this.model.toJSON());
 
 			$(this.el).html(this.template(this.model.toJSON()));
 			
@@ -388,7 +380,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				.append(viewE.el)
 				.append(viewA.el);
 
-			this.model.get('getContent')();
+			this.model.getContent();
 		    return this;
 		},
 		
@@ -422,7 +414,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						query:title,
 						name:title
 					}, function(res){
-						console.log(res);
+						on.helper.log(res);
 						that.model.set({saved:true});
 					})
 					break;
@@ -433,7 +425,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						$.post(url, {
 							channel:OUID[1]
 						},function(res){
-							console.log(res)
+							on.helper.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup, needs to be added to backend
 							that.model.set({saved:false});
 						})
@@ -443,7 +435,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						$.post(url,{
 							channel: OUID[1]
 						}, function(res){
-							console.log(res)
+							on.helper.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup
 							that.model.set({saved:true});
 						})
@@ -452,7 +444,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				case 'event':
 					break;
 				default:
-					console.error('DetailView.save failed service = ' + this.model.get('service'))
+					on.helper.log('DetailView.save failed service = ' + this.model.get('service'), 'error')
 					break;
 			}
 		}
@@ -463,7 +455,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		tagName: 'section',
 		className: 'content articleList',
 		initialize: function(){
-			console.log('# View.ArticleList.initialize');
+			on.helper.log('# View.ArticleList.initialize');
 			_.bindAll(this, 'addAll', 'addOne');
 			
 			this.collection.bind('reset', this.addAll);
@@ -495,7 +487,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		render: function(){
-			//if(this.model.get('original')) { console.log( eval( "(" + this.model.get('original') + ")" ) ) };
+			//if(this.model.get('original')) { on.helper.log( eval( "(" + this.model.get('original') + ")" ) ) };
 
 			var json = this.model.toJSON(),
 				type = json.type;
@@ -523,7 +515,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var url = this.model.get('link'),
 				view = new iframeView({model:this.model});
 
-			console.log(url)
+			on.helper.log(url)
 			$('body').append(view.render().el);	
 		}
 	
@@ -555,7 +547,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			_.bindAll(this, 'render' ,'remove');
 		},
 		render: function(){
-			console.log(this.model.toJSON())
+			on.helper.log(this.model.toJSON())
 			$(this.el).html(this.template( this.model.toJSON() ));
 			return this;
 		},
@@ -583,10 +575,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		
 		focus: function(){
-			console.log('focus')
+			on.helper.log('focus')
 		},
 		blur: function(){
-			console.log('blur')
+			on.helper.log('blur')
 		},
 		submit: function(e){
 		    e.preventDefault();
@@ -596,7 +588,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		    	val = this.$('input#commentAdd').val(),
 		    	postParams = {comment:val};
 		    
-		    if(UID[1] === null) return;
+		    if(UID[1] === 'null') {
+		    	alert('please select a channel first');
+		    	return;
+		    }
 		    
 		    postParams[UID[0]] = UID[1];
 			this.collection.urlParams = '';

@@ -9,14 +9,29 @@ on.m = {};
 on.c = {};
 on.v = {};
 
+on.env = {
+	internetConnection : true,
+	server : 'development'
+};
+
+on.logger = [];
 on.helper = {
 	// escape HTML (prevent script insertion)
 	esc : function(string) {return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');}
+	, log : function(msg, type){
+		if (window.console === undefined || on.env.server !== 'development'){
+			on.logger.push(type +' = '+ msg);
+		} else {
+			switch(type){
+				case 'error': console.error(msg); break;
+				case 'info': console.info(msg); break;
+				case 'dir': console.dir(msg); break;
+				case 'log':
+				default: console.log(msg); break;
+			}
+		}
+	}
 }
-
-on.env = {
-	internetConnection : true
-};
 
 on.path = {
 	js: '/j/',
@@ -49,12 +64,12 @@ $LAB
 			if(local === null || !options.local ) {
 				collection.saveFetch(options);
 			}else{
-				console.log('load local')
+				on.helper.log('load local')
 				collection.reset(JSON.parse(local));
 			}
 		},
 		saveFetch : function(options) {
-			console.log('saveFetch')
+			on.helper.log('saveFetch')
 			options || (options = {});
 			var collection = this;
 			var success = options.success;
@@ -67,7 +82,7 @@ $LAB
 			return (this.sync || Backbone.sync).call(this, 'read', this, options); 
 		},
 		saveLocal : function(name,data){
-			console.log('save local')
+			on.helper.log('save local')
 			sessionStorage.setItem(name,JSON.stringify(data))
 		}
 	})

@@ -15,7 +15,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var App	= Backbone.Model.extend({
 		initialize: function(route){
-			console.info('# Model.App.initialize');
+			on.helper.log('# Model.App.initialize','info');
 			var app = this;
 			this.route = route;
 			
@@ -42,9 +42,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 
 	var Channel = Backbone.Model.extend({
+		url: function(){
+			return on.path.api + '/channel/' + this.id;
+		},
 		service: 'channels',
 		initialize: function(){
-			console.info('# Model.Channel.initialize');
+			on.helper.log('# Model.Channel.initialize','info');
+		},
+		parse: function(resp){
+			return resp.resultset.channels[0];
 		},
 		defaults: {
 			selected	: false,
@@ -66,7 +72,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var Event = Backbone.Model.extend({
 		service: 'events',
 		initialize: function(){
-			console.info('# Model.Event.initialize');
+			on.helper.log('# Model.Event.initialize','info');
 		},
 		defaults: {
 			selected	: false,
@@ -83,34 +89,77 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Search = Backbone.Model.extend({
+		url: function(){
+			return on.path.api + '/search?q=' + this.query;
+		},
+		query: '',
 		service: 'search',
+		parse: function(resp){
+			return {
+				id			: this.query.replace(' ', '_'),
+				service		: resp.service,
+				title		: this.query,
+				channels	: resp.resultset.channels,
+				events		: resp.resultset.events,
+				articles	: resp.resultset.articles,
+			};
+		},
 		initialize: function(){
-			console.info('# Model.Search.initialize');
+			on.helper.log('# Model.Search.initialize','info');
 		}
 	})
 	
 	var Detail = Backbone.Model.extend({
-		// channels: null,
-		// events: null,
-		// articles: null,
 		initialize: function(){
+			// this.channels = new BB.ChannelList();
+			// this.events = new BB.EventList();
+			// this.articles = new BB.ArticleList();
+
 		},
 		defaults: {
-			selected: false,
-			service: undefined,
-			saved: false
+			selected 	: false,
+			saved 		: false,
+			originUId	: null,
+			channels	: null,
+			events 		: null,
+			articles 	: null
+		},
+		getContent: function(){
+			var service = this.get('originUId').split('|')[0];
+			switch(service){
+				case 'channel':
+				case 'event':
+					this.setPaths();
+					this.get('events').fetch();
+					this.get('channels').fetch();
+					this.get('articles').fetch();
+					break;
+				case 'search':
+					this.get('events').reset(this.get('eventJson'));
+					this.get('channels').reset(this.get('channelJson'));
+					this.get('articles').reset(this.get('articleJson'));
+					break;
+				default:
+					on.helper.log('Model.Detail.getContent - service = ' + service, 'error');
+			}
+		},
+		setPaths: function(){
+			var s = this.get('originUId').split('|');
+			this.get('channels').url = on.path.api + '/channel?' + s[0] + '=' + s[1];
+			this.get('events').url = on.path.api + '/event?' + s[0] + '=' + s[1];
+			this.get('articles').url = on.path.api + '/article?' + s[0] + '=' + s[1];
 		}
 	});
 
 	var Article = Backbone.Model.extend({
 		initialize: function(){
-			//console.info('# Model.Article.initialize');
+			//on.helper.log('# Model.Article.initialize', 'info');
 		}
 	});
 	
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
-			//console.info('# Model.Comment.initialize');
+			//on.helper.log('# Model.Comment.initialize','info');
 		},
 		parse: function(resp, xhr){
 			return resp.resultset.comments[0];
@@ -132,7 +181,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Chat = Backbone.Model.extend({
 		initialize: function(){
-			console.info('# Model.Chat.initialize');
+			on.helper.log('# Model.Chat.initialize','info');
 		}
 	});
 	

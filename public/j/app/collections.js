@@ -52,68 +52,50 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		manageCollection: function(){
 			// possibly delete old if too many - manage memory
-			// console.log(this)
+			// on.helper.log(this)
 		},
-		createModel: function(selectedItemUID, ID){
-			console.info('# Collection.DetailList.create - ' + ID)
-//			console.info(obj)
+		createModel: function(selectedItemUID, ID, author){
+			on.helper.log('# Collection.DetailList.create - ' + ID, 'info')
 
 			var s = selectedItemUID.split('|');
 			if(s[1] === 'null') return;
+			var c = new BB.ChannelList(),
+				e = new BB.EventList(),
+				a = new BB.ArticleList();
 
-			var thisModel = {
+			this.selected = ID;			
+			
+			var detailModel = new BB.Detail({
 				id		 	: ID,
 				originUId	: selectedItemUID,
 				selected	: true,
-				channels 	: new ChannelList(),
-				events 		: new EventList(),
-				articles 	: new ArticleList(),
-			};
+				author		: author.toJSON(),
+				channels	: c,
+				events 		: e,
+				articles 	: a
+			});
 
-
-			switch (s[0].toLowerCase()){
+			switch (s[0]){
 				case 'channel':
 				case 'event':
-					var author = (s[0] === 'channel')? this.app.channels.get(s[1]) : this.app.events.get(s[1]);
-					console.log(author.toJSON());
-
-					thisModel.channels.url = on.path.api + '/channel?' + s[0] + '=' + s[1];
-					thisModel.events.url = on.path.api + '/event?' + s[0] + '=' + s[1];
-					thisModel.articles.url = on.path.api + '/article?' + s[0] + '=' + s[1];
-
-					thisModel.author = author.toJSON();
-					thisModel.title = author.get('name');
-					thisModel.getContent = function(){
-						thisModel.events.fetch();
-						thisModel.channels.fetch();
-						thisModel.articles.fetch();
-					};
-					
-					//_.extend(obj, thisModel);
-					this.add(thisModel);
-					return thisModel;
-
+					detailModel.set({ title:author.get('name') });
+					this.add(detailModel);
 					break;
+					
 				case 'search':
-					var author = this.app.get('searchModel');
-					
-					thisModel.author = author.toJSON();
-					thisModel.type = author.get('type');
-					thisModel.title = author.escape('title');
-					thisModel.getContent = function(){
-						thisModel.events.reset(author.get('events'));
-						thisModel.channels.reset(author.get('channels'));
-						thisModel.articles.reset(author.get('articles'));
-					}
-					
-					this.add(thisModel);
-					return thisModel;
-					
+					detailModel.set({
+						type 		: author.get('type'),
+						title 		: author.escape('title'),
+						eventJson 	: author.get('events'),
+						channelJson : author.get('channels'),
+						articleJson	: author.get('articles')
+					});
+					this.add(detailModel);
 					break;
+					
 				default:
-					console.error('# Collection.DetailList.Create: unknown service = ' + service);
+					on.helper.log('# Collection.DetailList.Create: unknown service = ' + service, 'error');
 					return;	
-				
 			}
 		},
 		checkSetCreate: function(){
@@ -121,10 +103,33 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			 *
 			 */
 			
-			var selectedItemUID = this.app.get('selectedItemUID'),
+			var self = this,
+				selectedItemUID = this.app.get('selectedItemUID'),
 				s = selectedItemUID.split('|'),
 				detailUID = 'detail|' + selectedItemUID,
 				existingModel = this.get( detailUID );
+			
+			function checkAuthor(appCollection, Model){
+				var author = self.app[appCollection].get(s[1]);
+				if(author === undefined) {
+					on.helper.log('//////////////////////// author unknown')
+
+					author = new BB[Model]({id:s[1]});
+					author.fetch({
+						success:function(model){
+							self.createModel( selectedItemUID, detailUID, model);
+						},
+						error: function(err){
+							on.helper.log(err, 'error');
+							alert(Model + ' unavailable');						
+						}
+					});
+				}else{
+					on.helper.log('//////////////////////// author')
+					on.helper.log(author)
+					self.createModel( selectedItemUID, detailUID, author);
+				}
+			};
 			
 			// if current model selected, change to hidden
 			if(this.selected !== false) {
@@ -137,11 +142,36 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			if(existingModel) {
 				// if exists get model
 				existingModel.set({selected:true});
+				this.selected = detailUID;
 			} else {
 				// else create model
-				this.createModel( selectedItemUID, detailUID );
+				switch(s[0]){
+					case 'channel':
+						checkAuthor('channels', 'Channel')
+						break;
+					case 'event':
+						checkAuthor('events', 'Event');
+						break;
+					case 'search':
+						var author = this.app.get('searchModel');
+						if(author === null || author.get('query') !== s[1]) {
+							author = new BB.Search();
+							author.query = s[1];
+							author.fetch({
+								success:function(model){
+									self.createModel( selectedItemUID, detailUID, model);
+								},
+								error:function(){alert('search failed')}
+							})
+						}else{
+							this.createModel( selectedItemUID, detailUID, author);
+						}
+						break;
+					default:
+						on.helper.log('Collection.DetailList.checkCreate - service = ' + s[0], 'error');
+						return;
+				}
 			};
-			this.selected = detailUID;
 		}
 	});
 	
@@ -169,7 +199,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			this.reset();
 			if(s[1] === 'null') {
-				console.error('Model.App.updateComments - selectedItemUID = ' + s[0] +'|'+ s[1] );
+				on.helper.log('Model.App.updateComments - selectedItemUID = ' + s[0] +'|'+ s[1], 'error');
 			} else {
 				this.urlParams = '?' + s[0] +'='+ s[1];
 				this.fetch();

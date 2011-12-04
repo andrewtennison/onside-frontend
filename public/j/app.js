@@ -4,7 +4,8 @@ BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''				: 'home',
 		'event/:id'		: 'getEvent',
-		'channel/:id'	: 'getChannel'
+		'channel/:id'	: 'getChannel',
+		'search/:id'	: 'getSearch'
 	},
 	
 	initialize: function(){
@@ -52,6 +53,11 @@ BB.appRoutes = Backbone.Router.extend({
 	getChannel: function( id ){
 		console.log('// Routes = "/channel/'+id+'"');
 		on.m.app.set({ selectedItemUID : 'channel|'+id });
+	},
+	
+	getSearch: function( id ){
+		console.log('// Routes = "/search/'+id+'"');
+		on.m.app.set({ selectedItemUID : 'search|'+id });
 	}
 });
 

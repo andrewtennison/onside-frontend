@@ -6,11 +6,11 @@ var rest 		= require('restler');
 	conf 		= new Config();
 
 exports.index = function(req, res){
+	console.log(req.user)
 	if(req.loggedIn && req.user.enabled === '1'){
 		res.render('index', { title: 'Onside', cssPath: '', jsPath:'' })
 	} else if(req.loggedIn && req.user.enabled === '0'){
-		res.render('index', { title: 'Onside', cssPath: '', jsPath:'' })
-		//res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
+		res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
 	} else {
 		res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:false })
 	}
