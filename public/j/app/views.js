@@ -214,6 +214,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		addAll: function(){
 			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
+			$(this.el).empty();
 			this.collection.each(this.addOne);
 		}
 		
@@ -438,6 +439,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 							on.helper.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup
 							that.model.set({saved:true});
+							that.app.channels.fetch();
 						})
 					}
 					break
@@ -502,6 +504,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				case 'rss':
 				default:
+					console.log(json)
 					$(this.el).html(this.template(json));
 					break;
 			};
