@@ -121,19 +121,19 @@ script#detailTemplate.tmpl(type="text/template")
 
 script#articleTemplate.tmpl(type="text/template")
 	\<% if(images) { %> <img src='<%= images %>' /> <% } %>
-
 	\<% if(extended) { %> <a class="readMore button" href="#">read more</a> <% } %>
-	
 	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	//\<input type="hidden" value='<%= original %>' />
 
 	h2 <%= title %>
 	p <%= content %>
-	\<a class="fullArtilce" href='<%= link %>'>@ <%= source %></a>
+	\<a class="fullArticle" href='<%= link %>'>@ <%= source %></a>
 
 script#articleTemplate-twitter.tmpl(type="text/template")
 	cite <%= author %>
 	p <%= content %>
 	\<%= link %>
+	//\<input type="hidden" value='<%= original %>' />
 
 script#articleTemplate-youtube.tmpl(type="text/template")
 	h2 <%= author %>: <%= title %>
@@ -141,6 +141,7 @@ script#articleTemplate-youtube.tmpl(type="text/template")
 	\<input type="hidden" value="<%= link %>" name="videoData" />
 	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
 	\<a href='<%= videos %>'>see video</a>
+	//\<input type="hidden" value='<%= original %>' />
 
 script#articleDetail.tmpl(type="text/template")
 	header

@@ -8,7 +8,7 @@ var rest 		= require('restler');
 exports.index = function(req, res){
 	console.log(req.user)
 	if(req.loggedIn && req.user.enabled === '1'){
-		res.render('index', { title: 'Onside', cssPath: '', jsPath:'' })
+		res.render('index', { title: 'Onside', cssPath: '', jsPath:'' });
 	} else if(req.loggedIn && req.user.enabled === '0'){
 		res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
 	} else {
@@ -114,7 +114,7 @@ exports.delApi = function(req,res){
 };
 
 exports.cms = function(req,res){
-	if(req.loggedIn && req.user.admin === '1'){
+	if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
 		res.render('addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
 	} else {
 		res.redirect('/', 401);
