@@ -6,7 +6,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var _Lists = Backbone.Collection.extend({
 		// overiden in extended objects
-		defaultUrl:'', 
+		defaultUrl:'',
+		initialize:function(){
+			on.helper.log('# Collection._Lists.initialize','info');
+		}
 	});
 	
 	var ChannelList = _Lists.extend({
@@ -45,6 +48,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		selected: false,
 		initialize: function(app){
+			on.helper.log('# Collection.DetailList.initialize','info');
+
 			this.app = app;
 			_.bindAll(this, 'manageCollection', 'create', 'checkSetCreate');
 			this.bind('add', this.manageCollection);
@@ -190,6 +195,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			//return Comment.get("created_at");
 		},
 		initialize: function(app){
+			on.helper.log('# Collection.CommentList.initialize','info');
 			this.app = app;
 			_.bindAll(this, 'updateCollection');
 			this.app.bind('change:selectedItemUID', this.updateCollection);

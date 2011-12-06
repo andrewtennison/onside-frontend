@@ -20,7 +20,6 @@ BB.appRoutes = Backbone.Router.extend({
 			el: $('#OnsideApp'),
 			app: on.m.app
 		});
-		
 		// Navigation view		
 		on.v.nav = new BB.NavView({ app: on.m.app });
 		

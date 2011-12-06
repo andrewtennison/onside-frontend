@@ -100,7 +100,7 @@ header > [class*='block'] input {width:230px}
 	}
 #listGroups article img {position:relative; display:inline-block; margin:0; border-radius:8px; box-shadow:0 1px 3px rgba(0, 0, 0, 0.3); vertical-align: top}
 #listGroups article.active img {box-shadow:0 2px 5px rgba(0, 0, 0, 0.7)}
-#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 45px; font-size:1.2em; margin:0 0 0 10px; font-weight:normal; text-transform:uppercase;}
+#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 1.2em; padding-top:6px; font-size:1.2em; margin:0 0 0 10px; font-weight:normal; text-transform:uppercase; width:178px}
 
 /* ==|== listDetail styles ===================================================== */
 #main #listDetail {left:260px; width:768px; right:auto; z-index:2; top:8px}
@@ -211,6 +211,7 @@ header > [class*='block'] input {width:230px}
 @media only screen and (min-width: 0px) and (max-width:836px) {
 	#main #listDetail {left:0; bottom:71px; width:auto; right:0}
 	#main #listGroups {bottom:1px; left:1px; height:60px; top:auto; width:70%}
+	#main #listGroups article {display:inline-block}
 		#listGroups header {display:inline-block; padding:20px 5px;}
 		#listGroups .content {display:inline-block; vertical-align: top}
 		#listGroups article h1 {display:none}

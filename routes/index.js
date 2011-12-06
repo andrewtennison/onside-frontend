@@ -6,7 +6,9 @@ var rest 		= require('restler');
 	conf 		= new Config();
 
 exports.index = function(req, res){
-	console.log(req.user)
+	console.log('routes.index, if user enabled + logged in, req.user = ');
+	console.log(req.user);
+
 	if(req.loggedIn && req.user.enabled === '1'){
 		res.render('index', { title: 'Onside', cssPath: '', jsPath:'' });
 	} else if(req.loggedIn && req.user.enabled === '0'){

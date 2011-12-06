@@ -1,6 +1,10 @@
 
 /**
  * Module dependencies.
+ * 
+ * todo: 	- login.js - currently caching user in local object. Fetch from api. Also update findUserById - may be possible to use session
+ * 			- cluster module, investigate
+ * 
  */
 var express 	= require('express'),
 	resource 	= require('express-resource'),   
@@ -15,7 +19,7 @@ var express 	= require('express'),
 
 	// for login
 	everyauth 	= require('everyauth'),
-	graph 		= require('fbgraph'),	
+	//graph 		= require('fbgraph'),	
 	login		= require('./lib/login').all(conf);
 
 everyauth.debug = true;
@@ -33,8 +37,8 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	app.use(express.session({ 
-		secret : "testsecret",
-		store: new RedisStore({host:'127.0.0.1', port:'6379'}) 
+		secret	: "testsecret",
+		store	: new RedisStore({host:'127.0.0.1', port:'6379'}) 
 	}));
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
@@ -62,9 +66,7 @@ app.configure('production', function(){
 //app.resource('channels', require('./routes/channels'));
 
 app.get('*', function(req, res, next){
-	//console.log(req.session);
-	
-	if(req.headers.host == 'dev2.onside.me') {
+	if(req.headers.host === 'test.onside.me') {
 		routes.demo1();
 	}else{
 		next();
@@ -80,17 +82,10 @@ app.get('/login', function(req,res){
 
 app.get('/addcontent', routes.cms);
 
+// API proxy requests
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
-
-app.post('/comment', function(req,res){
-	rest.post('http://onside.mini-apps.co.uk:80/comment', req.body).on('complete', function(data){
-		console.log('res.statusCode = ' + res.statusCode);
-		res.json(data)
-	});
-});
-
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
