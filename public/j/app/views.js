@@ -481,11 +481,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		youtubeTemplate: _.template( $('#articleTemplate-youtube').html() ),
 		
 		events: {
-			'click a.fullArtilce':'openIframe'
+			'click .fullArticle' : 'openIframe'
 		},
 		
 		initialize: function(){
-			_.bindAll(this, 'render');
+			_.bindAll(this, 'render', 'openIframe');
 		},
 		
 		render: function(){
@@ -515,8 +515,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		openIframe: function(e){
 			e.preventDefault();
+
 			var url = this.model.get('link'),
 				view = new iframeView({model:this.model});
+				
+			console.log(url)
 
 			on.helper.log(url)
 			$('body').append(view.render().el);	
