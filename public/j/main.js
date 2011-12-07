@@ -10,8 +10,10 @@ on.c = {};
 on.v = {};
 
 on.env = {
-	internetConnection : true,
-	server : 'development'
+	internetConnection	: true,
+	server				: 'development',
+	articleMax			: 20,
+	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click'
 };
 
 on.logger = [];

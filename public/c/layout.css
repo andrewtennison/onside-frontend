@@ -59,9 +59,12 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 #listGroups h2 {color:#fff; font-weight:normal; font-size:1.1em; padding:4px 10px 2px; background: #595959; /* Old browsers */background: -moz-linear-gradient(top, #595959 0%, #020202 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(100%,#020202)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #595959 0%,#020202 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #595959 0%,#020202 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #595959 0%,#020202 100%); /* IE10+ */background: linear-gradient(top, #595959 0%,#020202 100%); /* W3C */}
 #listGroups article {position:relative; display:block; padding:8px 8px 8px 38px; border-bottom:1px solid #d4d7dc}
 #listGroups article:hover {cursor: pointer; background:#eee}
-#listGroups article img {position:absolute; left:8px; top:8px;}
-#listGroups article h1 {line-height:24px; font-size:1.2em; color:#494c4f; font-weight: normal}
+#listGroups article img {position:relative; display: inline;}
+#listGroups article h1 {display:inline; line-height:24px; font-size:1.2em; color:#494c4f; font-weight: normal}
 #listGroups article.active {background:#ddd;}
+
+#listGroups .searchList article {background:#666}
+#listGroups .searchList article h1 {color:#fff}
 
 /* ==|== listDetail styles ===================================================== */
 #main #listDetail {left:280px; right:280px; background:#fff; z-index:2; box-shadow:0 0 10px #666}
@@ -86,13 +89,21 @@ header > #navSearch {display:block; background:url(/i/sprites/carbonFibre.png) 0
 #listDetail .articleList {position:relative; display:block; clear:both; border-bottom:1px dotted #333}
 #listDetail .articleList article:first-child {position:relative; display:block; width:96%; padding:2%; float:none; min-height: 50px}
 #listDetail .articleList article {position:relative; display:inline-block; width:29%; padding:2%; float:left; min-height: 200px;}
-	#listDetail .detailItem article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
-	#listDetail .detailItem article img {max-width: 100%}
-	#listDetail .detailItem article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
-	#listDetail .detailItem article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
-	#listDetail .detailItem article a {margin:0 5px 0 0; font-size:1.1em}
-	#listDetail .detailItem article a.readMore {}
+#listDetail .articleList article nav {display:none; position:absolute; top:5px; right:5px; z-index:2}
+#listDetail .articleList article.on nav {display:block}	
+	#listDetail .articleList article nav a {position:relative; display:inline-block; width:20px; height:20px; margin:0 0 0 10px; text-indent:-999px; overflow:hidden; background:#ccc} 
+
+#listDetail .articleList article .filters {position:absolute; display:none; top:0; right:0; bottom:0; left:0; background:rgba(0,0,0,0.7); padding:20px; z-index:1}
+#listDetail .articleList article .filters.on {display:block}
+	#listDetail .articleList article .filters h1 {color:#fff; font-size:1.4em;}
+	#listDetail .articleList article .filters a {color:#fff; display:block;}
 	
+#listDetail .detailItem article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
+#listDetail .detailItem article img {max-width: 100%}
+#listDetail .detailItem article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
+#listDetail .detailItem article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
+#listDetail .detailItem article a {margin:0 5px 0 0; font-size:1.1em}
+#listDetail .detailItem article a.readMore {}
 
 /* ==|== detailArticle styles ===================================================== */
 #main #detailArticle {left:280px; right:280px; background:#fff; z-index:1}

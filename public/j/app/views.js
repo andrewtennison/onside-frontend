@@ -78,11 +78,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
 			var channelList = new ChannelListView({ collection: this.app.channels, app: this.options.app }),
-				eventList = new EventListView({ collection: this.app.events, app: this.options.app });
+				eventList = new EventListView({ collection: this.app.events, app: this.options.app }),
+				searchList = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
 	
 			// commonly
 			this.$channels = $(channelList.el);
 			this.$events = $(eventList.el);
+			this.$searches = $(searchList.el);
 			this.$content = this.$('.content');
 		},
 		
@@ -128,8 +130,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					
 				case 'channel':
 				case 'channels':
-				//case 'savedSearch':
+				case 'search':
 					this.$content.append(this.$channels);
+					this.$content.append(this.$searches);
 					this.$events.detach();
 					this.$channelButton.addClass('on');
 					this.$eventButton.removeClass('on');
@@ -253,6 +256,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			$(this.el).append(view.render().el);
 		}
 	});
+
+	var SavedSearchListView = _ListView.extend({
+		className: 'searchList',
+		addOne: function(search){
+			var view = new SaveSearchView({model:search, app:this.options.app});
+			$(this.el).append(view.render().el);
+		}
+	});
 	
 	// Item views for left nav
 	var _ListItemView 	= Backbone.View.extend({
@@ -305,6 +316,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var EventDetailView = EventView.extend({
 		template: _.template( $('#eventDetailItemTemplate').html() )
+	});
+	var SaveSearchView 	= _ListItemView.extend({
+		className:'searchItem',
+		template: _.template( $('#savedSearchTemplate').html() )
 	});
 	
 	// Detail views
@@ -429,6 +444,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 							on.helper.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup, needs to be added to backend
 							that.model.set({saved:false});
+							this.app.searches.fetch();
 						})
 					}else{
 						// if not saved, then save
@@ -481,11 +497,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		youtubeTemplate: _.template( $('#articleTemplate-youtube').html() ),
 		
 		events: {
-			'click .fullArticle' : 'openIframe'
+			'click .fullArticle'	: 'openIframe',
+			'mouseenter'			: 'hoverOver',
+			'mouseleave'			: 'hoverOut',
+			//'mouseleave .filters'	: 'toggleFilters',
+			'click .filter'			: 'toggleFilters',
+			'click .filters a'		: 'filterCollection'
 		},
 		
 		initialize: function(){
-			_.bindAll(this, 'render', 'openIframe');
+			_.bindAll(this, 'render', 'openIframe', 'hoverOver', 'hoverOut', 'filterCollection', 'setDisplay');
+			
+			this.model.bind('change:selected', this.setDisplay);
+			this.model.collection.bind('change:filter', this.updateFilters)
 		},
 		
 		render: function(){
@@ -493,6 +517,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 			var json = this.model.toJSON(),
 				type = json.type;
+			
+			if(!json.selected) $(this.el).addClass('hidden');
 			
 			switch(type){
 				case 'twitter':
@@ -504,7 +530,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				case 'rss':
 				default:
-					console.log(json)
+					//console.log(json)
 					$(this.el).html(this.template(json));
 					break;
 			};
@@ -513,18 +539,56 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		    return this;
 		},
 		
+		setDisplay: function(){
+			if(this.model.get('selected')) {
+				$(this.el).removeClass('hidden');
+			}else{
+				$(this.el).addClass('hidden');
+			}
+		},
+		
 		openIframe: function(e){
 			e.preventDefault();
 
 			var url = this.model.get('link'),
 				view = new iframeView({model:this.model});
 				
-			console.log(url)
-
 			on.helper.log(url)
 			$('body').append(view.render().el);	
+		},
+		
+		hoverOver: function(e){ 
+			$(this.el).addClass('on');
+		},
+		hoverOut: function(){
+			$(this.el).removeClass('on');
+			this.$('.filters').removeClass('on');
+		},
+		toggleFilters: function(e){
+			e.preventDefault();
+			this.$('.filters').toggleClass('on');
+		},
+		filterCollection: function(e){
+			e.preventDefault();
+
+			var $el = $(e.target),
+				attr = e.target.className.replace('f_',''),
+				val = $('span', $el).text();
+			
+			if(this.$('.filters a').not($el).hasClass('on')){
+				this.$('.filters a').not($el).removeClass('on')
+			}
+			
+			if($el.hasClass('on')){
+				$el.removeClass('on');
+				this.model.collection.myFilter(attr);
+			}else{
+				$el.addClass('on');
+				this.model.collection.myFilter(attr,val);
+			}
+
+			
 		}
-	
 	});
 	
 	var ArticleDetailView = Backbone.View.extend({

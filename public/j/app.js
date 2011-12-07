@@ -37,6 +37,7 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		on.m.app.channels.fetch();
 		on.m.app.events.fetch();
+		on.m.app.searches.fetch();
 	},
 	
 	home: function(){

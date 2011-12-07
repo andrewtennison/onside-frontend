@@ -28,9 +28,18 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 	});
 		
+	var SavedSearchList = _Lists.extend({
+		model : BB.SavedSearch,
+		url: on.path.api + '/search/list',
+		parse: function(resp, xhr) {
+			return resp.resultset.searches;
+		}
+    });
+
 	var ArticleList = Backbone.Collection.extend({
 		model : BB.Article,
 		url: on.path.api + '/article',
+		filters:{},
 		parse: function(resp, xhr) {
 			return resp.resultset.articles;
 		},
@@ -38,6 +47,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var P = Article.get("publish"),
 				D = new Date(P.replace(' ', 'T'));
 			return - D.getTime();
+		},
+		myFilter: function(attr, val){
+			console.log(attr +' / '+val);
+			var groupByAttr = this.groupBy(function(article){
+				var res = (val === undefined)? true : (article.get(attr) == val);
+				article.set({selected:res});
+				return res;
+			});
+			console.info(groupByAttr)
+			return groupByAttr;
 		}
 	});
 
@@ -107,7 +126,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			/* if selectedItemUID (channel|2) - has service + value
 			 *
 			 */
-			
 			var self = this,
 				selectedItemUID = this.app.get('selectedItemUID'),
 				s = selectedItemUID.split('|'),
@@ -219,6 +237,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	// Assign to BB namespace
 	BB.ChannelList = ChannelList;
 	BB.EventList = EventList;
+	BB.SavedSearchList = SavedSearchList;
 	BB.DetailList = DetailList;
 	BB.ArticleList = ArticleList;
 	BB.CommentList = CommentList;

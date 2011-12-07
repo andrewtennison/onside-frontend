@@ -16,6 +16,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.events = new BB.EventList();
 			this.detailedList = new BB.DetailList(app);
 			this.comments = new BB.CommentList(app);
+			this.searches = new BB.SavedSearchList(app);
 			
 			this.bind('change:selectedItemUID', this.updateService);
 		},
@@ -35,7 +36,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		url: function(){
 			return on.path.api + '/channel/' + this.id;
 		},
-		service: 'channels',
+		service: 'channel',
 		initialize: function(){
 			on.helper.log('# Model.Channel.initialize','info');
 		},
@@ -75,6 +76,25 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// type 			: undefined,
 			// geolat			: null,
 			// geolng			: null			
+		}
+	});
+
+	var SavedSearch = Backbone.Model.extend({
+		url: function(){
+			//return on.path.api + '/search/save' + this.id;
+		},
+		service: 'search',
+		initialize: function(){
+			on.helper.log('# Model.SavedSearch.initialize','info');
+		},
+		parse: function(resp){
+			return resp.resultset.searches[0];
+		},
+		defaults: {
+			selected	: false,
+			service		: 'search',
+			name		: null,
+			query		: null			
 		}
 	});
 	
@@ -127,7 +147,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				case 'search':
 					this.get('events').reset(this.get('eventJson'));
 					this.get('channels').reset(this.get('channelJson'));
-					this.get('articles').reset(this.get('articleJson'));
+					this.get('articles').reset(this.get('articleJson').slice(0, on.env.articleMax));
 					break;
 				default:
 					on.helper.log('Model.Detail.getContent - service = ' + service, 'error');
@@ -137,13 +157,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var s = this.get('originUId').split('|');
 			this.get('channels').url = on.path.api + '/channel?' + s[0] + '=' + s[1];
 			this.get('events').url = on.path.api + '/event?' + s[0] + '=' + s[1];
-			this.get('articles').url = on.path.api + '/article?' + s[0] + '=' + s[1];
+			this.get('articles').url = on.path.api + '/article?' + s[0] + '=' + s[1] +'&limit='+on.env.articleMax;
 		}
 	});
 
 	var Article = Backbone.Model.extend({
 		initialize: function(){
 			//on.helper.log('# Model.Article.initialize', 'info');
+		},
+		defaults: {
+			selected : true
 		}
 	});
 	
@@ -183,6 +206,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.App = App;
 	BB.Channel = Channel;
 	BB.Event = Event;
+	BB.SavedSearch = SavedSearch;
 	BB.Search = Search;
 	BB.Detail = Detail;
 	BB.Article = Article;

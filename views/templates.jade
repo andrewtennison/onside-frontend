@@ -1,28 +1,116 @@
 // TEMPLATES ///////////////////////////////////////////
 
-script#eventListTemplate(type="text/html")
-  h1 {{collection}} / {{ name }}
 
-script#channelListTemplate(type="text/html)
-  <h1>{{ name }}</h1>
-  {{#img}} <img src='/assets/i/content/channel/{{ img }}_thumb.png' /> {{/img}}
+script#channelItemTemplate.tmpl(type="text/template")
+	\<img src="<%= img %>" />
+	h1 <%= name %>
 
-script#commentListTemplate(type="text/html")
-  p {{ text }}
-  time {{ created_at }}
-  img(src='{{ profile_image_url }}', alt='avatar')
+script#channelDetailItemTemplate.tmpl(type="text/template")
+	h1 <%= name %>
 
-script#rssTemplate(type="text/html")
-  a.readMore(href="#")
-    h2 {{title}}
-  {{#o_img}} img(src="{{url}}") {{/o_img}}
-  p {{o_shortDesc}}
-  {{#o_readMore}} a.readMore.button(href="#") read more {{/o_readMore}}
-  a(href="{{link}}) view source
-  time {{o_date}}
-  nav
+script#eventItemTemplate.tmpl(type="text/template")
+	img(src="/i/placeholder/listIcon2.png")
+	h1 <%= name %>
 
-script#fullArticleTemplate(type="text/html")
-  {{#o_img}} img(src="{{url}}") {{/o_img}}
-  div {{{o_longDesc}}}
+script#eventDetailItemTemplate.tmpl(type="text/template")
+	h1 <%= name %>
+	p  <%= sport %> / <%= type %>
+
+script#savedSearchTemplate.tmpl(type="text/template")
+	h1 <%= name %>
+
+script#detailTemplate.tmpl(type="text/template")
+	header
+		h1 <%= title %>
+		nav
+			span.buttonGroup
+				//a.filter(href="#") filter page
+				a.refresh(href="#") refresh
+				a.save(href="#") save
+				
+			//a.button.close(href="#") close
+	
+	div.contentWrapper
+
+script#articleTemplate.tmpl(type="text/template")
+	nav 
+		a.filter(href="#") filter articles
+		//a.explore(href="#") if nested articles view those
+		//a.save(href="#") save article to favs
+		//a.comment(href="#") focus on comment input + context of article
+	
+	section.filters
+		h1 Filter content to show more:
+		a.f_type(href="#") type 
+			span <%= type %>
+		a.f_source(href="#") from 
+			span <%= source %>
+		a.f_keywords(href="#") about 
+			span <%= keywords %>
+		a.f_author(href="#") by 
+			span <%= author %>
+		
+	\<% if(images) { %> <img src='<%= images %>' /> <% } %>
+	\<% if(extended) { %> <a class="readMore button" href="#">read more</a> <% } %>
+	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	//\<input type="hidden" value='<%= original %>' />
+
+	h2 <%= title %>
+	p <%= content %>
+	\<a class="fullArticle" href='<%= link %>'>read more: <%= source %></a>
+
+script#articleTemplate-twitter.tmpl(type="text/template")
+	div.pad
+		p <%= content %>
+		cite <%= author %>
+		\<%= link %>
+		//\<input type="hidden" value='<%= original %>' />
+
+script#articleTemplate-youtube.tmpl(type="text/template")
+	h2 <%= author %>: <%= title %>
+	p <%= content %>
+	\<input type="hidden" value="<%= link %>" name="videoData" />
+	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	\<a href='<%= videos %>'>see video</a>
+	
+	//\<iframe class="youtube-player" type="text/html" width="373" height="220" src="http://www.youtube.com/embed/<%= videoId%>" frameborder="0"></iframe>
+	\<object style="height: 245; width: 373">
+	\<param name="movie" value="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	\<embed src="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+
+
+	//\<input type="hidden" value='<%= original %>' />
+
+script#articleDetail.tmpl(type="text/template")
+	header
+		h1 <%= title %>
+		nav
+			span.buttonGroup
+				a.share(href="#") share
+				a.save(href="#") save
+		
+		\<% if(images) { %> <img src='<%= images %>' /> <% } %>
+		div <%= extended %>
+
+script#commentTemplate.tmpl(type="text/template")
+	p <%= comment %>
+
+	\<% if(user) { %> <a href='/user/<%= user %>' > user id: <%= user %> </a> <% } %>
+	\<% if(added) { %> <time> <%= added %> </time> <% } %>
+	
+	nav
+		a.reply(href="#") reply
+
+script#videoTemplate.tmpl(type="text/template")
+	\<object style="height: 245; width: 373">
+	\<param name="movie" value="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	\<embed src="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+
+script#iframeTemplate.tmpl(type="text/template")
+	a.close(href="#") x
+	\<iframe src="<%= link %>" />
+
+
+
+
 
