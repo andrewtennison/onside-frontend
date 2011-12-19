@@ -70,7 +70,7 @@ section#OnsideApp
 		section.page#listDetail
 		
 		section.page#detailArticle
-		
+
 		section.page#listChat
 			header
 				h1
@@ -93,5 +93,14 @@ section#OnsideApp
 
 
 // templates
-!=partial('templates')
+!=partial('templates/general')
+!=partial('templates/articles')
+!=partial('templates/articleDetail')
 
+
+script 
+	on.preload = {
+		channels: !{channels},
+		events: !{events}, 
+		searches: !{searches}
+	};

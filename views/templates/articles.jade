@@ -1,0 +1,60 @@
+// ARTICLE TEMPLATES ///////////////////////////////////////////
+
+
+script#articleTemplate.tmpl(type="text/template")
+	div.inner
+		nav 
+			a.filter(href="#") [f]
+			//a.explore(href="#") if nested articles view those
+			a.save(href="#") [*]
+			a.comment(href="#") [c]
+		
+		section.filters
+			h1 Filter content to show more:
+			a.f_type(href="#") type 
+				span <%= type %>
+			a.f_source(href="#") from 
+				span <%= source %>
+			a.f_keywords(href="#") about 
+				span <%= keywords %>
+			a.f_author(href="#") by 
+				span <%= author %>
+
+		h2 <%= title %>
+		div.content
+			<%= content %>
+			
+		\<% if(images) { %> <img src='<%= images %>' /> <% } %>
+		\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+		//\<input type="hidden" value='<%= original %>' />
+	
+		\<a class="open button" href='<%= link %>'>read more: <%= source %></a>
+
+script#articleTemplate-twitter.tmpl(type="text/template")
+	div.pad
+		p <%= content %>
+		cite <%= author %>
+		\<a class="open button" href='<%= link %>'>see more tweets</a>
+		//\<input type="hidden" value='<%= original %>' />
+
+script#articleTemplate-youtube.tmpl(type="text/template")
+	h2 <%= author %>: <%= title %>
+	p <%= content %>
+	\<input type="hidden" value="<%= link %>" name="videoData" />
+	\<% if(publish) { %> <time> <%= publish %> </time> <% } %>
+	\<a class="open button" href='<%= link %>'>watch video</a>
+	
+	
+	//\<input type="hidden" value='<%= original %>' />
+
+
+script#articleDetailTemplate-youtube.tmpl(type="text/template")
+	//\<img src="http://img.youtube.com/vi/<%= videoId%>/0.jpg"
+	//\<iframe class="youtube-player" type="text/html" width="373" height="220" src="http://www.youtube.com/embed/<%= videoId%>" frameborder="0"></iframe>
+	\<object style="height: 245; width: 373">
+	\<param name="movie" value="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	\<embed src="https://www.youtube.com/v/<%= videoId%>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+
+
+
+

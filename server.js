@@ -6,21 +6,26 @@
  * 			- cluster module, investigate
  * 
  */
-var express 	= require('express'),
-	resource 	= require('express-resource'),   
-	RedisStore 	= require('connect-redis')(express),
-	routes 		= require('./routes'),
-	util 		= require('util'),
-	rest 		= require('restler'),
+var express			= require('express')
+//	, resource		= require('express-resource')
+	, RedisStore	= require('connect-redis')(express)	// redis is used for user session store
+	, routes		= require('./routes')					// paths for all views
+	, util			= require('util')
+	, rest			= require('restler')					// restler - used for proxy API request
 
 	// returns config for correct environment based on process.env.NODE_ENV
-	Config 		= require('./lib/conf'),
-	conf 		= new Config(),
+	, Config 		= require('./lib/conf')
+	, conf			= new Config()
 
 	// for login
-	everyauth 	= require('everyauth'),
-	//graph 		= require('fbgraph'),	
-	login		= require('./lib/login').all(conf);
+	, everyauth 	= require('everyauth')
+//	, graph 		= require('fbgraph')
+	, login		= require('./lib/login').all(conf)
+	
+	// Email
+	, email 		= require('./lib/email')
+	;
+
 
 everyauth.debug = true;
 
@@ -75,6 +80,7 @@ app.get('*', function(req, res, next){
 
 app.get('/', routes.index);
 app.get('/demo', routes.demo1);
+app.get('/demo2', routes.demo2);
 
 app.get('/login', function(req,res){
 	res.render('login', { title: 'Log In', cssPath: '' });
