@@ -74,7 +74,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			on.helper.log('# Collection.DetailList.initialize','info');
 
 			this.app = app;
-			_.bindAll(this, 'manageCollection', 'create', 'checkSetCreate');
+			_.bindAll(this, 'manageCollection', 'create', 'createHomeModel', 'checkSetCreate');
 			this.bind('add', this.manageCollection);
 			this.app.bind('change:selectedItemUID', this.checkSetCreate)
 		},
@@ -91,7 +91,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				e = new BB.EventList(this.app),
 				a = new BB.ArticleList(this.app);
 
-			this.selected = ID;			
+			this.selected = ID;
 			
 			var detailModel = new BB.Detail({
 				id		 	: ID,
@@ -126,6 +126,22 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					return;	
 			}
 		},
+		createHomeModel: function(selectedItemUID, ID){
+			on.helper.log('# Collection.DetailList.createHome - ' + ID, 'info')
+			var detailModel = new BB.Detail({
+				id		 	: ID,
+				originUId	: selectedItemUID,
+				selected	: true,
+				type 		: 'home',
+				title 		: 'home',
+				// author		: author.toJSON(),
+				channels	: this.app.channels,
+				// events 		: e,
+				// articles 	: a
+			});
+			//this.add(detailModel);
+			//this.selected = ID;
+		},
 		checkSetCreate: function(){
 			/* if selectedItemUID (channel|2) - has service + value
 			 *
@@ -139,7 +155,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			function checkAuthor(appCollection, Model){
 				var author = self.app[appCollection].get(s[1]);
 				if(author === undefined) {
-					on.helper.log('//////////////////////// author unknown')
+					on.helper.log('//////////////////////// detail.author unknown')
 
 					author = new BB[Model]({id:s[1]});
 					author.fetch({
@@ -152,7 +168,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 						}
 					});
 				}else{
-					on.helper.log('//////////////////////// author')
+					on.helper.log('//////////////////////// detail.author found')
 					on.helper.log(author)
 					self.createModel( selectedItemUID, detailUID, author);
 				}
@@ -164,12 +180,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			}
 
 			// service, but no item selected stop.
-			if(s[1] === 'null') return;
-						
 			if(existingModel) {
 				// if exists get model
 				existingModel.set({selected:true});
 				this.selected = detailUID;
+			} else if(s[1] === 'null'){
+				// home page, no channel or event selected
+				this.createHomeModel();
+				//return;
+				
+				
 			} else {
 				// else create model
 				switch(s[0]){

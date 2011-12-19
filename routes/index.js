@@ -48,18 +48,13 @@ var preload = function(req, path, callback){
 				for(ii; ii < l; ii++){
 					
 					getFirstArticle(channels[ii], ii, l, function(req){
-						console.log('req >>>>>>>>>>>>>>>>' + j +' / ' + (l-1) + ' / ' + req.index);
-						
 						channels[req.index].defaultArticle = req.defaultArticle;
-						
 						j += 1;
-						
 						if(j === l ){
+							console.log('Preload of article for each channel complete')
 							content.channels = JSON.stringify(channels);
-							console.log('>>>>>>> COMPLETE >>>>>>>>>>>>')
 							content.channelsLoaded = true;
 						}else{
-							console.log('>>>>>>> FALSE >>>>>>>>>>>>')
 							content.channelsLoaded = false;
 						}
 					});
@@ -135,10 +130,13 @@ exports.demo2 = function(req, res){
 };
 
 
-function callApi(req, res, action, authRequired){
+function callApi(req, res, action, authRequired, callback){
+	var response = {};
+	
 	if(authRequired && !req.loggedIn){
-		res.send('User must be logged in to perform this action');
+		response.error = 'User must be logged in to perform this action';
 		console.err('user must be auth')
+		callback(response);
 		return;
 	};
 	
@@ -173,14 +171,19 @@ function callApi(req, res, action, authRequired){
 		url += path;
 		
 		console.log('callAPI - ' + action + ' to - ' + url);
-		console.log(obj);
+		//console.log(obj);
 		
 		rest[action](url,obj).on('complete', function(data) {
-			console.log('data //////////')
-			console.log(data)
-			res.json(data);
+			//console.log('data //////////')
+			//console.log(data)
+			// res.json(data);
+			response.success = data;
+			callback(response);
 		}).on('error', function(err){
-			console.error(err)
+			console.error(err);
+			//res.send('error calling API')
+			response.error = 'error calling API';
+			callback(response);
 		});
 		
 	}else{
@@ -190,19 +193,91 @@ function callApi(req, res, action, authRequired){
 };
 
 exports.getApi = function(req,res){
-	callApi(req, res, 'get');
+	callApi(req, res, 'get', false, function(r){
+		(r.error)? res.send(r.error) : res.json(r.success);
+	});
 };
 
 exports.postApi = function(req,res){
 	if((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url)){
-		callApi(req, res, 'post', true);
+		callApi(req, res, 'post', true, function(r){
+			(r.error)? res.send(r.error) : res.json(r.success);
+		});
 	}else{
-		callApi(req, res, 'post');
+		callApi(req, res, 'post', false, function(){
+			(r.error)? res.send(r.error) : res.json(r.success);
+		});
 	}
 };
 
 exports.delApi = function(req,res){
-	 callApi(req, res, 'del');
+	 callApi(req, res, 'del', true, function(){
+		(r.error)? res.send(r.error) : res.json(r.success);
+	 });
+};
+
+exports.getDetailApi = function(req,res){
+	var action = req.params.action,
+		id = req.params.id,
+		timer = setInterval ( onComplete, 100 ),
+		i = 0,
+		content = {
+			// author	: this should be returned in list of related objects
+			// title	: set when channels call responds
+			id			: 'detail|' + action +'|'+id,
+			originUId 	: action +'|'+id,
+			channels	: false,
+			events 		: false,
+			articles 	: false
+		};
+	
+
+	req.url = '/channel?'+action+'='+id;
+	callApi(req, res, 'get', false, function(r){
+		content.channels = (r.success)? r.success.resultset.channels : false;
+	});
+
+	req.url = '/event?'+action+'='+id;
+	callApi(req, res, 'get', false, function(r){
+		content.events = (r.success)? r.success.resultset.events : false;
+	});
+
+	req.url = '/article?'+action+'='+id + '&limit=30';
+	callApi(req, res, 'get', false, function(r){
+		content.articles = (r.success)? r.success.resultset.articles : false;
+	});
+	
+	function setAuthor(){
+		console.log('get Author, action = ' + action);
+
+		var actions = action + 's',
+			arr = content[actions],
+			l = arr.length | 0;
+		
+		while(l--){
+			if(arr[l].id === id){
+				content.author = arr[l];
+				content.title = arr[l].name | arr[l].title;
+				return;
+			};
+		}
+	};
+
+	function onComplete(){
+		if(content.channels && content.events && content.articles){
+			setAuthor();
+			clearInterval( timer );
+			res.json(content)
+		} else if(i === 3000){
+			console.log('API timed out, timer = ' + i)
+			clearInterval( timer );
+			res.send('load detailed failed, request timed out')
+		} else{
+			i += 100;
+			console.log('load detail content from API, timer = ' + i)
+		}
+	}
+
 };
 
 exports.cms = function(req,res){

@@ -93,5 +93,8 @@ app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
 
+// fake call to proxy multiple calls to API 
+app.get('/detail/:action?/:id?', routes.getDetailApi);
+
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
