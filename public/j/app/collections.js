@@ -66,6 +66,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var DetailList = Backbone.Collection.extend({
 		model: BB.Detail,
+		url: function(action, id){
+			var arr = this.id.split('|');
+			return '/' +arr[0]+ '/' + arr[1] +'/'+ arr[2];
+		},
 		comparator: function(){
 			// sort models.. by the users default order if available?
 		},
@@ -74,7 +78,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			on.helper.log('# Collection.DetailList.initialize','info');
 
 			this.app = app;
-			_.bindAll(this, 'manageCollection', 'create', 'createHomeModel', 'checkSetCreate');
+			_.bindAll(this, 'manageCollection', 'createModel', 'checkSetCreate');
 			this.bind('add', this.manageCollection);
 			this.app.bind('change:selectedItemUID', this.checkSetCreate)
 		},
@@ -82,98 +86,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// possibly delete old if too many - manage memory
 			// on.helper.log(this)
 		},
-		createModel: function(selectedItemUID, ID, author){
-			on.helper.log('# Collection.DetailList.create - ' + ID, 'info')
-
-			var s = selectedItemUID.split('|');
-			if(s[1] === 'null') return;
-			var c = new BB.ChannelList(this.app),
-				e = new BB.EventList(this.app),
-				a = new BB.ArticleList(this.app);
-
-			this.selected = ID;
-			
-			var detailModel = new BB.Detail({
-				id		 	: ID,
-				originUId	: selectedItemUID,
-				selected	: true,
-				author		: author.toJSON(),
-				channels	: c,
-				events 		: e,
-				articles 	: a
-			});
-
-			switch (s[0]){
-				case 'channel':
-				case 'event':
-					detailModel.set({ title:author.get('name') });
-					this.add(detailModel);
-					break;
-					
-				case 'search':
-					detailModel.set({
-						type 		: author.get('type'),
-						title 		: author.escape('title'),
-						eventJson 	: author.get('events'),
-						channelJson : author.get('channels'),
-						articleJson	: author.get('articles')
-					});
-					this.add(detailModel);
-					break;
-					
-				default:
-					on.helper.log('# Collection.DetailList.Create: unknown service = ' + service, 'error');
-					return;	
-			}
-		},
-		createHomeModel: function(selectedItemUID, ID){
-			on.helper.log('# Collection.DetailList.createHome - ' + ID, 'info')
-			var detailModel = new BB.Detail({
-				id		 	: ID,
-				originUId	: selectedItemUID,
-				selected	: true,
-				type 		: 'home',
-				title 		: 'home',
-				// author		: author.toJSON(),
-				channels	: this.app.channels,
-				// events 		: e,
-				// articles 	: a
-			});
-			//this.add(detailModel);
-			//this.selected = ID;
-		},
 		checkSetCreate: function(){
-			/* if selectedItemUID (channel|2) - has service + value
-			 *
-			 */
 			var self = this,
 				selectedItemUID = this.app.get('selectedItemUID'),
-				s = selectedItemUID.split('|'),
 				detailUID = 'detail|' + selectedItemUID,
-				existingModel = this.get( detailUID );
-			
-			function checkAuthor(appCollection, Model){
-				var author = self.app[appCollection].get(s[1]);
-				if(author === undefined) {
-					on.helper.log('//////////////////////// detail.author unknown')
+				s = selectedItemUID.split('|'),
+				existingModel = this.get( detailUID ),
+				search = (s[0] === 'search')? true : false,
+				model = new this.model({id:detailUID});
 
-					author = new BB[Model]({id:s[1]});
-					author.fetch({
-						success:function(model){
-							self.createModel( selectedItemUID, detailUID, model);
-						},
-						error: function(err){
-							on.helper.log(err, 'error');
-							alert(Model + ' unavailable');						
-						}
-					});
-				}else{
-					on.helper.log('//////////////////////// detail.author found')
-					on.helper.log(author)
-					self.createModel( selectedItemUID, detailUID, author);
-				}
-			};
-			
 			// if current model selected, change to hidden
 			if(this.selected !== false) {
 				this.get(this.selected).set({ selected : false});
@@ -184,41 +105,64 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				// if exists get model
 				existingModel.set({selected:true});
 				this.selected = detailUID;
-			} else if(s[1] === 'null'){
-				// home page, no channel or event selected
-				this.createHomeModel();
-				//return;
+			} else if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
+				// load home page
+				model.set({
+					title		: 'home',
+					type		: 'home',
+					originUId	: selectedItemUID,
+					channels	: on.m.app.channels.toJSON()
+				})
+				self.createModel(model);
+
+			} else if(search){
+				var author = this.app.get('searchModel');
 				
+				function setSearchModel(){
+					model.set({
+						originUId	: selectedItemUID,
+						type 		: author.get('type'),
+						title 		: author.escape('title'),
+						events 		: author.get('events'),
+						channels 	: author.get('channels'),
+						articles	: author.get('articles')
+					});
+					self.createModel(model);
+				};
 				
-			} else {
-				// else create model
-				switch(s[0]){
-					case 'channel':
-						checkAuthor('channels', 'Channel')
-						break;
-					case 'event':
-						checkAuthor('events', 'Event');
-						break;
-					case 'search':
-						var author = this.app.get('searchModel');
-						if(author === null || author.get('query') !== s[1]) {
-							author = new BB.Search();
-							author.query = s[1];
-							author.fetch({
-								success:function(model){
-									self.createModel( selectedItemUID, detailUID, model);
-								},
-								error:function(){alert('search failed')}
-							})
-						}else{
-							this.createModel( selectedItemUID, detailUID, author);
+				if(author === null){
+					author = new BB.Search();
+					author.query = s[1];
+					author.fetch({
+						success:function(){
+							setSearchModel();
 						}
-						break;
-					default:
-						on.helper.log('Collection.DetailList.checkCreate - service = ' + s[0], 'error');
-						return;
+					});
+				}else{
+					setSearchModel();
 				}
-			};
+			} else {
+				model.fetch({
+					success:function(){
+						self.createModel(model);
+					}
+				});
+			}
+		},
+		createModel: function(model){
+			this.selected = model.id;
+			model.set({
+				channelJson	: model.get('channels'),
+				channels	: new BB.ChannelList(this.app),
+
+				eventJson	: model.get('events'),
+				events		: new BB.EventList(this.app),
+
+				articleJson	: model.get('articles'),
+				articles	: new BB.ArticleList(this.app)
+			});
+			
+			this.add(model);
 		}
 	});
 	

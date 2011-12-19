@@ -202,7 +202,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'addOne', 'addAll', 'confirm')
+			_.bindAll(this, 'addOne', 'addAll', 'confirm');
 
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
@@ -294,7 +294,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var SaveSearchView 	= _ListItemView.extend({
 		className:'searchItem',
-		template: _.template( $('#savedSearchTemplate').html() )
+		template: _.template( $('#savedSearchTemplate').html() ),
+		selectItem: function(e){
+			e.preventDefault();
+			on.helper.log('! View.listItem.selectItem => click');
+			this.app.set({
+				selectedItemUID		: this.model.get('service') + '|' + this.model.get('query'),
+				selectedModel 		: this.model
+			});
+		}
 	});
 
 // Detail View
@@ -303,7 +311,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		tagName: 'section',
 		className: 'content channelList',
 		addOne: function(channel){
-			var view = new ChannelDetailView({model:channel, app:this.options.app}),
+			var view = ( channel.get('defaultArticle') )? new ChannelDetailHomeView({model:channel, app:this.options.app}) : new ChannelDetailView({model:channel, app:this.options.app}),
 				render = view.render().el;
 			
 			$(this.el).append(render);
@@ -321,6 +329,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	// Item view for related items in detail view
 	var ChannelDetailView 	= ChannelView.extend({
 		template: _.template( $('#channelDetailItemTemplate').html() )
+	});
+	var ChannelDetailHomeView = ChannelView.extend({
+		className:'channelHomeItem',
+		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
+		render: function(){
+			console.log(this.model.toJSON());
+			
+			$(this.el).html(this.template(this.model.toJSON()));
+		    return this;
+		}
 	});
 	var EventDetailView = EventView.extend({
 		template: _.template( $('#eventDetailItemTemplate').html() )
@@ -381,28 +399,27 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.app = this.options.app;
 			this.model.bind('change:selected', this.toggleDisplay);
 			this.model.bind('change:saved', this.toggleButton);
-			
 			this.toggleButton();
 		},
 		
 		render: function(){
 			on.helper.log('# View.Detail.render');
-			on.helper.log(this.model.toJSON());
 
 			$(this.el).html(this.template(this.model.toJSON()));
-			
+
 			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels') }),
 			this.viewE = new EventListDetailView({ collection: this.model.get('events') }),
 			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.app });
-				
+
 			this.app.set({selectedArticleList:this.viewA.collection});
 
 			$(this.el).find('.contentWrapper') 
 				.append(this.viewC.el)
 				.append(this.viewE.el)
 				.append(this.viewA.el);
+			
+			this.model.refresh();
 
-			this.model.getContent();
 		    return this;
 		},
 		
@@ -502,7 +519,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					break;
 				case 'youtube':
 					var vidId = json.link.substring(json.link.lastIndexOf('/') + 1,json.link.length)
-					article.set({videoId:vidid}) ;
+					article.set({videoId:vidId}) ;
 					view = new ArticleView_youtube({model:article, app:this.app});
 					break;
 				case 'rss':

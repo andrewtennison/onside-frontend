@@ -257,7 +257,7 @@ exports.getDetailApi = function(req,res){
 		while(l--){
 			if(arr[l].id === id){
 				content.author = arr[l];
-				content.title = arr[l].name | arr[l].title;
+				content.title = arr[l].name;
 				return;
 			};
 		}

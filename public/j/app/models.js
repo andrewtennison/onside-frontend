@@ -123,43 +123,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Detail = Backbone.Model.extend({
 		initialize: function(){
-			// this.channels = new BB.ChannelList();
-			// this.events = new BB.EventList();
-			// this.articles = new BB.ArticleList();
-
+		},
+		url: function(){
+			return '/' + this.id.replace(/\|/g,'/');
 		},
 		defaults: {
-			selected 	: false,
-			saved 		: false,
-			originUId	: null,
-			channels	: null,
-			events 		: null,
-			articles 	: null
+			selected 	: true,
+			// saved 		: false,
 		},
-		getContent: function(){
-			var service = this.get('originUId').split('|')[0];
-			switch(service){
-				case 'channel':
-				case 'event':
-					this.setPaths();
-					this.get('events').fetch();
-					this.get('channels').fetch();
-					this.get('articles').fetch();
-					break;
-				case 'search':
-					this.get('events').reset(this.get('eventJson'));
-					this.get('channels').reset(this.get('channelJson'));
-					this.get('articles').reset(this.get('articleJson').slice(0, on.env.articleMax));
-					break;
-				default:
-					on.helper.log('Model.Detail.getContent - service = ' + service, 'error');
-			}
-		},
-		setPaths: function(){
-			var s = this.get('originUId').split('|');
-			this.get('channels').url = on.path.api + '/channel?' + s[0] + '=' + s[1];
-			this.get('events').url = on.path.api + '/event?' + s[0] + '=' + s[1];
-			this.get('articles').url = on.path.api + '/article?' + s[0] + '=' + s[1] +'&limit='+on.env.articleMax;
+		refresh: function(){
+			console.log(this)
+			this.get('channels').reset(this.get('channelJson'));
+			this.get('events').reset(this.get('eventJson'));
+			this.get('articles').reset(this.get('articleJson'));
 		}
 	});
 

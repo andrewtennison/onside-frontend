@@ -58,11 +58,13 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	getEvent: function( id ){
 		console.log('// Routes = "/events/'+id+'"');
+		if(id === '') id = null;
 		on.m.app.set({ selectedItemUID : 'event|'+id });
 	},
 	
 	getChannel: function( id ){
 		console.log('// Routes = "/channel/'+id+'"');
+		if(id === '') id = null;
 		on.m.app.set({ selectedItemUID : 'channel|'+id });
 	},
 	
