@@ -23,7 +23,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selectedServiceName: null,
 			selectedItemUID: null,
-			searchModel: null
+			searchModel: null,
+			selectedArticleList: null,
+			selectedArticle: null
 		},
 		updateService: function(){
 			this.set({
@@ -166,8 +168,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			//on.helper.log('# Model.Article.initialize', 'info');
 		},
 		defaults: {
-			selected : true
+			selected : false,
+			filtered : true
 		}
+
 	});
 	
 	var Comment = Backbone.Model.extend({

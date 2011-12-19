@@ -1,0 +1,276 @@
+/*
+   layout.css
+   site
+   
+   Created by andrew tennison on 2011-09-08.
+   Copyright 2011 andrew tennison. All rights reserved.
+*/
+
+
+/* ==|== normalise ====================================================== */
+@import "/c/style.css";
+/* ==|== typography ====================================================== */
+@import "/c/type.css";
+
+.page > header h1, .page .detailItem > header h1 {padding:10px}
+
+input[type=text] {position:relative; display:block; font-size:1.4em; padding:4px 2px; border-radius:14px; border:1px solid #000; box-shadow:inset 0 2px 3px rgba(0,0,0,0.5)}
+input[type=search] {background:#323132; color:#fff; padding:5px; border-radius: 2px; border:1px solid #000; box-shadow: none; font-size:1.2em; height:16px}
+button[type=submit] {
+	position:relative; display:inline-block; height:22px; text-indent:-999px; overflow:hidden; border-radius:2px; border:0px none; width:30px;
+	background: #0c7701; /* Old browsers */background: -moz-linear-gradient(top,  #0c7701 0%, #10a101 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0c7701), color-stop(100%,#10a101)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* IE10+ */background: linear-gradient(top,  #0c7701 0%,#10a101 100%); /* W3C */
+	}
+		
+.toggleButton2 {position:relative; display:inline-block; border:3px solid #ccc; background:#ccc; border-radius:4px;}
+.toggleButton2 span {
+	position:relative; display:inline-block; height:15px; line-height: 15px; padding:0 8px; text-decoration:none; color:#494c4f; font-size:1.1em;
+	background: #fcfcfc; /* Old browsers */background: -moz-linear-gradient(top, #fcfcfc 0%, #ebebeb 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfcfc), color-stop(100%,#ebebeb)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* IE10+ */background: linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* W3C */
+	}
+.toggleButton2 span {border-right:1px solid #acafb4; box-shadow:-1px 0px 1px rgba(0,0,0,0.3); border-radius: 3px 0 0 3px}
+.toggleButton2 span:last-child {border-right:0px none; box-shadow:1px 0px 1px rgba(0,0,0,0.3); border-radius: 0 3px 3px 0}
+
+.toggleButton2 span {padding:4px 10px}
+.toggleButton2 span:hover {background:#fff}
+.toggleButton2 span.on {
+	background: #0c7701; /* Old browsers */background: -moz-linear-gradient(top,  #0c7701 0%, #10a101 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#0c7701), color-stop(100%,#10a101)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #0c7701 0%,#10a101 100%); /* IE10+ */background: linear-gradient(top,  #0c7701 0%,#10a101 100%); /* W3C */
+	color:#fff; box-shadow:inset 0 0 3px rgba(0,0,0,0.3);
+	}
+
+
+.pad {padding:10px}
+
+
+/* ==|== media queries ====================================================== 
+@import "/c/lessframework.css";*/
+
+/* ==|== templating overide ====================================================== */ 
+.tmpl {display:none !important}
+
+
+/* ==|== generic styles ===================================================== */
+
+/* ==|== primary styles ===================================================== */
+
+body {background:#2a2a2a; font-family:Verdana }
+#OnsideApp {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden}
+#main {position:absolute; display:block; z-index:1; top:0px; left:0; right:0; bottom:0; overflow:hidden; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#main > .page {
+		position:absolute; 
+		display:block; display: -moz-box; display: -webkit-box; display: box;
+		-webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;-moz-box-orient: vertical; -webkit-box-orient: vertical; box-orient: vertical; 
+		top:0px; bottom:0; left:0; right:0; overflow-y:hidden; 
+		}
+
+#main #listGroups {position:fixed; width:247px; top:8em; right:auto; z-index:3; bottom:0px; left:0px}
+#main #listDetail {z-index:2; margin:0; padding:0 338px 0 247px; overflow-y:auto}
+	#main #listDetail .detailItem {background:#474747}
+
+#main #listArticle {background:rgba(0,0,0,0.8); z-index:10; display:none}
+	#main #listArticle.on {display:block}
+#main #listChat {width:206px; left:auto; background:none; z-index:1}
+
+
+/* ==|== Header ===================================================== */
+#OnsideApp > header {position: absolute; left:0; top:0; width:247px; height:8em}
+	#OnsideApp > header .inner {position:relative; display:block}
+	#OnsideApp > header h1 {position:relative; width:132px; height:23px; margin:10px 0 15px 15px; background:url(/i/sprites/d2_logo.png) left center no-repeat; text-indent:-999px; overflow:hidden}
+	#OnsideApp > header nav {float:right; height:40px; display:none}
+	#OnsideApp > header nav > * {display:inline-block;}
+	#OnsideApp > header nav > a {}
+	#OnsideApp > header nav > a span {}
+	#OnsideApp > header nav > a:hover {}
+	#OnsideApp > header nav > a:hover span {}
+	#OnsideApp > header .block {display:none}
+
+	#navSearch {position:relative; padding: 0 0 0 15px}
+	#navSearch input[type=search] {display:inline-block; width:170px; margin:0 4px 0 0; float:left; background:#d7d8d7; border:0px none; color:#555; padding:3px 5px; box-shadow:inset 0 1px 2px rgba(0,0,0,0.3)}
+	#navSearch button {float:left; }
+
+.page > section.content { -moz-box-flex: 1; -webkit-box-flex: 1; box-flex: 1; overflow-y: auto}
+
+header {}
+header > [class*='block'] {position:relative; display:none; padding:6px;}
+header > [class*='block'] input {width:230px}
+
+
+/* ==|== listGroups styles ===================================================== */
+#listGroups header {position:relative; display:block; padding:8px 0 20px}
+#listGroups header nav {text-align:center}
+#listGroups .content {position:relative; display:block; overflow:visible}
+
+#listGroups header h1, 
+#listGroups footer {border-bottom:1px solid #cbcbcb; background: #ffffff; /* Old browsers */background: -moz-linear-gradient(top, #ffffff 0%, #fdfdfd 50%, #e5e5e5 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(50%,#fdfdfd), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */background: -o-linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* Opera11.10+ */background: linear-gradient(top, #ffffff 0%,#fdfdfd 50%,#e5e5e5 100%); /* W3C */}
+#listGroups footer {box-shadow:0 0 20px rgba(0,0,0,0.2);}
+#listGroups footer a {position:relative; display:inline-block; vertical-align:middle}
+#listGroups footer .settings, 
+#listGroups footer .wiggle {position:relative; display:inline-block; height:52px; text-indent:-999px; overflow:hidden}
+#listGroups footer .settings {background:url(/i/sprites/icon_gear.png) center center no-repeat; width:52px; border-right:1px solid #c6c8cd}
+#listGroups footer .wiggle {background:url(/i/sprites/icon_wiggle.png) center center no-repeat; width:58px; border-left:1px solid #c6c8cd}
+#listGroups footer .toggleButton {margin:0 20px; float:none}
+
+#listGroups h2 {
+	color:#fff; font-weight:normal; font-size:1.1em; padding:4px 10px 2px; 
+	background: #595959; /* Old browsers */background: -moz-linear-gradient(top, #595959 0%, #020202 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(100%,#020202)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #595959 0%,#020202 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #595959 0%,#020202 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #595959 0%,#020202 100%); /* IE10+ */background: linear-gradient(top, #595959 0%,#020202 100%); /* W3C */
+	}
+#listGroups article {position:relative; display:block; height:43px; padding:5px; margin:0 0 0 8px;}
+#listGroups article a {text-decoration:none}
+#listGroups article.active {background:#474747; border-radius:5px 0 0 5px;}
+#listGroups article img {position:relative; display:inline-block; margin:0; border-radius:8px; vertical-align: top}
+#listGroups article.active img {box-shadow:0 2px 5px rgba(0, 0, 0, 0.7)}
+#listGroups article h1 {display:inline-block; color:#fff; height:43px; line-height: 1.2em; padding-top:6px; font-size:1.2em; margin:0 0 0 10px; font-weight:normal; text-transform:uppercase; width:170px}
+
+/* ==|== listDetail styles ===================================================== */
+
+#listDetail header {position:fixed; top:0; height:68px; width:1080px; z-index:4; background:#2a2a2a; padding-top:12px; border-bottom:1px solid #3a3a3a; }
+#listDetail header h1 {color:#fff; text-align:center; background:#474747; border-radius:4px 4px 0 0; padding:10px 0 15px}
+	#listDetail header h1 img {margin:0 15px 0 0}
+#listDetail header nav {position:absolute; right:15px; top:28px;}
+#listDetail header > span {position:absolute; display:block; clear:both; bottom:0; left:45px; right:45px; background:#a30226; box-shadow:0 0 2px rgba(0,0,0,0.5); height:6px}
+#listDetail .contentWrapper {padding:80px 0 0; position:relative; display:block}
+	#listDetail .channelList {display:block; border-bottom:1px solid #3A3A3A}
+
+	#listDetail .articleList, #listDetail .eventList {position:relative; display:table-cell; padding-top:5px}
+	#listDetail .channelList {padding-left:10px}
+	#listDetail .eventList {width:250px; padding-right:10px}
+
+#listDetail .loading {background:url(/i/sprites/ajax-loader.gif) center center no-repeat;}
+#listDetail .content  {}
+#listDetail .content:after {content:''; position:relative; display:block; width:1px; height:1px; clear:both}
+
+
+#listDetail .channelList article {display:inline-block; background:#777; margin:0 10px 4px;}
+	#listDetail .channelList article h1 {display:inline-block; color:#fff; font-size:1.2em; padding: 4px 6px}
+
+
+#listDetail .articleList article:first-child {position:relative; display:block; width:99.2%; float:none; min-height: 50px}
+#listDetail .articleList article {position:relative; display:inline-block; width:49.5%; height:220px; float:left; padding:1px; }
+	#listDetail .detailItem article .inner {position:relative; display:block; width:100%; height:100%; background:#fff; box-shadow:0 0 2px #000}
+
+	#listDetail .detailItem article h2 {color:#1b4773; font-size:1.4em; line-height:1.2em; padding-bottom:5px}
+	#listDetail .detailItem article img {max-width: 100%}
+	#listDetail .detailItem article p {font-size:1.2em; color:#494c4f; line-height: 1.5em; word-wrap:break-word}
+	#listDetail .detailItem article time {position:relative; display:block; clear:both; font-size: 1.1em; color:#999; font-weight: bold}
+	#listDetail .detailItem article a {margin:0 5px 0 0; font-size:1.1em}
+	#listDetail .detailItem article a.readMore {}
+	
+	#listDetail .detailItem article nav {position:absolute; bottom:-2px; right:-2px; width:30px; height:214px; padding:10px 0 0 0; background: url(/i/sprites/d2_navMini.png) left bottom no-repeat; overflow:hidden; -webkit-transition: all 0.3s ease-out; -moz-transition: all 0.2s ease-out;}
+	#listDetail .detailItem article nav a {display: block; line-height: 25px; margin-left: 35px; position: relative; width: 27px; color:#fff}
+	#listDetail .detailItem article.on {}
+	#listDetail .detailItem article.on nav {width:58px; }
+	#listDetail .detailItem article .filters {position:absolute; display:none; z-index:3; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5)}
+	#listDetail .detailItem article .filters.on {display:block}
+	#listDetail .detailItem article .filters a {display:block; background:#fff; color:#000; padding:3px 5px; margin:5px 10px}
+
+#listDetail .content article.twitter {background:#000}
+#listDetail .content article.twitter p {color:#fff; font-size:1.8em; line-height: 1.5em; padding:10px 0}
+#listDetail .content article.twitter p:before,
+#listDetail .content article.twitter p:after {position:relative; display:block; background:url(/i/placeholder/demo_quotes.png) 0 0 no-repeat; content:''; width:28px; height:21px; top:-10px}
+#listDetail .content article.twitter p:after {background-position: -28px 0; position:relative; left:90%; top:10px}
+#listDetail .content article.twitter cite {color:#ccc; position: relative; top:-15px}
+
+/* ==|== detailArticle styles ===================================================== */
+#listArticle header {position:relative; margin:0 0 0 0%; border-bottom:1px solid #e6e6e6; background:rgba(255,255,255, 0.8)}
+	#listArticle header h1 {padding:16px 150px 16px 16px}
+	#listArticle header nav {position:absolute; top:5px; right:10px}
+#listArticle section {margin:0 0 0 5%; padding:16px; font-size:1.2em}
+#listArticle section h2 {font-size:1.2em; padding: 0 0 10px 0}
+#listArticle section p {padding:0 0 10px 0}
+
+#listArticle .detailItem {position:relative; display:block; clear:both}
+
+#listArticle .articleIframe {}
+	#listArticle .articleIframe .iframeWrap {position:absolute; top:50px; left:0; right:0; bottom:0}
+	#listArticle .articleIframe iframe {border:0px none; width:100%; height:100%}
+
+#listArticle .articleTwitter {width:900px; margin:10px auto 0; background:#fff;}
+	.articleTwitter .pad {padding:20px;}
+	.articleTwitter .original {background:#ccc; border-radius:10px;}
+	.articleTwitter img {display:inline-block; padding:10px 0 10px 10px}
+	.articleTwitter p {padding:10px; font-size:1.2em; display:inline-block}
+	.articleTwitter cite {position:relative; display:block; padding:5px 10px; background:#999; border-radius:0 0 10px 10px; border-top:1px solid #fff;}
+	.articleTwitter .older {}
+
+/* ==|== listChat styles ===================================================== */
+#listChat header {border-bottom:1px solid #dee3e7}
+#listChat header h1 {margin-left:10px; padding-left:30px; background:url(/i/sprites/icon_comment.png) left center no-repeat}
+#listChat header h1 span {position:absolute; top:8px; left:20px; font-size:0.5em; font-weight:normal; display:block; background:#3b97fe; color:#fff; border:2px solid #fff; border-radius:10px; padding:2px 4px 1px 4px; box-shadow:0 2px 3px rgba(0,0,0,0.5)}
+
+#listChat .addBlock {position:relative; display:block; margin:0 10px 0 10px; padding:20px 18px 18px; background:#333; border-radius:5px}
+#listChat #commentAdd {background:transparent url(/i/placeholder/demo_comment.png) 0 3px no-repeat; padding:4px 0 4px 25px; width:125px; color:#fff; box-shadow:none; border-radius:0; border:0px none;}
+
+
+#listChat article {position:relative; display:block; margin:10px 10px 0 10px; padding:18px; background:#333; border-radius:5px}
+#listChat article:before {content:''; width:0; height:0; position:absolute; left:-14px; top:20%; margin-top:-3px;  border:7px solid transparent; border-right-color:#333}
+#listChat article p {font-size:1.2em; color:#696969; word-wrap: break-word; padding:0; margin:0}
+#listChat article img {position:absolute; top:8px; right:8px;}
+#listChat article time {position:relative; display:block; padding:0 0 8px 8px}
+
+#listChat footer {position:relative; display:block; margin:20px 0 0 0;}
+#listChat footer a {position:relative; display:block; color:#1b4773; text-align: center; padding:10px 0; text-decoration: none; font-size:1.2em; font-weight: bold;}
+#listChat footer a:hover {color:#D2D7DB; background:#455e6b}
+/* ==|== reused styles ===================================================== */
+
+
+
+
+
+
+/* ==|== media querys ===================================================== */
+
+/* full width */
+@media only screen and (min-width: 1236px) {
+}
+
+/* collapse left nav */
+@media only screen and (min-width: 1051px) and (max-width:1245px) {
+}
+
+/* hide comments */
+@media only screen and (min-width: 837px) and (max-width:1050px) {
+	#main #listChat {right:-210px;}
+}
+
+@media only screen and (min-width: 768px) and (max-width:836px) {
+	#main #listChat {right:-210px;}
+	
+}
+
+
+
+/* collapse left nav */
+@media only screen and (min-width: 0px) and (max-width:1245px) {
+	#main #listDetail {left:72px}
+	#main #listGroups {width:59px; overflow:visible}
+	#listGroups header {padding:5px}
+	#listGroups .toggleButton2 span {width:20px; text-indent:-999px; overflow:hidden; margin:2px}
+	#listGroups .toggleButton2 span:after {position:absolute; top:0; left:0; width:20px; height:20px; text-indent: 0px}
+	#listGroups .toggleButton2 span.channel:after {content:'C'}
+	#listGroups .toggleButton2 span.event:after {content:'E'}
+	#listGroups article h1 {width:0px; overflow: hidden}
+}
+
+/* nav to bottom */
+@media only screen and (min-width: 0px) and (max-width:836px) {
+	#main #listDetail {left:0; bottom:71px; width:auto; right:0}
+	#main #listGroups {bottom:1px; left:1px; height:60px; top:auto; width:70%}
+	#main #listGroups article {display:inline-block}
+		#listGroups header {display:inline-block; padding:20px 5px;}
+		#listGroups .content {display:inline-block; vertical-align: top}
+		#listGroups article h1 {display:none}
+		#listGroups article {border:0px none; border-left:1px solid #414141; border-right:1px solid #222222}
+		
+	#main #listChat {top:auto; bottom:2px; right:0; width:30%; height:61px; overflow:hidden}
+		#listChat .addBlock {margin:0 2px 0 6px;  border:1px solid #111}
+}
+
+
+@media only screen and (max-width: 767px) {
+	#listDetail .content article {width:99.2%}
+}
+@media only screen and (max-width: 543px) {
+	#OnsideApp > header nav > a {text-indent:-999px; overflow: hidden; padding:0 14px}
+}
+
+
+
+

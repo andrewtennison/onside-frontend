@@ -24,21 +24,19 @@ on.helper = {
 		if (window.console === undefined || on.env.server !== 'development'){
 			on.logger.push(type +' = '+ msg);
 		} else {
-			switch(type){
-				case 'error': console.error(msg); break;
-				case 'info': console.info(msg); break;
-				case 'dir': console.dir(msg); break;
-				case 'log':
-				default: console.log(msg); break;
-			}
+			try {
+				if(type === undefined) type = 'log';
+				console[type](msg);
+			} catch(err){
+				console.error(err)
+				console.log(msg)
+			};
 		}
 	}
 }
 
 on.path = {
 	js: '/j/',
-	//api: 'http://onside.mini-apps.co.uk'
-	//api: 'http://api.onside.me:8000'
 	api:'/api'
 };
 

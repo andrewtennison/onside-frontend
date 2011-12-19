@@ -5,7 +5,8 @@ BB.appRoutes = Backbone.Router.extend({
 		''				: 'home',
 		'event/:id'		: 'getEvent',
 		'channel/:id'	: 'getChannel',
-		'search/:id'	: 'getSearch'
+		'search/:id'	: 'getSearch',
+		':service/:id/article-:id2'	: 'getArticle'
 	},
 	
 	initialize: function(){
@@ -25,6 +26,9 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Detail view
 		on.v.detailList = new BB.DetailListView({ app: on.m.app });
+
+		// Article Detail view
+		on.v.articleList = new BB.ArticleDetailView({ app: on.m.app });
 		
 		// Search view
 		on.v.search = new BB.SearchView({ app: on.m.app });
@@ -35,9 +39,16 @@ BB.appRoutes = Backbone.Router.extend({
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
 		
-		on.m.app.channels.fetch();
-		on.m.app.events.fetch();
-		on.m.app.searches.fetch();
+		// If JSON is preloaded use it, else fetch from server
+		on.preload = window.on.preload || {};
+		// console.info('preload channels')
+		// console.log(on.preload.channels)
+		// console.log(on.preload.channels.resultset.channels)
+
+		// on.m.app.channels.reset(on.preload.channels)
+		; (on.preload.channels !== undefined)?	on.m.app.channels.reset(on.preload.channels)	: on.m.app.channels.fetch(); 
+		; (on.preload.events !== undefined)?	on.m.app.events.reset(on.preload.events)		: on.m.app.events.fetch(); 
+		; (on.preload.searches !== undefined)?	on.m.app.searches.reset(on.preload.searches)	: on.m.app.searches.fetch(); 
 	},
 	
 	home: function(){
@@ -58,6 +69,13 @@ BB.appRoutes = Backbone.Router.extend({
 	getSearch: function( id ){
 		console.log('// Routes = "/search/'+id+'"');
 		on.m.app.set({ selectedItemUID : 'search|'+id });
+	},
+	
+	getArticle: function( service, id, id2){
+		on.m.app.set({ 
+			selectedItemUID : service +'|'+ id,
+			selectedArticle :  'article-' + id2
+		});		
 	}
 });
 

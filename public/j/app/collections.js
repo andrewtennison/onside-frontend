@@ -40,8 +40,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.Article,
 		url: on.path.api + '/article',
 		filters:{},
+		selectedModel: false,
 		parse: function(resp, xhr) {
 			return resp.resultset.articles;
+		},
+		initialize: function(app){
+			this.app = app;
 		},
 		comparator : function(Article) {
 			var P = Article.get("publish"),
@@ -83,9 +87,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 			var s = selectedItemUID.split('|');
 			if(s[1] === 'null') return;
-			var c = new BB.ChannelList(),
-				e = new BB.EventList(),
-				a = new BB.ArticleList();
+			var c = new BB.ChannelList(this.app),
+				e = new BB.EventList(this.app),
+				a = new BB.ArticleList(this.app);
 
 			this.selected = ID;			
 			

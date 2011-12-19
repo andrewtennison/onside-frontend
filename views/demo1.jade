@@ -60,8 +60,11 @@ section#OnsideApp
 				
 
 		section.page#listDetail
+			nav
+				a.prev(href="#") prev
+				a.next(href="#") next 
 		
-		section.page#detailArticle
+		section.page#listArticle
 		
 		section.page#listChat
 			div.addBlock
@@ -76,5 +79,7 @@ section#OnsideApp
 
 
 // templates
-!=partial('templates')
+!=partial('templates/general')
+!=partial('templates/articles')
+!=partial('templates/articleDetail')
 
