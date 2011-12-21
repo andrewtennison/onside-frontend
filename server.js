@@ -23,7 +23,7 @@ var express			= require('express')
 	, login		= require('./lib/login').all(conf)
 	
 	// Email
-	, email 		= require('./lib/email')
+	// , email 		= require('./lib/email')
 	;
 
 
