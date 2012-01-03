@@ -3,7 +3,25 @@
   , "version": "0.0.1"
   , "private": true
   , "dependencies": {
+	// framework
       "express": "2.5.0"
-    , "jade": ">= 0.0.1"
+    , "n" : ">= 0.5.4"
+    , "express-resource" : ">= 0.2.3"
+
+	// rendering
+    , "jade": ">= 0.16.4"
+    , "ejs": ">= 0.0.1"
+    , "stylus" : ">= 0.21.2"
+    , "expresso" : ">= 0.9.2"
+    
+    // extraneous
+    , "restler" : ">= 0.2.1"
+    , "connect-redis" : ">= 1.2.0"
+    , "aws-lib" : ">= 0.0.5"
+    , "everyauth" : ">= 0.2.23"
+    , "fbgraph" : ">= 0.2.1"
+    
+    // testing
+    , "should" : ">= 0.3.2"
   }
 }

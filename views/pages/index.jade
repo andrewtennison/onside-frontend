@@ -1,15 +1,15 @@
+- var user = user, loggedIn = loggedIn;
 
 section#OnsideApp
 	div#main(role='main')
 		section.page#listGroups
 			header
 				hgroup
-				
-					- if (everyauth.loggedIn)
-						h1= everyauth.user.name
+					- if (loggedIn)
+						h1= user.name
 							span(style='display:none')= JSON.stringify(everyauth)
 						
-						- if (everyauth.user.enabled === '1' && everyauth.user.admin === '1')
+						- if (user.enabled === '1' && user.admin === '1')
 							a(href="/addcontent") site admin
 						
 					- else
@@ -17,17 +17,17 @@ section#OnsideApp
 
 				nav
 					span.buttonGroup
-						- if (everyauth.loggedIn)
+						- if (loggedIn)
 							a.account.toggleBlock(href="#navAccounts") profile
 						-else 
 							a.login.toggleBlock(href="#navLogin") Sign In
 					
 					a.filter.button.toggleBlock(href="#navFilters") filter
 				
-				- if (everyauth.loggedIn)
+				- if (loggedIn)
 					div#navAccounts.block
 							a.logout(href="/logout") Sign out
-							p= JSON.stringify(everyauth.user)
+							//p= JSON.stringify(user)
 
 				-else
 					div#navLogin.block
@@ -93,9 +93,9 @@ section#OnsideApp
 
 
 // templates
-!=partial('templates/general')
-!=partial('templates/articles')
-!=partial('templates/articleDetail')
+!=partial('partials/general')
+!=partial('partials/articles')
+!=partial('partials/articleDetail')
 
 
 script 

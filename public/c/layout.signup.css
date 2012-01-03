@@ -12,18 +12,157 @@
 /* ==|== typography ====================================================== */
 @import "/c/type.css";
 
-#container {position:absolute; display:block; top:0; left:0; right:0; bottom:0;}
-#container .box {position:relative; width:300px; padding:0; margin:30px auto 0;}
-	h1 {color:#000; padding:20px; color:#0f9301; text-transform: uppercase; font-weight:normal; text-align: center; font-size:4em}
-	h1 span {position:relative; display:inline-block; font-size:0.5em; line-height:1em; text-transform:lowercase; color:#333; padding:0 0 0 10px; text-align:left}
-	.inner {padding:20px 0; background:#000; background:rgba(0,0,0,0.8); border-radius:4px; color:#fff}
+a, a:visited { color: #fff; text-decoration:none}
+a:hover { color: #fff; }
+a:focus {}
+a:hover, a:active {}
+
+body {background:#000; color:#fff; font-family:Geneva, Tahoma, Verdana, sans-serif}
+.inner {width:1024px; margin:0px auto}
+
+html {overflow:auto}
+nav {position:relative; display:block; border-bottom:1px solid #232323;}
+header {position:relative; display:block; margin-bottom:-25px;}
+#reasons {position:relative; display:block; padding-top:120px;}
+#support {position:relative}
+	#challenge {position:relative; display:table-cell; width:66%}
+	#share {position:relative; display:table-cell;}
+footer {position:relative}
+
+.inner {position:relative; z-index:2}
+header:before, section:before, footer:before {position:absolute; left:0; top:0; right:0; bottom:0; z-index:1; content:""; background:url(/i/sprites/noise.png) 0 0 repeat; opacity:0.05;}
+
+h1 {font-size:1.7em; font-weight:normal; color:#ccc; line-height:1.6em;}
+p {font-size:1.3em; line-height:1.6em; color:#808080; padding-bottom:10px}
+
+.forIE6 {display:none}
+.ie6 .forIE6 {display:block}
+.ie6 .notForIE6 {display:none}
+
+
+/* ==|== top navigation ====================================================== */
+nav {border-bottom: 1px solid #2B2B2B; text-align:right;}
+nav a {position:relative; display:inline-block; padding:8px 18px; margin:6px 0; border-left:1px solid #2A2B2D; font-size:1.3em; color:#fff}
+
+/* ==|== header ====================================================== */
+header article {position:relative; display:inline-block;}
+
+#devices {width:55%; min-height:350px}
+#devices:after {background: none repeat scroll 0 0 #FFFFFF; border-radius: 50%; bottom: 150px; box-shadow: 0 0 99px 70px #FFFFFF; content: ""; height: 120px; left: 130px; opacity: 0.6; position: absolute; width: 300px; z-index: -1;}
+
+.d_iphone, .d_ipad, .d_desktop {
+	position:absolute; display:block; bottom:0; left:0; text-indent: -999px; overflow:hidden; z-index:1;
+	-webkit-box-reflect: below 1px -webkit-gradient(linear, left bottom, left top, from(rgba(255,255,255,0.5)), to(transparent)); 
+	}
+
+.d_iphone	{background:url(/i/content/signup/iphone.png) 0 0 no-repeat; width:72px; height:158px; z-index:3; bottom:-70px; left:20px}
+.d_ipad		{background:url(/i/content/signup/ipad.png) 0 0 no-repeat; width:316px; height:285px; z-index:2; bottom:-100px; left:55px}
+.d_desktop	{background:url(/i/content/signup/imac.png) 0 0 no-repeat; width:557px; height:432px; bottom:-70px}
 	
-	p {padding:0 20px 10px}
-	h2 {padding: 10px 20px; text-align: center; background:#000; color:#fff; margin-bottom:10px}
-	a {
-		position:relative; display:inline-block; padding:7px 10px 5px; border-radius:4px; background:#0f9301; margin:10px 0 0 28px; text-decoration:none;
-		box-shadow:inset 0 4px 8px rgba(255,255,255,0.6), inset 0 -1px 5px rgba(0,0,0,0.4), inset 0 -1px 0px rgba(255,255,255,0.3), 2px 2px 5px rgba(0,0,0,0.6);
-		}
-		a:hover {box-shadow:none}
-		a, a:visited, a:hover, a:focus, a:hover, a:active { outline:0 none; color:#fff}
-	a:hover {}
+#signupOpts {width:44%; overflow:hidden; min-height:350px; float:right}
+#signupOpts:after {background: #FFFFFF; border-radius: 50% 50%; box-shadow: 0 0 100px 80px #FFFFFF; content: ""; height: 20px; left: 180px; opacity: 0.3; position: absolute; top: -50px; width: 170px; z-index: -1;}
+
+	#signupOpts hgroup h1 {position:relative; display:block; width:576px; height:53px; margin:30px 0 15px 0; background:url(/i/sprites/signup/logo.gif) 0 0 no-repeat; text-indent:-999px; overflow:hidden;}
+	#signupOpts hgroup h2 {font-size:1.8em}
+	#signupOpts hgroup p {font-size:1.8em; color:#88B208; margin-bottom:20px}
+
+#signupOpts article {position:relative; display:block; border-radius:5px; background:#323232; width:auto}
+
+	#signupOpts article h1 {padding:8px 25px; font-size:2.3em; color:#9FD300; box-shadow:0 1px 0 #222, 0 2px #414141}
+	#signupOpts article p {padding:10px 25px;}
+	
+	#signupOpts article a {position:relative; display:inline-block; height:48px; line-height:48px; border-radius:5px; padding-right:10px; font-size:1.2em; text-transform: uppercase; margin:0 0 1% 1%; width:46%}
+		#signupOpts article a.joinF {background: #49628e; /* Old browsers */background: -moz-linear-gradient(top,  #49628e 0%, #49628e 50%, #345081 50%, #345081 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#49628e), color-stop(50%,#49628e), color-stop(50%,#345081), color-stop(100%,#345081)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* IE10+ */background: linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* W3C */}
+		#signupOpts article a.joinT {background: #36cef0; /* Old browsers */background: -moz-linear-gradient(top,  #36cef0 0%, #36cef0 50%, #04c2ec 51%, #04c2ec 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#36cef0), color-stop(50%,#36cef0), color-stop(51%,#04c2ec), color-stop(100%,#04c2ec)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* IE10+ */background: linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* W3C */}
+		
+	#signupOpts article a:before {content:""; position:relative; display:inline-block; width:40px; height:48px; background:url(/i/sprites/signup/icons.png) 0 0 no-repeat; vertical-align:top; margin-right:10px}
+		#signupOpts article a.joinF:before {background-position:-606px 0; box-shadow:1px 0 0 rgba(0,0,0,0.7), 2px 0 0 rgba(255,255,255,0.3);}
+		#signupOpts article a.joinT:before {background-position:-653px 0; box-shadow:1px 0 0 rgba(0,0,0,0.5), 2px 0 0 rgba(255,255,255,0.5);}
+
+	#signupOpts form {position:relative}
+	#signupOpts input.txt {position:relative; margin:0 2%; width:96%; text-indent:2%; height:40px; font-size:1.6em; border-radius:5px 7px 7px 5px; border:0px none; z-index:2}
+	#signupOpts input.submit {position:absolute; background: #777; border: 0 none; border-radius: 0 5px 5px 0; color: #9FD300; font-size: 1.6em; height: 42px; right: 1.6%; top:0; padding: 0 4%; z-index: 3; box-shadow:-1px 0 0 #555}
+
+/* ==|== #reasons ====================================================== */
+#reasons {background:#191919;}
+#reasons article {position:relative; display:inline-block; width:33%; vertical-align: top; padding-bottom:20px}
+	#reasons article h1 {padding-left:48px}
+	#reasons article p {padding-left:48px}
+
+#reasons article:before {content:""; position:absolute; display:block; width:50px; height:50px; background:url(/i/sprites/signup/icons.png) 0 0 no-repeat;}
+	#reasons .r_personal:before {background-position:-250px 0}
+	#reasons .r_news:before {background-position:-200px 0}
+	#reasons .r_live:before {background-position:-100px 0}
+	#reasons .r_discuss:before {background-position:-150px 0}
+	#reasons .r_allSport:before {background-position:0 0}
+	#reasons .r_free:before {background-position:-50px 0}
+	
+	
+	
+/* ==|== #support ====================================================== */
+#support {padding:20px 0; background:#222; position:relative}
+#support article {padding:0 20px 0 48px;}
+
+/* ==|== #challenge ====================================================== */
+#challenge h1 {color:#87B207;}
+#challenge ol {color:#808080; font-size:1.3em; list-style-position: inside; padding:0; line-height: 1.6em}
+#challenge ol li {padding:0 0 0.25em}
+
+#challenge img {position:relative; float:right; margin:0 30px 20px 50px}
+
+/* ==|== #share ====================================================== */
+#share {border-left: 1px dotted #fff}
+#share h1 {position:relative; color:#04C1EB; height:30px;}
+	#share h1:before {position:relative; display:inline-block; width:36px; height:30px; background:#fff; content:""; background:url(/i/sprites/signup/icons.png) -313px -13px no-repeat; vertical-align:top;}
+	#share h1 a {letter-spacing:0.05em}
+	#share h1 a span {color:#aaa; padding:0 1px}
+#share ul {list-style:none; padding:0; margin:20px 0 40px 0 }
+#share li {position:relative; display:block; background:#333; padding:15px 20px; margin:0 0 20px 0; border-radius:4px; font-size:1.1em; color:#808080; line-height:1.4em}
+	#share li:after {position:absolute; display:block; z-index:2; bottom:-10px; left:20px; width:0px; height:0px; border:10px solid transparent; border-left-color:#333; content:"";}
+
+#share h2 {border-top:1px dotted #fff; padding:20px 0}
+#share .share {position:relative; display:inline-block; width:76px; height:38px; margin-right:5px; background-image:url(/i/sprites/signup/icons.png); background-repeat:no-repeat; text-indent:-999px; overflow:hidden}
+	#share .SG {background-position:-350px 0}
+	#share .ST {background-position:-522px 0}
+	#share .SF {background-position:-436px 0}
+
+
+/* ==|== footer ====================================================== */
+footer {padding:10px 0}
+footer small {font-size:1.1em; padding-left:48px}
+
+/* ==|======================================================== */
+/* ==|== media queries ====================================================== */
+/* ==|======================================================== */
+@media only screen and (max-width: 1065px) {
+	.inner {width:100%;}
+	#signupOpts article {margin:0 10px}
+	#signupOpts article a {width:95%}
+}
+
+@media only screen and (max-width: 930px) {
+	#devices {min-height:400px}
+	#signupOpts hgroup {padding-left:20px}
+	#signupOpts, #devices {float:none; width:100%}	 
+	#challenge img {max-width:30%}
+}
+
+@media only screen and (max-width: 780px) {
+	#reasons article {width:48%}
+	#share, #challenge {width:auto; display:block; clear:both}
+	#support #share {border-left:0px none; border-top:1px dotted #fff; padding: 20px 0 0 0; margin:0 20px 0 48px}
+}
+
+@media only screen and (max-width: 557px) {
+	#devices {min-height:200px}
+	#reasons article {width:96%}
+	.d_desktop {display:none}
+	#devices:after {display:none}
+}
+@media only screen and (max-width: 410px) {
+	#signupOpts hgroup h1 {width:100%; background-size:100%}
+}
+@media only screen and (max-width: 410px) {
+	.d_ipad {width:100%; left:0}
+	.d_iphone {bottom:-100px}
+}

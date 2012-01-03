@@ -23,7 +23,7 @@ var express			= require('express')
 	, login		= require('./lib/login').all(conf)
 	
 	// Email
-	// , email 		= require('./lib/email')
+	, email 		= require('./lib/email')
 	;
 
 
@@ -55,14 +55,14 @@ app.configure(function(){
 });
 
 app.configure('development', function(){
-	process.env.NODE_ENV = 'development';
 	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-	process.env.NODE_ENV = 'staging';
-	app.use(express.errorHandler()); 
+	app.use(express.logger());
+	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	//app.use(express.errorHandler()); 
 });
 
 
@@ -78,12 +78,17 @@ app.get('*', function(req, res, next){
 	}
 }); 
 
+app.get('/signup', function(req,res){
+	res.render('pages/signup.ejs', { title: 'Onside Signup', cssPath: '.signup', jsPath:'.signup', loggedIn:true });
+});
+
+
 app.get('/', routes.index);
 app.get('/demo', routes.demo1);
 app.get('/demo2', routes.demo2);
 
 app.get('/login', function(req,res){
-	res.render('login', { title: 'Log In', cssPath: '' });
+	res.render('pages/login', { title: 'Log In', cssPath: '' });
 });
 
 app.get('/addcontent', routes.cms);

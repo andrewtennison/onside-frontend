@@ -5,16 +5,15 @@ var rest 		= require('restler');
 	Config 		= require('../lib/conf'),
 	conf 		= new Config();
 
-
-
 var preload = function(req, path, callback){
 	// remove this return - for test purposes until fixed
 	//return '';
 	
 	var content = {},
 		i = 0,
-		timer = setInterval ( onComplete, 100 );
-		user = (req.user)? '?user=' + req.user.id : '';
+		timer = setInterval ( onComplete, 100 ),
+		user = req.user,
+		userString = (user)? '?user=' + user.id : '';
 
 	var getFirstArticle = function( channel, index, length, callback ){
 		var url = conf.apiPath + '/article?channel='+channel.id+'&limit=1',
@@ -31,13 +30,12 @@ var preload = function(req, path, callback){
 				req.defaultArticle = undefined;
 				callback(req);
 			});
-		
 	};
 
 	
 	// get channels
-	console.log(conf.apiPath + '/channel' + user)
-	rest.get(conf.apiPath + '/channel' + user)
+	console.log(conf.apiPath + '/channel' + userString)
+	rest.get(conf.apiPath + '/channel' + userString)
 		.on('success', function(data) {
 			var channels = data.resultset.channels,
 				l = channels.length,
@@ -50,7 +48,7 @@ var preload = function(req, path, callback){
 					getFirstArticle(channels[ii], ii, l, function(req){
 						channels[req.index].defaultArticle = req.defaultArticle;
 						j += 1;
-						if(j === l ){
+						if( j === l ){
 							console.log('Preload of article for each channel complete')
 							content.channels = JSON.stringify(channels);
 							content.channelsLoaded = true;
@@ -67,16 +65,16 @@ var preload = function(req, path, callback){
 		.on('error', function() { return content.channels = undefined});
 
 	// get events
-	console.log(conf.apiPath + '/event' + user)
-	rest.get(conf.apiPath + '/event' + user)
+	console.log(conf.apiPath + '/event' + userString)
+	rest.get(conf.apiPath + '/event' + userString)
 		.on('success', function(data) { content.events = (data.resultset.events.length >= 1)? JSON.stringify(data.resultset.events) : false })
 		.on('error', function() { content.events = undefined})
 		.on('complete', function(){ content.eventsLoaded = true });
 
 	// get searches if user exist
-	console.log(conf.apiPath + '/search/list' + user)
-	if(req.user) {
-		rest.get(conf.apiPath + '/search/list' + user)
+	console.log(conf.apiPath + '/search/list' + userString)
+	if(user) {
+		rest.get(conf.apiPath + '/search/list' + userString)
 			.on('success', function(data) { return content.searches = (data.resultset.searches.length >= 1)? JSON.stringify(data.resultset.searches) : false })
 			.on('error', function() { return content.channels = undefined})
 			.on('complete', function(){ content.searchesLoaded = true });
@@ -84,6 +82,7 @@ var preload = function(req, path, callback){
 	
 	function onComplete(){
 		if(content.channelsLoaded && content.eventsLoaded && content.searchesLoaded){
+			console.log('Preloading complete')
 			clearInterval( timer );
 			callback(content);
 		} else if(i === 3000){
@@ -98,41 +97,44 @@ var preload = function(req, path, callback){
 	
 };
 
-exports.index = function(req, res){
-	console.log('routes.index, if user enabled + logged in, req.user = ');
-	console.log(req.user);
 
-	if(req.loggedIn && req.user.enabled === '1'){
-		preload(req, '', function(content){
-			res.render('index', {
-				title: 'Onside', 
-				cssPath: '',
-				jsPath:'',
-				channels: content.channels, 
-				events: content.events,
-				searches: content.searches
+exports.index = function(req, res){
+	var user = req.user;
+	var preload = true;
+	
+	if(req.loggedIn && user.enabled === '1'){
+		console.log('routes.index, user enabled + logged in, preload content, req.user = ');
+
+		if(preload){
+			preload(req, '', function(content){
+				console.log('res.render with preload')
+				res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', channels: content.channels, events: content.events, searches: content.searches });
 			});
-		});
+		}else{
+			console.log('res.render NO preload')
+			res.render('pages/index', {title: 'Onside', cssPath: '', jsPath:'', channels: [], events: [], searches: [] });
+		}
 		
-	} else if(req.loggedIn && req.user.enabled === '0'){
-		res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
+	} else if(req.loggedIn && user.enabled === '0'){
+		console.log('routes.index, user NOT enabled + logged in');
+		console.log(user);
+		res.render('pages/signup_complete.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
 	} else {
-		res.render('betaSignup', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:false })
+		res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:false })
 	}
 };
 
 exports.demo1 = function(req, res){
-  res.render('demo1', { title: 'Onside', cssPath: '.demo1', jsPath:'' })
+  res.render('pages/demo1', { title: 'Onside', cssPath: '.demo1', jsPath:'' })
 };
 
 exports.demo2 = function(req, res){
-  res.render('demo1', { title: 'Onside', cssPath: '.demo2', jsPath:'' })
+	res.render('pages/demo1', { title: 'Onside', cssPath: '.demo2', jsPath:'' })
 };
 
 
 function callApi(req, res, action, authRequired, callback){
 	var response = {};
-	
 	if(authRequired && !req.loggedIn){
 		response.error = 'User must be logged in to perform this action';
 		console.err('user must be auth')
@@ -282,7 +284,7 @@ exports.getDetailApi = function(req,res){
 
 exports.cms = function(req,res){
 	if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
-		res.render('addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
+		res.render('pages/addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
 	} else {
 		res.redirect('/', 401);
 	}

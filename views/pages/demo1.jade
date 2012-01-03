@@ -79,7 +79,13 @@ section#OnsideApp
 
 
 // templates
-!=partial('templates/general')
-!=partial('templates/articles')
-!=partial('templates/articleDetail')
+!=partial('partials/general')
+!=partial('partials/articles')
+!=partial('partials/articleDetail')
 
+script 
+	on.preload = {
+		channels: !{channels},
+		events: !{events}, 
+		searches: !{searches}
+	};
