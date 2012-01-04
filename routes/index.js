@@ -5,10 +5,7 @@ var rest 		= require('restler');
 	Config 		= require('../lib/conf'),
 	conf 		= new Config();
 
-var preload = function(req, path, callback){
-	// remove this return - for test purposes until fixed
-	//return '';
-	
+var preload = function(req, callback){
 	var content = {},
 		i = 0,
 		timer = setInterval ( onComplete, 100 ),
@@ -37,6 +34,7 @@ var preload = function(req, path, callback){
 	console.log(conf.apiPath + '/channel' + userString)
 	rest.get(conf.apiPath + '/channel' + userString)
 		.on('success', function(data) {
+			console.log('////////////////////// success channel ')
 			var channels = data.resultset.channels,
 				l = channels.length,
 				ii = 0,
@@ -44,7 +42,6 @@ var preload = function(req, path, callback){
 				
 			if(l >= 1){
 				for(ii; ii < l; ii++){
-					
 					getFirstArticle(channels[ii], ii, l, function(req){
 						channels[req.index].defaultArticle = req.defaultArticle;
 						j += 1;
@@ -62,7 +59,7 @@ var preload = function(req, path, callback){
 				return content.channels = false;
 			}
 		})
-		.on('error', function() { return content.channels = undefined});
+		.on('error', function() { return content.channels = undefined; });
 
 	// get events
 	console.log(conf.apiPath + '/event' + userString)
@@ -85,7 +82,7 @@ var preload = function(req, path, callback){
 			console.log('Preloading complete')
 			clearInterval( timer );
 			callback(content);
-		} else if(i === 3000){
+		} else if(i === 30000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			callback(content);
@@ -97,8 +94,68 @@ var preload = function(req, path, callback){
 	
 };
 
+var checkAuth = function(opts){
+	var user = opts.req.user,
+		loggedIn = opts.req.loggedIn,
+		stage = false;
+
+	// logged in
+	if(!loggedIn) {
+		opts.fail();
+		return;
+	};
+	
+	switch(user.enabled){
+		case '0':			// default - user new, not yet invited
+			opts.fail(loggedIn);
+			return;
+		case '1':						// user has been sent invite - more info/action required
+		case '2':						// user has visited site and completed required signup tasks
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+			stage = 'stage' + user.enabled;
+			break;
+		case '9':						// user is suspended
+			(opts.reject)? opts.reject() : res.render('pages/suspended.ejs');
+			return;
+		
+		default:
+			console.log('routes.checkAuth - user.enabled unknow =' + user.enabled)
+			opts.fail();
+			return;
+	};
+	
+	if(opts.preload){
+		preload(opts.req, function(json){
+			console.log('/////////////////////////// json');
+			console.log(json);
+			var content = {channels: json.channels, events: json.events, searches: json.searches};
+			( opts[stage] )? opts[stage](content) : opts.pass(content);
+		});
+	}else{
+		var content = {channels: [], events: [], searches: []};
+		( opts[stage] )? opts[stage](content) : opts.pass(content);
+	}
+}
 
 exports.index = function(req, res){
+	checkAuth({
+		req: req,
+		res: res,
+		preload: true,
+		pass: function(content){
+			res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', channels: content.channels, events: content.events, searches: content.searches });
+		},
+		fail: function(loggedIn){
+			res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:loggedIn })
+		}
+		// other options = ,rejected:function(){}, stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
+	});
+/*
 	var user = req.user;
 	var preload = true;
 	
@@ -122,6 +179,7 @@ exports.index = function(req, res){
 	} else {
 		res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:false })
 	}
+	*/
 };
 
 exports.demo1 = function(req, res){
@@ -270,7 +328,7 @@ exports.getDetailApi = function(req,res){
 			setAuthor();
 			clearInterval( timer );
 			res.json(content)
-		} else if(i === 3000){
+		} else if(i === 30000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			res.send('load detailed failed, request timed out')
@@ -284,7 +342,7 @@ exports.getDetailApi = function(req,res){
 
 exports.cms = function(req,res){
 	if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
-		res.render('pages/addcontent', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
+		res.render('pages/cms', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
 	} else {
 		res.redirect('/', 401);
 	}

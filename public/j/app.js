@@ -41,9 +41,6 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// If JSON is preloaded use it, else fetch from server
 		on.preload = window.on.preload || {};
-		// console.info('preload channels')
-		// console.log(on.preload.channels)
-		// console.log(on.preload.channels.resultset.channels)
 
 		// on.m.app.channels.reset(on.preload.channels)
 		; (on.preload.channels !== undefined)?	on.m.app.channels.reset(on.preload.channels)	: on.m.app.channels.fetch(); 

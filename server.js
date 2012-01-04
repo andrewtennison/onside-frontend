@@ -43,7 +43,7 @@ app.configure(function(){
 	app.use(express.cookieParser());
 	app.use(express.session({ 
 		secret	: "testsecret",
-		store	: new RedisStore({host:'127.0.0.1', port:'6379'}) 
+		store	: new RedisStore({host:'127.0.0.1', port:'6379'})
 	}));
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
