@@ -1,0 +1,72 @@
+<!-- // ARTICLE TEMPLATES /////////////////////////////////////////// -->
+
+
+<script id="articleDetail" class="tmpl" type="text/template">
+	<header>
+		<h1><@= title @></h1>
+	</header>
+	<nav>
+		<a class="close button" href="#">close</a>
+		<span class="buttonGroup">
+			<a class="share" href="#">share</a>
+			<a class="save" href="#">save</a>
+		</span>
+	</nav>
+	
+	<@ if(images) { @>
+		<img src='<@= images @>' />
+	<@ } @>
+	
+	<div><@= extended @></div>
+</script>
+
+<script id="articleDetail_youtube" class="tmpl" type="text/template">
+	<object style="height: 245; width: 373">
+	<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+</script>
+
+<script id="articleDetail_iframe" class="tmpl overlay" type="text/template">
+	<header>
+		<h1><@= title @></h1>
+	</header>
+	<nav>
+		<a class="close button" href="#">close</a>
+		<span class="buttonGroup">
+			<a class="share" href="#">share</a>
+			<a class="save" href="#">save</a>
+		</span>
+	</nav>
+
+	<div class="iframeWrap">
+		<iframe src="<@= link @>" />
+	</div>
+</script>
+
+<script id="articleDetail_twitter" class="tmpl overlay" type="text/template" >
+	<header>
+		<h1>Twitter @ (need name)</h1>
+	</header>
+	<nav>
+		<a class="close button" href="#">close</a>
+		<span class="buttonGroup">
+			<a class="share" href="#">share</a>
+			<a class="save" href="#">save</a>
+		</span>
+	</nav>
+
+	<div class="pad">
+		<div class="original">
+			<img src="<@= images @>" />
+			<p><@= content @></p>
+			<cite><@= author @></cite>
+		</div>
+		<a class="reply" href="#">@reply</a><!-- :: check if user is twit auth, if not login and return to here-->
+		
+		<ul class="older"></ul>
+	</div>
+</script>
+
+
+
+

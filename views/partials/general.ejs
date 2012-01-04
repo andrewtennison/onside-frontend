@@ -1,0 +1,77 @@
+<!-- // GENERAL TEMPLATES /////////////////////////////////////////// -->
+
+
+<!-- // NAVIGATION TEMPLATES // -->
+
+<script id="channelItemTemplate" class="tmpl" type="text/template">
+	<a href="#">
+		<@ if(img) { @><img src="<@= img @>" /><@ } @>
+		<h1><@= name @></h1>
+	</a>
+</script>
+
+<script id="eventItemTemplate" class="tmpl" type="text/template">
+	<a href="#">
+		<img src="/i/placeholder/listIcon2.png" />
+		<h1><@= name @></h1>
+	</a>
+</script>
+
+<script id="savedSearchTemplate" class="tmpl" type="text/template">
+	<a href="#">
+		<h1><@= name @></h1>
+	</a>
+</script>
+
+
+<!-- // DETAIL ITEM TEMPLATES // -->
+<script id="detailTemplate" class="tmpl" type="text/template">
+	<header>
+		<h1> 
+			<img src="/i/placeholder/listIcon2.png" />
+			<@= title @>
+		</h1>
+		<nav>
+			<span class="buttonGroup">
+				<a class="refresh" href="#">refresh</a>
+				<a class="save" href="#">save</a>
+			</span>
+		</nav>
+		<span />
+	
+	<div class="contentWrapper"></div>
+</script>
+
+<script id="channelDetailItemTemplate" class="tmpl" type="text/template">
+	<h1><@= name @></h1>
+</script>
+	
+<script id="channelDetailHomeItemTemplate" class="tmpl" type="text/template">
+	<h1><@= name @></h1>
+	<h2><@= defaultArticle.title @></h2>
+	<p><@= defaultArticle.publish @></p>
+</script>
+
+<script id="eventDetailItemTemplate" class="tmpl" type="text/template">
+	<h1><@= name @></h1>
+	<p><@= sport @> / <@= type @></p>
+</script>
+
+// COMMENT TEMPLATES //
+<script id="commentTemplate" class="tmpl" type="text/template">
+	<p><@= comment @></p>
+	<@ if(user) { @> 
+		<a href='/user/<@= user @>' > user id: <@= user @> </a>
+	<@ } @>
+	<@ if(added) { @>
+		<time> <@= added @> </time>
+	<@ } @>
+	
+	<nav>
+		<a class="reply" href="#">reply</a>
+	</nav>
+</script>
+
+
+
+

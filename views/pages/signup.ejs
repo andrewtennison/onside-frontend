@@ -17,6 +17,12 @@
 				<p>Available to all early 2012</p>
 			</hgroup>
 			
+			<% if(loggedIn) { %>
+			<article>
+				<h1><%= everyauth.user.name %> - Thanks for signing up</h1>
+				<p>We will send you an email with your invitation once we release to more people.</p>
+			</article>
+			<% } else { %>
 			<article>
 				<h1>Sign up now</h1>
 				<p>Join our invite list  to be the first to experience the future of sports news.</p>
@@ -30,10 +36,13 @@
 					<a class="joinF" href="/auth/facebook">Sign up with facebook</a>
 					<a class="joinT" href="/auth/twitter">Signup with twitter</a>
 				</div>
+
 				<div class="forIE6">
 					<p>You appear to be using IE6. This now 11 years old and is not supporoted by Onside, please signup using a more recent browser such as <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/new/">firefox</a>.</p>
 				</div>
 			</article>
+			<% } %>
+
 		</article>
 		<article id="devices">
 			<div class="d_iphone">available on mobile devices</div>

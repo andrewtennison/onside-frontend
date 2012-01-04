@@ -1,0 +1,60 @@
+<!-- // ARTICLE TEMPLATES /////////////////////////////////////////// -->
+
+
+<script id="articleTemplate" class="tmpl" type="text/template">
+	<div class="inner">
+		<nav> 
+			<a class="filter" href="#">[f]</a>
+			<a class="save" href="#">[*]</a>
+			<a class="comment" href="#">[c]</a>
+		</nav>
+		
+		<section class="filters">
+			<h1>Filter content to show more:</h1>
+			<a class="f_type" href="#">type <span><@= type @></span></a>
+			<a class="f_source" href="#" >from <span><@= source @></span></a>
+			<a class="f_keywords" href="#">about <span><@= keywords @></span></a>
+			<a class="f_author" href="#">by <span><@= author @></span></a>
+		</section>
+
+		<h2><@= title @></h2>
+		<div class="content">
+			<@= content @>
+		</div>
+			
+		<@ if(images) { @>
+			<img src='<@= images @>' />
+		<@ } @>
+		<@ if(publish) { @>
+			<time><@= publish @></time>
+		<@ } @>
+		<a class="open button" href='<@= link @>'>read more: <@= source @></a>
+</script>
+
+<script id="articleTemplate-twitter" class="tmpl" type="text/template">
+	<div class="pad">
+		<p><@= content @></p>
+		<cite><@= author @></cite>
+		<a class="open button" href='<@= link @>'>see more tweets</a>
+	</div>
+</script>
+
+<script id="articleTemplate-youtube" class="tmpl" type="text/template">
+	<h2><@= author @>: <@= title @></h2>
+	<p><@= content @></p>
+	<input type="hidden" value="<@= link @>" name="videoData" />
+	<@ if(publish) { @>
+		<time><@= publish @></time>
+	<@ } @>
+	<a class="open button" href='<@= link @>'>watch video</a>
+</script>
+
+<script id="articleDetailTemplate-youtube" class="tmpl" type="text/template">
+	<!-- img src="http://img.youtube.com/vi/<@= videoId@>/0.jpg" /-->
+	<!--iframe class="youtube-player" type="text/html" width="373" height="220" src="http://www.youtube.com/embed/<@= videoId@>" frameborder="0"></iframe-->
+	<object style="height: 245; width: 373">
+	<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+	<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+</script>
+
+

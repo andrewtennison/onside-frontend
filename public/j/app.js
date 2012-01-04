@@ -41,11 +41,12 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// If JSON is preloaded use it, else fetch from server
 		on.preload = window.on.preload || {};
+		var p = on.preload; 
 
 		// on.m.app.channels.reset(on.preload.channels)
-		; (on.preload.channels !== undefined)?	on.m.app.channels.reset(on.preload.channels)	: on.m.app.channels.fetch(); 
-		; (on.preload.events !== undefined)?	on.m.app.events.reset(on.preload.events)		: on.m.app.events.fetch(); 
-		; (on.preload.searches !== undefined)?	on.m.app.searches.reset(on.preload.searches)	: on.m.app.searches.fetch(); 
+		; (p.channels === undefined || p.channels.length === 0)? 	on.m.app.channels.fetch() 	: on.m.app.channels.reset(on.preload.channels); 
+		; (p.events === undefined || p.events.length === 0)?		on.m.app.events.fetch() 	: on.m.app.events.reset(on.preload.events); 
+		; (p.searches === undefined || p.searches.length === 0)?	on.m.app.searches.fetch()	: on.m.app.searches.reset(on.preload.searches); 
 	},
 	
 	home: function(){

@@ -95,19 +95,22 @@ var preload = function(req, callback){
 };
 
 var checkAuth = function(opts){
-	var user = opts.req.user,
+	if(opts.req == undefined || opts.res == undefined) { console.log('routes.index.checkAuth - req/res not defined'); return; };
+
+	var user = opts.req.user || {},
+		res = opts.res,
 		loggedIn = opts.req.loggedIn,
 		stage = false;
 
 	// logged in
 	if(!loggedIn) {
-		opts.fail();
+		opts.fail(res,loggedIn);
 		return;
 	};
 	
 	switch(user.enabled){
 		case '0':			// default - user new, not yet invited
-			opts.fail(loggedIn);
+			opts.fail(res,loggedIn);
 			return;
 		case '1':						// user has been sent invite - more info/action required
 		case '2':						// user has visited site and completed required signup tasks
@@ -120,74 +123,68 @@ var checkAuth = function(opts){
 			stage = 'stage' + user.enabled;
 			break;
 		case '9':						// user is suspended
-			(opts.reject)? opts.reject() : res.render('pages/suspended.ejs');
+			opts.reject(res,loggedIn);
 			return;
 		
 		default:
 			console.log('routes.checkAuth - user.enabled unknow =' + user.enabled)
-			opts.fail();
+			opts.fail(res,loggedIn);
 			return;
 	};
 	
 	if(opts.preload){
 		preload(opts.req, function(json){
-			console.log('/////////////////////////// json');
-			console.log(json);
 			var content = {channels: json.channels, events: json.events, searches: json.searches};
-			( opts[stage] )? opts[stage](content) : opts.pass(content);
+			( opts[stage] )? opts[stage](res,loggedIn,content) : opts.pass(res,loggedIn,content);
 		});
 	}else{
-		var content = {channels: [], events: [], searches: []};
-		( opts[stage] )? opts[stage](content) : opts.pass(content);
+		var content = {channels: undefined, events: undefined, searches: undefined};
+		( opts[stage] )? opts[stage](res,content) : opts.pass(res,loggedIn,content);
 	}
 }
 
-exports.index = function(req, res){
-	checkAuth({
-		req: req,
-		res: res,
-		preload: true,
-		pass: function(content){
-			res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', channels: content.channels, events: content.events, searches: content.searches });
-		},
-		fail: function(loggedIn){
-			res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:loggedIn })
-		}
-		// other options = ,rejected:function(){}, stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
-	});
-/*
-	var user = req.user;
-	var preload = true;
-	
-	if(req.loggedIn && user.enabled === '1'){
-		console.log('routes.index, user enabled + logged in, preload content, req.user = ');
+// Base object for checkAuth function
+baseAuthObject = {
+	pass	: function(res, loggedIn, content){ res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }); },
+	fail	: function(res, loggedIn){ res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:loggedIn }) },
+	reject	: function(res){  res.render('pages/suspended.ejs'); },
+	preload	: true
+	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
+}
 
-		if(preload){
-			preload(req, '', function(content){
-				console.log('res.render with preload')
-				res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', channels: content.channels, events: content.events, searches: content.searches });
-			});
-		}else{
-			console.log('res.render NO preload')
-			res.render('pages/index', {title: 'Onside', cssPath: '', jsPath:'', channels: [], events: [], searches: [] });
-		}
-		
-	} else if(req.loggedIn && user.enabled === '0'){
-		console.log('routes.index, user NOT enabled + logged in');
-		console.log(user);
-		res.render('pages/signup_complete.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:true })
-	} else {
-		res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:false })
-	}
-	*/
+exports.index = function(req, res){
+	baseAuthObject.req = req;
+	baseAuthObject.res = res;
+	
+	// for new dev
+	baseAuthObject.preload = false;	
+	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/index-1.0.ejs', { title: 'Onside', cssPath: '.index-1.0', jsPath:'', loggedIn:loggedIn, channels: [], events: [], searches: [] }) }; 
+	checkAuth( baseAuthObject );
+	//baseAuthObject.pass(res, false)
 };
 
 exports.demo1 = function(req, res){
-  res.render('pages/demo1', { title: 'Onside', cssPath: '.demo1', jsPath:'' })
+	baseAuthObject.req = req;
+	baseAuthObject.res = res;
+	baseAuthObject.preload = false;
+	baseAuthObject.pass = function(res){ res.render('pages/demo1', { title: 'Onside', cssPath: '.demo1', jsPath:'', channels: [], events: [], searches: [] }) }; 
+	checkAuth( baseAuthObject );
 };
 
 exports.demo2 = function(req, res){
-	res.render('pages/demo1', { title: 'Onside', cssPath: '.demo2', jsPath:'' })
+	baseAuthObject.req = req;
+	baseAuthObject.res = res;
+	baseAuthObject.preload = false;
+	baseAuthObject.pass = function(res){ res.render('pages/demo1', { title: 'Onside', cssPath: '.demo2', jsPath:'', channels: [], events: [], searches: [] }) }; 
+	checkAuth( baseAuthObject );
+};
+
+exports.demo3 = function(req, res){
+	baseAuthObject.req = req;
+	baseAuthObject.res = res;
+	baseAuthObject.preload = false;
+	baseAuthObject.pass = function(res){ res.render('pages/demo3', { title: 'Onside', cssPath: '.demo3', jsPath:'', channels: [], events: [], searches: [] }) }; 
+	checkAuth( baseAuthObject );
 };
 
 

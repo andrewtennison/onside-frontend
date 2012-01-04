@@ -1,0 +1,108 @@
+<section id="OnsideApp">
+	<div id="main" role='main'>
+		<section class="page" id="listGroups">
+			<header>
+				<hgroup>
+					<% if (loggedIn) { %>
+						<h1><%= user.name %></h1>
+					
+						<% if (user.enabled === '1' && user.admin === '1') { %>
+						<a href="/addcontent">site admin</a>
+						<% } %>
+						
+					<% } else { %>
+						<h1><%= title %></h1>
+					<% } %>
+				</hgroup>
+
+				<nav>
+					<span class="buttonGroup">
+						<% if (loggedIn) { %>
+						<a class="account toggleBlock" href="#navAccounts">profile</a>
+						<% } else { %> 
+						<a class="login toggleBlock" href="#navLogin">Sign In</a>
+						<% } %>
+					</span>
+					<a class="filter button toggleBlock" href="#navFilters">filter</a>
+				</nav>
+
+				<% if (loggedIn) { %>
+				<div id="navAccounts" class="block">
+					<a class="logout" href="/logout">Sign out</a>
+					<p><%= JSON.stringify(everyauth) %></p>
+				</div>
+
+				<% } else { %>
+				<div id="navLogin" class="block">
+					<a href='/register'>Register</a>
+					<a href='/login'>Login with Password</a>					
+					<a class="fb_button_medium" href='/auth/facebook'><span id="fb_login_text" class="fb_button_text">Connect with Facebook</span></a>
+					<a href='/auth/twitter'><img src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png' /></a>
+					<a href='/auth/google'><img src='https://www.google.com/favicon.ico' /></a>
+				</div>
+				<% } %>
+
+				<div id="navFilters" class="block">
+					<p>filter options</p>
+				</div>
+
+				<div id="navSearch" class="block">
+					<form action="/search">
+						<input id="groupSearch" type="search" placeholder="search" name="q" />
+					</form>
+				</div>
+			</header>
+			
+			<section class="content"></section>
+
+			<footer>
+				<nav>
+					<a class="settings icon" href="#">settings</a>
+					<a class="toggleList toggleButton" href="#">
+						<span class"channel">channels</span>
+						<span class="event">events</span>
+					</a>
+				</nav>
+			</footer>
+		</section>
+		<section class="page" id="listDetail"></section>
+		
+		<section class="page" id="detailArticle"></section>
+
+		<section class="page" id="listChat">
+			<header>
+				<h1><span>0</span>Chatter</h1>
+				<nav>
+					<a class="button filter" href="#">filter</a>
+					<a class="button add" href="#">Add</a>
+				</nav>
+
+				<div class="addBlock">
+					<form action="/">
+						<input id="commentAdd" type="text" placeholder="add your comment" name="comment" />
+					</form>
+				</div>
+			</header>
+
+			<section class="content"></section>
+
+			<footer>
+				<a href="#">SEE MORE DISCUSSIONS</a>
+			</footer>
+		</section>
+
+	</div>
+</section><!-- /#OnsideApp -->
+
+<%- partial('partials/general') %>
+<%- partial('partials/articles') %>
+<%- partial('partials/articleDetail') %>
+
+<script type="text/javascript"> 
+var on = window.on || {};
+on.preload = {
+	channels	: '<%- channels %>',
+	events		: '<%- events %>', 
+	searches	: '<%- searches %>'
+};
+</script>
