@@ -74,6 +74,9 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
+	alert('backbone loaded');
+	
+	if(iScroll) $('body').addClass('iScrollEnabled');
 	
 	// prevent conflict with .ejs backend templates
 	_.templateSettings = { 
@@ -149,8 +152,6 @@ $LAB
 	window.onload = function() { MBP.scaleFix(); }
 
 	$(document).ready(function(){
-		if(iScroll) $('body').addClass('iScrollEnabled');
-	
 		$LAB
 		.script(on.path.js + 'app/views.js')
 		.wait()
