@@ -73,7 +73,7 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
-	alert('backbone loaded - 0.2');
+	alert('backbone loaded - 0.3');
 	
 	if(iScroll) $('body').addClass('iScrollEnabled');
 	
