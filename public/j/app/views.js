@@ -271,7 +271,7 @@ TweetView			- individual tweet comment
 			this.setAuth(false,this.app.get('userAuth'));
 			
 			$('.show', this.el).bind(on.env.touchClick, function(){
-				alert('click  touch')
+				console.log('click  touch? = ' + on.env.touchClick);
 			});
 			
 		},

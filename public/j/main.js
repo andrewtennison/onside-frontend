@@ -57,7 +57,7 @@ $LAB
 .script( 
 	// put in head, use instead of lib.js & user modernizr.load() - libs/modernizr-custom.js
 	on.path.js + 'lib/json2.js', 
-	on.path.js + 'lib/jquery-1.6.4.min.js',
+	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js',
 	on.path.js + 'lib/backbone-0.5.3.min.js',
 	on.path.js + 'lib/pretty.js',
@@ -130,7 +130,7 @@ $LAB
 				method = _.bind(method, this);
 				
 				// overide click event if touch is enabled
-				if(eventName === 'click' && on.env.isTouch){eventName = 'ontouchstart';};
+				if(eventName === 'click' && on.env.isTouch)	console.log('click')	//{eventName = 'ontouchstart';};
 				eventName += '.delegateEvents' + this.cid;
 				if (selector === '') {
 					$(this.el).bind(eventName, method);
@@ -146,7 +146,7 @@ $LAB
 .wait(function(){
 
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
-	window.onload = function() { MBP.scaleFix(); }
+	window.onload = function() { MBP.scaleFix(); MBP.hideUrlBar(); }
 
 	$(document).ready(function(){
 		$LAB
