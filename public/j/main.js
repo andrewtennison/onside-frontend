@@ -15,7 +15,6 @@ on.env = {
 	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
 	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}())
 };
-alert(on.env.isTouch);
 
 on.logger = [];
 on.helper = {
@@ -73,7 +72,7 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
-	alert('backbone loaded - 0.3');
+	alert('backbone loaded - 0.4');
 	
 	if(iScroll) $('body').addClass('iScrollEnabled');
 	
@@ -146,12 +145,14 @@ $LAB
 .wait(function(){
 
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
-	window.onload = function() { MBP.scaleFix(); MBP.hideUrlBar(); }
-
-	$(document).ready(function(){
+	window.onload = function() { 
+		MBP.scaleFix(); MBP.hideUrlBar();
 		$LAB
 		.script(on.path.js + 'app/views.js')
 		.wait()
 		.script(on.path.js + 'app.js');
+	}
+
+	$(document).ready(function(){
 	});
 })
