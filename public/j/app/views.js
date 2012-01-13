@@ -291,6 +291,7 @@ TweetView			- individual tweet comment
 		},
 		
 		show: function(e){
+			alert('click working')
 			e.preventDefault();
 			var id = $(e.target).attr('href').replace('#',''),
 				newShow = 'show'+id,
@@ -540,11 +541,11 @@ TweetView			- individual tweet comment
 		template: _.template( $('#channelItemTemplate').html() )
 	});
 	var EventView 		= _ListItemView.extend({
-		className:'eventItem',
+		className:'eventItem bb',
 		template: _.template( $('#eventItemTemplate').html() )
 	});
 	var SaveSearchView 	= _ListItemView.extend({
-		className:'searchItem',
+		className:'searchItem bb',
 		template: _.template( $('#savedSearchTemplate').html() ),
 		selectItem: function(e){
 			e.preventDefault();
