@@ -156,10 +156,9 @@ $LAB
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
 	window.onload = function() { 
 		MBP.scaleFix(); MBP.hideUrlBar();
-	}
-
-	console.log('on.env.docready = ' + on.env.docReady);
-	$(document).ready(function(){
+	};
+	
+	function init(){
 		console.log('5. doc ready')
 
 		$LAB
@@ -167,5 +166,12 @@ $LAB
 			.wait()
 			.script(on.path.js + 'app.js')
 			.wait(function(){	console.log('6. app loaded')});
-	});
+	};
+
+	console.log('on.env.docready = ' + on.env.docReady);
+	if(on.env.docReady){
+		init();
+	} else {
+		$(document).ready(init);
+	}
 })
