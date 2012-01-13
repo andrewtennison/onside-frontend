@@ -14,7 +14,7 @@ on.env = {
 	articleMax			: 20,
 	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
 	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}()),
-	docread				: false
+	docReady			: false
 };
 
 console.log('1. namespace')
@@ -46,11 +46,11 @@ on.path = {
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId			: '266299360074356',
-		channelUrl : '//dev.onside.me:3000/fb_channel',
-		status		 : true, // check login status
-		cookie		 : true, // enable cookies to allow the server to access the session
-		xfbml			: true	// parse XFBML
+		appId		: '266299360074356',
+		channelUrl	: '//dev.onside.me:3000/fb_channel',
+		status		: true, // check login status
+		cookie		: true, // enable cookies to allow the server to access the session
+		xfbml		: true	// parse XFBML
 	});
 };
 
@@ -69,7 +69,7 @@ $LAB
 )
 .wait(function(){
 	console.log('2. libs');
-	$(document).ready(function(){ on.env.docready = true; })
+	$(document).ready(function(){ on.env.docReady = true; })
 })
 .script(
 	on.path.js + 'app/models.js',
@@ -158,7 +158,7 @@ $LAB
 		MBP.scaleFix(); MBP.hideUrlBar();
 	}
 
-	console.log('on.env.docready = ' + on.env.docready);
+	console.log('on.env.docready = ' + on.env.docReady);
 	$(document).ready(function(){
 		console.log('5. doc ready')
 
