@@ -19,6 +19,7 @@
 
 <script id="savedSearchTemplate" class="tmpl" type="text/template">
 	<a href="#">
+		<span class="icon search"></span>
 		<h1><@= name @></h1>
 	</a>
 </script>
@@ -26,30 +27,59 @@
 
 <!-- // DETAIL ITEM TEMPLATES // -->
 <script id="detailTemplate" class="tmpl" type="text/template">
-	<header>
-		<h1> 
-			<img src="/i/placeholder/listIcon2.png" />
+	<header class="detailHead bb">
+		<h1>
+			<img class="badge" src="/i/placeholder/listIcon2.png" />
 			<@= title @>
 		</h1>
 		<nav>
-			<span class="buttonGroup">
-				<a class="refresh" href="#">refresh</a>
-				<a class="save" href="#">save</a>
-			</span>
+			<!--a class="refresh" href="#">refresh</a-->
+			<% if (everyauth.loggedIn) { %>	
+			<a class="save" href="#"><span class="icon save">save</span></a>
+			<% } else { %>
+			<a class="login" href="#"><span class="icon login"></span>login to save</a>
+			<% } %>
+			<a class="filter" href="#"><span class="icon filter">filter</span></a>
 		</nav>
-		<span />
+		<span class="brandStripe"></span>
+	</header>
+	
+	<div class="contentWrapper">
+		<div class="scroller"></div><!-- /.scroller -->
+	</div>
+</script>
+
+<script id="detail404Template" class="tmpl" type="text/template">
+	<header class="detailHead bb">
+		<h1>404: Channel not found</h1>
+		<span class="brandStripe"></span>
+	</header>
 	
 	<div class="contentWrapper"></div>
 </script>
 
 <script id="channelDetailItemTemplate" class="tmpl" type="text/template">
-	<h1><@= name @></h1>
+	<a href="#">
+		<img class="badge" src="/i/placeholder/listIcon2.png" />
+		<h1><@= name @></h1>
+	</a>
 </script>
 	
 <script id="channelDetailHomeItemTemplate" class="tmpl" type="text/template">
-	<h1><@= name @></h1>
-	<h2><@= defaultArticle.title @></h2>
-	<p><@= defaultArticle.publish @></p>
+	<@ var time = prettyDate( defaultArticle.publish ); @>
+	<header>
+		<img class="badge" src="/i/placeholder/listIcon2.png" />
+		<h1><@= name @></h1>
+		<p>[[ 120 followers / 20 articles since last visit ]]</p>
+	</header>
+	<div class="wrapArticle <@= defaultArticle.type @>">
+		<h2>Latest news from: <time><@= time @></time></h2>
+		<h3><@= defaultArticle.title @></h3>
+		<p class="more">see all <@= name @> news &gt;</p>
+	</div>
+	<div class="wrapEvent">
+		<h2>[[ latest / Next event info if any - determine if this is more important than news ]]</h2>
+	</div>
 </script>
 
 <script id="eventDetailItemTemplate" class="tmpl" type="text/template">
@@ -57,19 +87,40 @@
 	<p><@= sport @> / <@= type @></p>
 </script>
 
-// COMMENT TEMPLATES //
+<!-- // COMMENT TEMPLATES // -->
 <script id="commentTemplate" class="tmpl" type="text/template">
-	<p><@= comment @></p>
-	<@ if(user) { @> 
-		<a href='/user/<@= user @>' > user id: <@= user @> </a>
-	<@ } @>
-	<@ if(added) { @>
-		<time> <@= added @> </time>
-	<@ } @>
+	<@ var time = prettyDate( added ); @>
 	
-	<nav>
-		<a class="reply" href="#">reply</a>
-	</nav>
+	<div class="user">
+		<img src="/i/placeholder/user_small.gif" />
+		<cite>
+			[[ username ]]
+			<@ if(user) { @> 
+				<a href='/user/<@= user @>' > user id: <@= user @> </a> - <a class="reply" href="#">reply</a>
+			<@ } @>
+		</cite>
+		<@ if(added) { @>
+			<time> <@= time @> </time>
+		<@ } @>
+	</div>
+	<div class="wrapComment">
+		<p><@= comment @></p>
+	</div>
+</script>
+
+<script id="tweetTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( created_at ); @>
+	<img src="<@= profile_image_url @>" />
+	
+	<div class="user">
+		<cite>
+			<a href='https://twitter.com/#!/<@= from_user_name @>' ><@= from_user_name @> </a> - <a class="reply" href="#">reply</a>
+		</cite>
+		<time><@= time @></time>
+	</div>
+	<div class="wrapComment">
+		<p><@= text @></p>
+	</div>
 </script>
 
 

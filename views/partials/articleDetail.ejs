@@ -21,24 +21,37 @@
 </script>
 
 <script id="articleDetail_youtube" class="tmpl" type="text/template">
-	<object style="height: 245; width: 373">
-	<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
-	<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
+	<@ var width = $('#listArticle').width(); if(width > 500) width = 500; @>
+	<@ var ratio = (2/3); @>
+	<@ var height = width * ratio; @>
+	
+	<header class="detailHead">
+		<h1><@= title @></h1>
+		<nav>
+			<a class="icon share" href="#">share</a>
+			<a class="icon save" href="#">save</a>
+			<a class="icon close" href="#">close</a>
+		</nav>
+	</header>
+
+	<div class="contentWrapper iframeWrap">
+		<object style="height: <@= height @>; width: <@= width @>">
+		<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
+		<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="<@= width @>" height="<@= height @>"></object>
+	</div>
 </script>
 
 <script id="articleDetail_iframe" class="tmpl overlay" type="text/template">
-	<header>
+	<header class="detailHead">
 		<h1><@= title @></h1>
+		<nav>
+			<a class="icon share" href="#">share</a>
+			<a class="icon save" href="#">save</a>
+			<a class="icon close" href="#">close</a>
+		</nav>
 	</header>
-	<nav>
-		<a class="close button" href="#">close</a>
-		<span class="buttonGroup">
-			<a class="share" href="#">share</a>
-			<a class="save" href="#">save</a>
-		</span>
-	</nav>
 
-	<div class="iframeWrap">
+	<div class="contentWrapper iframeWrap">
 		<iframe src="<@= link @>" />
 	</div>
 </script>

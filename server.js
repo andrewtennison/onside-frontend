@@ -66,9 +66,20 @@ app.configure('production', function(){
 });
 
 
-
 // Routes
-//app.resource('channels', require('./routes/channels'));
+app.get('/fb_channel', function(req,res){
+	var $cache_expire = 60*60*24*365 * 1000,
+		d = new Date();
+    	
+	d.setTime(d.getTime()+$cache_expire);
+	d.toUTCString();
+	
+	res.header('Pragma' , 'public' );
+	res.header('Cache-Control' , 'max-age=' + $cache_expire );
+	res.header('Expires' , d );
+	res.render('channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false, loggedIn: false});
+});
+
 
 app.get('*', function(req, res, next){
 	if(req.headers.host === 'test.onside.me') {
@@ -97,6 +108,8 @@ app.get('/addcontent', routes.cms);
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
+
+app.post('/tweet', routes.tweet);
 
 // fake call to proxy multiple calls to API 
 app.get('/detail/:action?/:id?', routes.getDetailApi);

@@ -2,33 +2,45 @@
 
 
 <script id="articleTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( publish ); @>
 	<div class="inner">
 		<nav> 
-			<a class="filter" href="#">[f]</a>
-			<a class="save" href="#">[*]</a>
-			<a class="comment" href="#">[c]</a>
+			<a class="icon settings filter" href="#">filter news</a>
 		</nav>
 		
-		<section class="filters">
-			<h1>Filter content to show more:</h1>
-			<a class="f_type" href="#">type <span><@= type @></span></a>
-			<a class="f_source" href="#" >from <span><@= source @></span></a>
-			<a class="f_keywords" href="#">about <span><@= keywords @></span></a>
-			<a class="f_author" href="#">by <span><@= author @></span></a>
-		</section>
-
-		<h2><@= title @></h2>
-		<div class="content">
-			<@= content @>
-		</div>
-			
+		<h1><@= title @></h1>
 		<@ if(images) { @>
 			<img src='<@= images @>' />
 		<@ } @>
-		<@ if(publish) { @>
-			<time><@= publish @></time>
+		<div class="content"><@= content @></div>
+		
+		<@ if(extended) { @>
+		<a class="open button" href='<@= link @>'>read full article</a>
+		<@ } else { @>
+		<a class="open button" href='<@= link @>'>see website</a>
 		<@ } @>
-		<a class="open button" href='<@= link @>'>read more: <@= source @></a>
+		
+		<footer>
+			<@ if(source) { @>
+				<cite>by: <@= source @></cite>
+			<@ } else { @>
+				<cite>by: [[ rss source ]]</cite>
+			<@ } @>			
+
+			<@ if(publish) { @>
+				<time><@= time @></time>
+			<@ } @>
+		</footer>
+	</div>
+	<section class="filters">
+		<h2>Filter content to show more:</h2>
+		<a class="f_type" href="#">type <span><@= type @></span></a>
+		<a class="f_source" href="#" >from <span><@= source @></span></a>
+		<a class="f_keywords" href="#">about <span><@= keywords @></span></a>
+		<a class="f_author" href="#">by <span><@= author @></span></a>
+	</section>
+
+		
 </script>
 
 <script id="articleTemplate-twitter" class="tmpl" type="text/template">
@@ -40,13 +52,19 @@
 </script>
 
 <script id="articleTemplate-youtube" class="tmpl" type="text/template">
-	<h2><@= author @>: <@= title @></h2>
-	<p><@= content @></p>
-	<input type="hidden" value="<@= link @>" name="videoData" />
-	<@ if(publish) { @>
-		<time><@= publish @></time>
-	<@ } @>
-	<a class="open button" href='<@= link @>'>watch video</a>
+	<div class="hidden">
+		<h2><@= author @>: <@= title @></h2>
+		<p><@= content @></p>
+		<input type="hidden" value="<@= link @>" name="videoData" />
+		<@ if(publish) { @>
+			<time><@= publish @></time>
+		<@ } @>
+	</div>
+	<a href="<@= link @>" class="open">
+		<span class="icon play">watch video</span>
+		<img src="http://img.youtube.com/vi/<@= videoId @>/hqdefault.jpg" />
+	</a>
+	
 </script>
 
 <script id="articleDetailTemplate-youtube" class="tmpl" type="text/template">

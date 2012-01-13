@@ -9,27 +9,46 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var app = this;
 			this.route = route;
 			
-			_.bindAll(this, 'updateService');
+			_.bindAll(this, 'updateService', 'setTitle');
 			
 			// create + init collections for channels + events
 			this.channels = new BB.ChannelList();
 			this.events = new BB.EventList();
 			this.detailedList = new BB.DetailList(app);
-			this.comments = new BB.CommentList(app);
 			this.searches = new BB.SavedSearchList(app);
+			this.comments = new BB.CommentList(app);
+			this.tweets = new BB.TweetList(app);
 			
 			this.bind('change:selectedItemUID', this.updateService);
+			this.bind('change:selectedArticle', this.updateService);
 		},
 		defaults: {
 			selectedServiceName: null,
 			selectedItemUID: null,
+			selectedItemTitle: null,
 			searchModel: null,
 			selectedArticleList: null,
 			selectedArticle: null
 		},
-		updateService: function(){
+		setTitle: function(){
+			var title, model,
+				UID = this.get('selectedItemUID'),
+				article = this.get('selectedArticle');
+			
+			if(article){
+				model = this.get('selectedArticleList').get(article);
+			}else if(UID.split('|')[1] !== null){
+				model = this.detailedList.get('detail|' + UID);
+			} else {
+				model = false;
+			}
+
+			title = (model)? ( model.get('name') || model.get('title') ) : 'Onside home';
+			this.set({selectedItemTitle : title})
+		},
+		updateService: function(model,val){
 			this.set({
-				selectedServiceName: this.get('selectedItemUID').split('|')[0]
+				selectedServiceName	: this.get('selectedItemUID').split('|')[0]
 			}) 
 		}
 	});
@@ -136,6 +155,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.get('channels').reset(this.get('channelJson'));
 			this.get('events').reset(this.get('eventJson'));
 			this.get('articles').reset(this.get('articleJson'));
+		},
+		validate: function(attrs) {
+			// if (attrs.error) {
+				// return "channel does not exist";
+			// }
 		}
 	});
 
@@ -178,6 +202,21 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 	});
 	
+	var Tweet = Backbone.Model.extend({
+		methodToURL: {
+			'read': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
+			'update': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
+			'create': '/tweet'
+		},
+
+		sync: function(method, model, options) {
+//			if(method === 'read' && !this.hash) return;
+			options = options || {};
+			options.url = model.methodToURL[method.toLowerCase()];
+			Backbone.sync(method, model, options);
+		}
+	});
+	
 	
 	// extend events for custom scenarios
 	var Ev = {};
@@ -192,6 +231,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.Article = Article;
 	BB.Comment = Comment;
 	BB.Chat = Chat;
+	BB.Tweet = Tweet;
 	
 	BB.Ev = Ev;
 	

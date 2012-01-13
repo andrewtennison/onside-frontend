@@ -1,7 +1,7 @@
 /*
  * GET home page.
  */
-var rest 		= require('restler');
+var rest 		= require('restler'),
 	Config 		= require('../lib/conf'),
 	conf 		= new Config();
 
@@ -10,7 +10,7 @@ var preload = function(req, callback){
 		i = 0,
 		timer = setInterval ( onComplete, 100 ),
 		user = req.user,
-		userString = (user)? '?user=' + user.id : '';
+		userString = (user)? '?user=' + user.id : '?user=1';
 
 	var getFirstArticle = function( channel, index, length, callback ){
 		var url = conf.apiPath + '/article?channel='+channel.id+'&limit=1',
@@ -21,6 +21,7 @@ var preload = function(req, callback){
 		rest.get(url)
 			.on('success', function(data){ 
 				req.defaultArticle = data.resultset.articles[0];
+				//req.defaultArticle = undefined;
 				callback(req);
 			})
 			.on('error', function() { 
@@ -47,8 +48,8 @@ var preload = function(req, callback){
 						j += 1;
 						if( j === l ){
 							console.log('Preload of article for each channel complete')
-							content.channels = JSON.stringify(channels);
 							content.channelsLoaded = true;
+							content.channels = JSON.stringify(channels);
 						}else{
 							content.channelsLoaded = false;
 						}
@@ -70,12 +71,10 @@ var preload = function(req, callback){
 
 	// get searches if user exist
 	console.log(conf.apiPath + '/search/list' + userString)
-	if(user) {
-		rest.get(conf.apiPath + '/search/list' + userString)
-			.on('success', function(data) { return content.searches = (data.resultset.searches.length >= 1)? JSON.stringify(data.resultset.searches) : false })
-			.on('error', function() { return content.channels = undefined})
-			.on('complete', function(){ content.searchesLoaded = true });
-	}
+	rest.get(conf.apiPath + '/search/list' + userString)
+		.on('success', function(data) { return content.searches = (data.resultset.searches.length >= 1)? JSON.stringify(data.resultset.searches) : false })
+		.on('error', function() { return content.channels = undefined})
+		.on('complete', function(){ content.searchesLoaded = true });
 	
 	function onComplete(){
 		if(content.channelsLoaded && content.eventsLoaded && content.searchesLoaded){
@@ -88,10 +87,9 @@ var preload = function(req, callback){
 			callback(content);
 		} else{
 			i += 100;
-			console.log('proloading content from API, timer = ' + i)
+			console.log('proloading content from API, timer = ' + i + '//'+ content.channelsLoaded +' // '+ content.eventsLoaded +' // '+ content.searchesLoaded)
 		}
 	}
-	
 };
 
 var checkAuth = function(opts){
@@ -103,12 +101,14 @@ var checkAuth = function(opts){
 		stage = false;
 
 	// logged in
-	if(!loggedIn) {
+	if(!loggedIn && opts.authReq) {
 		opts.fail(res,loggedIn);
 		return;
 	};
 	
-	switch(user.enabled){
+	var userStatus = (!opts.authReq && user.enabled === undefined)? '1' : user.enabled;
+
+	switch(userStatus){
 		case '0':			// default - user new, not yet invited
 			opts.fail(res,loggedIn);
 			return;
@@ -120,14 +120,14 @@ var checkAuth = function(opts){
 		case '6':
 		case '7':
 		case '8':
-			stage = 'stage' + user.enabled;
+			stage = 'stage' + userStatus;
 			break;
 		case '9':						// user is suspended
 			opts.reject(res,loggedIn);
 			return;
 		
 		default:
-			console.log('routes.checkAuth - user.enabled unknow =' + user.enabled)
+			console.log('routes.checkAuth - user.enabled unknow =' + userStatus)
 			opts.fail(res,loggedIn);
 			return;
 	};
@@ -148,7 +148,8 @@ baseAuthObject = {
 	pass	: function(res, loggedIn, content){ res.render('pages/index', { title: 'Onside', cssPath: '', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }); },
 	fail	: function(res, loggedIn){ res.render('pages/signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:loggedIn }) },
 	reject	: function(res){  res.render('pages/suspended.ejs'); },
-	preload	: true
+	preload	: true,
+	authReq	: true
 	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
 }
 
@@ -157,8 +158,9 @@ exports.index = function(req, res){
 	baseAuthObject.res = res;
 	
 	// for new dev
-	baseAuthObject.preload = false;	
-	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/index-1.0.ejs', { title: 'Onside', cssPath: '.index-1.0', jsPath:'', loggedIn:loggedIn, channels: [], events: [], searches: [] }) }; 
+	baseAuthObject.preload = true;
+	baseAuthObject.authReq = false;	
+	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/index-1.0.ejs', { title: 'Onside', cssPath: '.index-1.0', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }) }; 
 	checkAuth( baseAuthObject );
 	//baseAuthObject.pass(res, false)
 };
@@ -174,8 +176,8 @@ exports.demo1 = function(req, res){
 exports.demo2 = function(req, res){
 	baseAuthObject.req = req;
 	baseAuthObject.res = res;
-	baseAuthObject.preload = false;
-	baseAuthObject.pass = function(res){ res.render('pages/demo1', { title: 'Onside', cssPath: '.demo2', jsPath:'', channels: [], events: [], searches: [] }) }; 
+	baseAuthObject.preload = true;
+	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/demo1', { title: 'Onside', cssPath: '.index-1.0', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }) }; 
 	checkAuth( baseAuthObject );
 };
 
@@ -188,8 +190,9 @@ exports.demo3 = function(req, res){
 };
 
 
-function callApi(req, res, action, authRequired, callback){
+function callApi(req, res, action, authRequired, forceUser, callback){
 	var response = {};
+	
 	if(authRequired && !req.loggedIn){
 		response.error = 'User must be logged in to perform this action';
 		console.err('user must be auth')
@@ -211,13 +214,15 @@ function callApi(req, res, action, authRequired, callback){
 				}
 			};
 		
+		var UID = (req.loggedIn)? req.user.id : 1;
+		
 		switch(action){
 			case 'post':
 				obj.data = req.body;
-				if(req.loggedIn) obj.data.user = req.user.id;
+				if(req.loggedIn && forceUser) obj.data.user = UID;
 				break;
 			case 'get':
-				if(req.loggedIn) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + req.user.id;
+				if(req.loggedIn && forceUser) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + UID;
 				break
 
 			case 'del':
@@ -231,14 +236,12 @@ function callApi(req, res, action, authRequired, callback){
 		//console.log(obj);
 		
 		rest[action](url,obj).on('complete', function(data) {
-			//console.log('data //////////')
-			//console.log(data)
-			// res.json(data);
+			console.log(data);
+			data.auth = req.loggedIn;
 			response.success = data;
 			callback(response);
 		}).on('error', function(err){
 			console.error(err);
-			//res.send('error calling API')
 			response.error = 'error calling API';
 			callback(response);
 		});
@@ -250,25 +253,28 @@ function callApi(req, res, action, authRequired, callback){
 };
 
 exports.getApi = function(req,res){
-	callApi(req, res, 'get', false, function(r){
+	callApi(req, res, 'get', false, true, function(r){
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
 
 exports.postApi = function(req,res){
+	console.log(req.url);
+	console.log((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url))
+	
 	if((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url)){
-		callApi(req, res, 'post', true, function(r){
+		callApi(req, res, 'post', true, false, function(r){
 			(r.error)? res.send(r.error) : res.json(r.success);
 		});
 	}else{
-		callApi(req, res, 'post', false, function(){
+		callApi(req, res, 'post', false, false, function(r){
 			(r.error)? res.send(r.error) : res.json(r.success);
 		});
 	}
 };
 
 exports.delApi = function(req,res){
-	 callApi(req, res, 'del', true, function(){
+	 callApi(req, res, 'del', true, false, function(){
 		(r.error)? res.send(r.error) : res.json(r.success);
 	 });
 };
@@ -279,50 +285,50 @@ exports.getDetailApi = function(req,res){
 		timer = setInterval ( onComplete, 100 ),
 		i = 0,
 		content = {
-			// author	: this should be returned in list of related objects
-			// title	: set when channels call responds
 			id			: 'detail|' + action +'|'+id,
 			originUId 	: action +'|'+id,
+
+			// default values to populate with content and pass back. Error is no content exists
+			error		: false,	
+			author		: false,
+			title		: false,
 			channels	: false,
 			events 		: false,
 			articles 	: false
 		};
 	
-
+	// get Channel
+	req.url = '/channel/'+id;
+	callApi(req, res, 'get', false, false, function(r){
+		if( (r.success && r.success.count === 0) || !r.success ) {
+			content.error = true;
+		} else {
+			content.author = r.success.resultset.channels[0];
+			content.title = r.success.resultset.channels[0].name;
+		}
+	});
+	
+	
+	// get related channels
 	req.url = '/channel?'+action+'='+id;
-	callApi(req, res, 'get', false, function(r){
+	callApi(req, res, 'get', false, false, function(r){
 		content.channels = (r.success)? r.success.resultset.channels : false;
 	});
 
+	// get related events
 	req.url = '/event?'+action+'='+id;
-	callApi(req, res, 'get', false, function(r){
+	callApi(req, res, 'get', false, false, function(r){
 		content.events = (r.success)? r.success.resultset.events : false;
 	});
 
+	// get related articles
 	req.url = '/article?'+action+'='+id + '&limit=30';
-	callApi(req, res, 'get', false, function(r){
+	callApi(req, res, 'get', false, false, function(r){
 		content.articles = (r.success)? r.success.resultset.articles : false;
 	});
 	
-	function setAuthor(){
-		console.log('get Author, action = ' + action);
-
-		var actions = action + 's',
-			arr = content[actions],
-			l = arr.length | 0;
-		
-		while(l--){
-			if(arr[l].id === id){
-				content.author = arr[l];
-				content.title = arr[l].name;
-				return;
-			};
-		}
-	};
-
 	function onComplete(){
-		if(content.channels && content.events && content.articles){
-			setAuthor();
+		if( content.error || (content.channels && content.events && content.articles && content.author) ){
 			clearInterval( timer );
 			res.json(content)
 		} else if(i === 30000){
@@ -337,6 +343,54 @@ exports.getDetailApi = function(req,res){
 
 };
 
+exports.tweet = function(req,res){
+	if(!req.xhr) return;
+	
+	var url = 'http://api.twitter.com/1/statuses/update.json',
+		obj = {
+			token: {
+				oauth_token_secret: req.session.auth.twitter.accessTokenSecret,
+				oauth_token: req.session.auth.twitter.accessToken
+			},
+			wrap_links : true,
+			status : req.body.message
+		};
+
+	console.log(req.session.auth.twitter)
+
+	rest.post(url,obj).on('complete', function(data) {
+		console.log(data);
+		res.json(err)
+	}).on('error', function(err){
+		console.error(err);
+		res.json(err)
+	});
+
+	//encodeURIComponent()
+	/*
+
+twitterClient.apiCall('POST', '/statuses/update.json',
+    {token: 
+    	{
+    		oauth_token_secret: req.param('oauth_token_secret'), 
+    		oauth_token: req.param('oauth_token')
+    	}, 
+    	status: req.param('message')
+    	},
+    
+
+	rest.post(url,obj).on('complete', function(data) {
+		console.log(data);
+		//response.success = data;
+		//callback(response);
+	}).on('error', function(err){
+		console.error(err);
+		//response.error = 'error calling API';
+		//callback(response);
+	});
+	*/
+}
+
 exports.cms = function(req,res){
 	if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
 		res.render('pages/cms', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
@@ -344,3 +398,9 @@ exports.cms = function(req,res){
 		res.redirect('/', 401);
 	}
 }
+
+
+
+
+
+

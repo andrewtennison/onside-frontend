@@ -14,6 +14,7 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// App model	
 		on.m.app = new BB.App(this);
+		on.m.app.set({ userAuth : (on.preload.auth === true)? true : false });
 		
 		// Create main views
 		// Application view
@@ -35,6 +36,7 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Post Comment view
 		on.v.postComment = new BB.CommentPostView({ app: on.m.app });
+		on.v.postTweet	= new BB.PostTweet({ app: on.m.app });
 		
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
@@ -44,9 +46,9 @@ BB.appRoutes = Backbone.Router.extend({
 		var p = on.preload; 
 
 		// on.m.app.channels.reset(on.preload.channels)
-		; (p.channels === undefined || p.channels.length === 0)? 	on.m.app.channels.fetch() 	: on.m.app.channels.reset(on.preload.channels); 
-		; (p.events === undefined || p.events.length === 0)?		on.m.app.events.fetch() 	: on.m.app.events.reset(on.preload.events); 
-		; (p.searches === undefined || p.searches.length === 0)?	on.m.app.searches.fetch()	: on.m.app.searches.reset(on.preload.searches); 
+		(p.channels === undefined || p.channels.length === 0)? 	on.m.app.channels.fetch() 	: on.m.app.channels.reset(on.preload.channels); 
+		(p.events === undefined || p.events.length === 0)?		on.m.app.events.fetch() 	: on.m.app.events.reset(on.preload.events); 
+		(p.searches === undefined || p.searches.length === 0)?	on.m.app.searches.fetch()	: on.m.app.searches.reset(on.preload.searches);
 	},
 	
 	home: function(){

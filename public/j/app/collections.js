@@ -94,6 +94,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				existingModel = this.get( detailUID ),
 				search = (s[0] === 'search')? true : false,
 				model = new this.model({id:detailUID});
+				
+				model.bind('error', function(model,error){
+					console.error('error - detailed model does not exist');
+				});
 
 			// if current model selected, change to hidden
 			if(this.selected !== false) {
@@ -108,7 +112,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			} else if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
 				// load home page
 				model.set({
-					title		: 'home',
+					title		: 'Onside home',
 					type		: 'home',
 					originUId	: selectedItemUID,
 					channels	: on.m.app.channels.toJSON()
@@ -151,6 +155,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		createModel: function(model){
 			this.selected = model.id;
+			
 			model.set({
 				channelJson	: model.get('channels'),
 				channels	: new BB.ChannelList(this.app),
@@ -201,6 +206,37 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var ChatList = Backbone.Collection.extend({});
 
+	var TweetList = Backbone.Collection.extend({
+		model : BB.tweet,
+		hash: false,
+
+		url : function(){
+			if(!this.hash) return;
+			return 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?';
+		},
+		parse: function(resp, xhr){
+			this.refreshUrl = resp.refresh_url;
+			return resp.results;
+		},
+		initialize: function(app){
+			on.helper.log('# Collection.CommentList.initialize','info');
+			this.app = app;
+			_.bindAll(this, 'updateCollection');
+			this.app.bind('change:selectedItemUID', this.updateCollection);
+		},
+		updateCollection: function(){
+			var s = this.app.get('selectedItemUID').split('|');
+			
+			this.reset();
+			if(s[1] === 'null') {
+				on.helper.log('Model.App.updateTweets - selectedItemUID = ' + s[0] +'|'+ s[1], 'error');
+			} else if(this.app.channels.get(s[1])) {
+				var name = this.app.channels.get(s[1]).get('name').replace(/\s/g,'_').replace(/\'/g,'');
+				this.hash = name + '@onside';
+				this.fetch();
+			}
+		}
+	});
 
 	// Assign to BB namespace
 	BB.ChannelList = ChannelList;
@@ -210,5 +246,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.ArticleList = ArticleList;
 	BB.CommentList = CommentList;
 	BB.ChatList = ChatList;
-	
+	BB.TweetList = TweetList;
+
 })(this.BB);
