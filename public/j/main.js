@@ -65,7 +65,7 @@ $LAB
 	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
-.wait(function(){alert(lib scripts loaded)})
+.wait(function(){alert('lib scripts loaded');})
 .script(
 	on.path.js + 'app/models.js',
 	on.path.js + 'app/collections.js'
