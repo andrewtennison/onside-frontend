@@ -290,7 +290,6 @@ TweetView			- individual tweet comment
 		},
 		
 		show: function(e){
-			alert('click working')
 			e.preventDefault();
 			var id = $(e.target).attr('href').replace('#',''),
 				newShow = 'show'+id,

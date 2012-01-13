@@ -14,7 +14,8 @@ on.env = {
 	internetConnection	: true,
 	server				: 'development',
 	articleMax			: 20,
-	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click'
+	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
+	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}())
 };
 
 on.logger = [];
@@ -44,11 +45,11 @@ on.path = {
 
 window.fbAsyncInit = function() {
 	FB.init({
-		appId      : '266299360074356',
+		appId			: '266299360074356',
 		channelUrl : '//dev.onside.me:3000/fb_channel',
-		status     : true, // check login status
-		cookie     : true, // enable cookies to allow the server to access the session
-		xfbml      : true  // parse XFBML
+		status		 : true, // check login status
+		cookie		 : true, // enable cookies to allow the server to access the session
+		xfbml			: true	// parse XFBML
 	});
 };
 
@@ -65,7 +66,7 @@ $LAB
 	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
-.wait(function(){alert('lib scripts loaded');})
+.wait()
 .script(
 	on.path.js + 'app/models.js',
 	on.path.js + 'app/collections.js'
@@ -73,16 +74,13 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
-	alert('backbone loaded');
-	
-	if(iScroll) $('body').addClass('iScrollEnabled');
 	
 	// prevent conflict with .ejs backend templates
 	_.templateSettings = { 
 		interpolate : /\<\@\=(.+?)\@\>/gim, 
 		evaluate: /\<\@(.+?)\@\>/gim
 	};
-      	
+				
 	_.extend(Backbone.Collection.prototype, Backbone.Events, {
 		checkFetch : function(options){
 			var collection = this;
@@ -111,7 +109,39 @@ $LAB
 			on.helper.log('save local')
 			sessionStorage.setItem(name,JSON.stringify(data))
 		}
-	})
+	});
+
+  // Cached regex to split keys for `delegate`.
+  var eventSplitter = /^(\S+)\s*(.*)$/;
+
+	_.extend(Backbone.View.prototype, Backbone.Events, {
+		delegateEvents : function(events) {
+			if (!(events || (events = this.events))) return;
+
+			if (_.isFunction(events)) events = events.call(this);
+			$(this.el).unbind('.delegateEvents' + this.cid);
+			for (var key in events) {
+				
+				if(key === 'click' && on.env.isTouch){
+					key = 'ontouchstart';
+				};
+
+				var method = this[events[key]];
+				if (!method) throw new Error('Event "' + events[key] + '" does not exist');
+				var match = key.match(eventSplitter);
+				var eventName = match[1], selector = match[2];
+				method = _.bind(method, this);
+				eventName += '.delegateEvents' + this.cid;
+				if (selector === '') {
+					$(this.el).bind(eventName, method);
+				} else {
+					$(this.el).delegate(selector, eventName, method);
+				}
+			}
+		},
+	});
+
+
 })
 .wait(function(){
 
@@ -119,6 +149,8 @@ $LAB
 	window.onload = function() { MBP.scaleFix(); }
 
 	$(document).ready(function(){
+		if(iScroll) $('body').addClass('iScrollEnabled');
+	
 		$LAB
 		.script(on.path.js + 'app/views.js')
 		.wait()
