@@ -13,8 +13,11 @@ on.env = {
 	server				: 'development',
 	articleMax			: 20,
 	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
-	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}())
+	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}()),
+	docread				: false
 };
+
+console.log('1. namespace')
 
 on.logger = [];
 on.helper = {
@@ -64,7 +67,10 @@ $LAB
 	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
-.wait()
+.wait(function(){
+	console.log('2. libs');
+	$(document).ready(function(){ on.env.docready = true; })
+})
 .script(
 	on.path.js + 'app/models.js',
 	on.path.js + 'app/collections.js'
@@ -72,7 +78,8 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
-	alert('backbone loaded - 0.4');
+	console.log('3. models + collections')
+
 	
 	if(iScroll) $('body').addClass('iScrollEnabled');
 	
@@ -144,15 +151,21 @@ $LAB
 })
 .wait(function(){
 
+	console.log('4. helpers')
+
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
 	window.onload = function() { 
 		MBP.scaleFix(); MBP.hideUrlBar();
-		$LAB
-		.script(on.path.js + 'app/views.js')
-		.wait()
-		.script(on.path.js + 'app.js');
 	}
 
+	console.log('on.env.docready = ' + on.env.docready);
 	$(document).ready(function(){
+		console.log('5. doc ready')
+
+		$LAB
+			.script(on.path.js + 'app/views.js')
+			.wait()
+			.script(on.path.js + 'app.js')
+			.wait(function(){	console.log('6. app loaded')});
 	});
 })
