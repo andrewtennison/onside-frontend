@@ -2,8 +2,6 @@
 
 // BB = {} is namespace for constructors
 // on = {} is namespace for instances of objects
-alert('! v0.1 loaded')
-
 var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
 
 on.m = {};
@@ -17,6 +15,7 @@ on.env = {
 	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
 	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}())
 };
+alert(on.env.isTouch);
 
 on.logger = [];
 on.helper = {
@@ -74,7 +73,7 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
-	alert('backbone loaded');
+	alert('backbone loaded - 0.1');
 	
 	if(iScroll) $('body').addClass('iScrollEnabled');
 	

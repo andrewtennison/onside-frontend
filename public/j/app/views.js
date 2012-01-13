@@ -112,10 +112,6 @@ TweetView			- individual tweet comment
 
 			/* set title */
 			var userAuth = (this.app)? this.app.get('userAuth') : null;
-			console.log('this.app ////////////////////')
-			console.log(this.app)
-			console.log(userAuth)
-			
 			if(this.title.auth && userAuth) {
 				$(this.el).prepend('<h2>'+this.title.auth+'</h2>');
 			} else if(this.title.unauth/* && userAuth*/){
@@ -258,8 +254,8 @@ TweetView			- individual tweet comment
 		},
 		
 		events: {
-			'click .login'	: 'login',
-			'click .show'	: 'show' 
+			'click .login'	: 'login'
+			//,'click .show'	: 'show' 
 		},
 		
 		initialize: function(){
@@ -273,6 +269,9 @@ TweetView			- individual tweet comment
 			
 			this.app.bind('change:userAuth', this.setAuth);
 			this.setAuth(false,this.app.get('userAuth'));
+			
+			$('.show', this.el).bind(on.env.touchClick, this.show);
+			
 		},
 				
 		login: function(){
@@ -378,7 +377,6 @@ TweetView			- individual tweet comment
 				var needsScroll = (self.$('#groupContentWrap').height() >= self.$('#groupContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
 				
-				console.info(self.scroll)
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
@@ -1022,7 +1020,6 @@ TweetView			- individual tweet comment
 				var needsScroll = (self.$('#chatContentWrap').height() >= self.$('#chatContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
 				
-				console.info(self.scroll)
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
