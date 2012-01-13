@@ -306,7 +306,7 @@ body,
 
 
 /* ==|== listChat styles ===================================================== */
-#listChat header h1 {display:inline-block; color:#fff; font-size:1.4em; font-weight:normal; line-height: 40px; padding:15px 0 0 10px}
+#listChat header h1 {display:block; color:#fff; font-size:1.4em; font-weight:normal; line-height: 40px; padding:15px 0 0 10px}
 #listChat header nav {position:absolute; display:block; right:0; bottom:0; z-index:1; height:48px}
 
 #listChat footer nav a {margin:1px 2px 0}
@@ -322,7 +322,7 @@ body,
 #listChat .content form input {padding:7px 4px 5px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
-#listChat .comment {min-height:45px;}
+#listChat .inner .comment {min-height:45px;}
 	#listChat .comment img {position:absolute; right:0; margin:5px}
 	#listChat .comment time, #listChat .comment cite {padding:5px 0 0 10px; font-size:1.2em; position:relative; display:inline-block; color:#999}
 	#listChat .comment .wrapComment p {padding:5px 10px;  color:#fff} 
