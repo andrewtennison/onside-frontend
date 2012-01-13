@@ -124,16 +124,14 @@ $LAB
 			if (_.isFunction(events)) events = events.call(this);
 			$(this.el).unbind('.delegateEvents' + this.cid);
 			for (var key in events) {
-				
-				if(key === 'click' && on.env.isTouch){
-					key = 'ontouchstart';
-				};
-
-				var method = this[events[key]];
+				var method = this[events[key]];				
 				if (!method) throw new Error('Event "' + events[key] + '" does not exist');
 				var match = key.match(eventSplitter);
 				var eventName = match[1], selector = match[2];
 				method = _.bind(method, this);
+				
+				// overide click event if touch is enabled
+				if(eventName === 'click' && on.env.isTouch){eventName = 'ontouchstart';};
 				eventName += '.delegateEvents' + this.cid;
 				if (selector === '') {
 					$(this.el).bind(eventName, method);
