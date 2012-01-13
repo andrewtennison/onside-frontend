@@ -127,5 +127,16 @@ on.preload = {
 	user		: <%- JSON.stringify(everyauth) %>
 };
 </script>
+<% } else { %>
+<script type="text/javascript"> 
+var on = window.on || {};
+on.preload = {
+	auth		: <%- loggedIn %>,
+	channels	: '',
+	events		: '', 
+	searches	: '',
+	user		: ''
+};
+</script>
 <% } %>
 

@@ -106,7 +106,7 @@ var checkAuth = function(opts){
 		return;
 	};
 	
-	var userStatus = (!opts.authReq && user.enabled === undefined)? '1' : user.enabled;
+	var userStatus = (!opts.authReq && user.status === 0)? '1' : user.status;
 
 	switch(userStatus){
 		case '0':			// default - user new, not yet invited
