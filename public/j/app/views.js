@@ -185,7 +185,6 @@ TweetView			- individual tweet comment
 		
 		initialize: function(){
 			_.bindAll(this, 'render', 'select', 'preSelect', 'hoverOver', 'hoverOut', 'filterCollection', 'setDisplay');
-			alert('! v0.1 loaded')
 			this.app = this.options.app;
 			this.model.bind('change:filtered', this.setDisplay);
 			this.model.collection.bind('change:filter', this.updateFilters);

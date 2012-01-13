@@ -2,6 +2,7 @@
 
 // BB = {} is namespace for constructors
 // on = {} is namespace for instances of objects
+alert('! v0.1 loaded')
 
 var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
 
@@ -64,7 +65,7 @@ $LAB
 	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
-.wait()
+.wait(function(){alert(lib scripts loaded)})
 .script(
 	on.path.js + 'app/models.js',
 	on.path.js + 'app/collections.js'
@@ -72,6 +73,7 @@ $LAB
 .wait(function(){
 	// Media Queries Polyfill https://github.com/h5bp/mobile-boilerplate/wiki/Media-Queries-Polyfill
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
+	alert('backbone loaded');
 	
 	if(iScroll) $('body').addClass('iScrollEnabled');
 	
