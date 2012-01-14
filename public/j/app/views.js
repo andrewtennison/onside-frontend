@@ -387,7 +387,7 @@ TweetView			- individual tweet comment
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
-					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar'});
+					//self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar'});
 				} else if (!needsScroll && scroll){
 					self.scroll.destroy();
 					self.scroll = null;
@@ -633,7 +633,7 @@ TweetView			- individual tweet comment
 			this.el.append(view.render().el);
 			
 			setTimeout(function () {
-				view.scroll = new iScroll(view.id, {scrollbarClass: 'detailScrollbar', zoom:false});
+				//view.scroll = new iScroll(view.id, {scrollbarClass: 'detailScrollbar', zoom:false});
 			}, 100);
 
 			// set page route
@@ -705,7 +705,7 @@ TweetView			- individual tweet comment
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
 				$(this.el).fadeIn(200,function(){
-					self.scroll = new iScroll(self.id, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
+					//self.scroll = new iScroll(self.id, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
 				});
 			}else{
 				$(this.el).fadeOut(200,function(){
@@ -1030,7 +1030,7 @@ TweetView			- individual tweet comment
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
-					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'commentScrollbar'});
+					//self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'commentScrollbar'});
 				} else if (!needsScroll && scroll){
 					self.scroll.destroy();
 					self.scroll = null;

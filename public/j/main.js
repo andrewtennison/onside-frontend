@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace')
+console.log('1. namespace - 0.1')
 
 on.logger = [];
 on.helper = {
