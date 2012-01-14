@@ -102,7 +102,7 @@ app.get('/login', function(req,res){
 	res.render('pages/login', { title: 'Log In', cssPath: '' });
 });
 
-app.get('/addcontent', routes.cms);
+app.get('/cms', routes.cms);
 
 // API proxy requests
 app.get('/api/*', routes.getApi);

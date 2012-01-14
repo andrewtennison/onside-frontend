@@ -169,7 +169,7 @@ body,
 #listGroups > footer,
 #listChat > footer {position:absolute; display:block; bottom:0; left:0; right:0; text-align:center}
 
-.iScrollEnabled #listDetail .scroller {padding-right:6px}
+.iScrollEnabled #listDetail .scroller {padding-right:9px}
 .iScrollEnabled .contentWrapper {overflow:hidden !important}
 
 /* ==|== animation styles ===================================================== */
@@ -251,7 +251,7 @@ body,
 
 .detailItem .content article {background:#fff; margin:3px; box-shadow:0 0 2px #000; -webkit-box-shadow:0 0 2px #000}
 
-.detailItem .channelList {padding:10px;}
+.detailItem .channelList {padding:10px 5px 10px 2px;}
 .detailItem .channelList h2 {color: #DDDDDD; font-size: 1.2em; font-weight: normal; padding: 0 0 4px; text-transform: uppercase;}
 
 	.detailItem .channelList .channelItem {margin:0 0 6px 0; border-bottom:5px solid #ff0000}

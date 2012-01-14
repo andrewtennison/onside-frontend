@@ -270,13 +270,14 @@ TweetView			- individual tweet comment
 			this.app.bind('change:userAuth', this.setAuth);
 			this.setAuth(false,this.app.get('userAuth'));
 			
-			
+			/*
 			var self = this;
 			this.$('.show').bind(on.env.touchClick, function(){
 				//self.show();
 				console.log('click  touch? = ' + on.env.touchClick);
 				return false;
 			});
+			*/
 			
 		},
 				
