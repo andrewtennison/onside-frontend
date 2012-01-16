@@ -44,15 +44,15 @@ on.path = {
 	facebookCss: '//dev.onside.me:3000/c/facebook.css?1'
 };
 
-window.fbAsyncInit = function() {
-	FB.init({
-		appId		: '266299360074356',
-		channelUrl	: '//dev.onside.me:3000/fb_channel',
-		status		: true, // check login status
-		cookie		: true, // enable cookies to allow the server to access the session
-		xfbml		: true	// parse XFBML
-	});
-};
+// window.fbAsyncInit = function() {
+	// FB.init({
+		// appId		: '266299360074356',
+		// channelUrl	: '//dev.onside.me:3000/fb_channel',
+		// status		: true, // check login status
+		// cookie		: true, // enable cookies to allow the server to access the session
+		// xfbml		: true	// parse XFBML
+	// });
+// };
 
 
 $LAB
@@ -61,11 +61,11 @@ $LAB
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js',
-	on.path.js + 'lib/backbone-0.5.3.min.js',
-	on.path.js + 'lib/pretty.js',
-	on.path.js + 'lib/iscroll.js',
-	on.path.js + 'lib/mbp.helper.js',
-	'http://connect.facebook.net/en_US/all.js'
+	on.path.js + 'lib/backbone-0.5.3.min.js'//,
+//	on.path.js + 'lib/pretty.js',
+//	on.path.js + 'lib/iscroll.js',
+//	on.path.js + 'lib/mbp.helper.js',
+//	'http://connect.facebook.net/en_US/all.js'
 )
 .wait(function(){
 	console.log('3. models + collections')
