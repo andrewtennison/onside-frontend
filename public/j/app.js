@@ -11,6 +11,24 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	initialize: function(){
 		console.info('# appRoutes.initialize');
+
+		var left = $('#listGroups'),
+			center = $('#main'),
+			//detail = $('#listDetail'),
+			//article = $('#listArticle'),
+			right = $('#listChat');
+		
+		
+		left.click(function(){
+			console.log('left')
+		});
+		right.click(function(){
+			console.log('right')			
+		});
+		center.delegate('#listDetail', 'click', function(){
+			console.log('detail')			
+		});		
+
 		
 		// App model	
 		on.m.app = new BB.App(this);

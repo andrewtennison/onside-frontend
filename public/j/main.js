@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.15')
+console.log('1. namespace - 0.16')
 
 on.logger = [];
 on.helper = {
@@ -156,26 +156,11 @@ $LAB
 	function init(){
 		console.log('5. doc ready')
 
-		var left = $('#listGroups'),
-			center = $('#main'),
-			//detail = $('#listDetail'),
-			//article = $('#listArticle'),
-			right = $('#listChat');
-		
-		
-		left.click(function(){
-			console.log('left')
-		});
-		right.click(function(){
-			console.log('right')			
-		});
-		center.delegate('#listDetail', 'click', function(){
-			console.log('detail')			
-		});		
-		
-		console.log(FB)
-
-
+		$LAB
+		.script(on.path.js + 'app/views.js')
+		.wait()
+		.script(on.path.js + 'app.js')
+		.wait(function(){console.log('6. app loaded')});
 
 
 
@@ -187,11 +172,6 @@ $LAB
 		MBP.scaleFix(); 
 		MBP.hideUrlBar();
 	
-		$LAB
-			.script(on.path.js + 'app/views.js')
-			.wait()
-			.script(on.path.js + 'app.js')
-			.wait(function(){console.log('6. app loaded')});
 		*/
 			
 	};
