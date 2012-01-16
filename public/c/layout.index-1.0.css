@@ -318,7 +318,7 @@ body,
 #listChat .content form {padding:10px; border-bottom: 1px solid #18191A;}
 #listChat .content .inner {border-top: 1px solid #393B3D;}
 #listChat .content form input,
-#listChat .content form textarea {width:290px; background:#fff url(/i/sprites/icon_comment.png) 5px 4px no-repeat; text-indent:30px}
+#listChat .content form textarea {width:230px; background:#fff url(/i/sprites/icon_comment.png) 5px 4px no-repeat; text-indent:30px}
 #listChat .content form input {padding:7px 4px 5px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
@@ -378,7 +378,7 @@ body,
 @media only screen and (min-width: 1000px) {
 	#main {left:260px;}
 	.showchannels #main {left:260px; right:45px}
-	.showcomments #main {left:0px; right: 260px}
+	.showcomments #main {left:45fpx; right: 260px}
 
 	#listGroups {width:265px}
 	#navSearch input {width:100%;}

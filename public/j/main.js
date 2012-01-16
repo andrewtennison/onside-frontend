@@ -87,7 +87,9 @@ $LAB
 
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
 	function init(){
-		console.log('5. doc ready')
+		console.log('5. doc ready');
+		
+		MBP.hideUrlBar();
 
 		if(iScroll) $('body').addClass('iScrollEnabled');
 
@@ -97,13 +99,6 @@ $LAB
 		.script(on.path.js + 'app.js?' + on.env.v)
 		.wait(function(){console.log('6. app loaded')});
 
-		/*
-		
-		MBP.scaleFix(); 
-		MBP.hideUrlBar();
-	
-		*/
-			
 	};
 
 	console.log('on.env.docready = ' + on.env.docReady);
