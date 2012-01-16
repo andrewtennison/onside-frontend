@@ -74,7 +74,7 @@ $LAB
 )
 .wait()
 .script(
-	on.path.js + 'lib/backbone_extensions.js?' + on.env.v,
+	on.path.js + 'lib/backbone_extentions.js?' + on.env.v,
 	on.path.js + 'app/models.js?' + on.env.v,
 	on.path.js + 'app/collections.js?' + on.env.v
 )
