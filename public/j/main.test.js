@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.04')
+console.log('1. namespace - 0.06')
 
 on.logger = [];
 on.helper = {
@@ -57,14 +57,13 @@ window.fbAsyncInit = function() {
 
 $LAB
 .script( 
-	// put in head, use instead of lib.js & user modernizr.load() - libs/modernizr-custom.js
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js',
-//	on.path.js + 'lib/backbone-0.5.3.min.js',
-	on.path.js + 'lib/pretty.js',
-	on.path.js + 'lib/iscroll.js',
-	on.path.js + 'lib/mbp.helper.js',
+	on.path.js + 'lib/backbone-0.5.3.min.js',
+//	on.path.js + 'lib/pretty.js',
+//	on.path.js + 'lib/iscroll.js',
+//	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
 .wait(function(){
