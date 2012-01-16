@@ -261,6 +261,13 @@ TweetView			- individual tweet comment
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
 
+			alert('appView init');
+			
+			$('#listDetail .detailHead h1').click(function(){
+				console.log('H1 title clicked');
+				console.log(this);
+			});
+
 			_.bindAll(this, 'onResize', 'show', 'setAuth');
 			this.app = this.options.app;
 
@@ -270,11 +277,6 @@ TweetView			- individual tweet comment
 			this.app.bind('change:userAuth', this.setAuth);
 			this.setAuth(false,this.app.get('userAuth'));
 			
-			alert('appView init');
-			$('a.show.comments.icon').click(function(){
-				alert('!clicked');
-				return false;
-			});
 			
 			
 		},
