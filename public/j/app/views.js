@@ -263,13 +263,20 @@ TweetView			- individual tweet comment
 
 			alert('appView init');
 			
-		$('#listDetail').delegate('.detailHead h1','click', function(){
-			console.log('H1 title clicked');
 			console.log(this);
-		}).delegate('.detailHead h1','ontouchstart', function(){
-			console.log('H1 title touched');
-			console.log(this);
-		});
+			console.log($('#OnsideApp'));
+			console.log($('#listGroups'));
+			console.log($('#main'));
+			console.log($('#listChat'));
+
+			
+			$('#listDetail').on('click', '.detailHead h1', function(){
+				console.log('H1 title clicked');
+				console.log(this);
+			}).on('ontouchstart', '.detailHead h1', function(){
+				console.log('H1 title touched');
+				console.log(this);
+			});
 
 			_.bindAll(this, 'onResize', 'show', 'setAuth');
 			this.app = this.options.app;
@@ -279,9 +286,6 @@ TweetView			- individual tweet comment
 			
 			this.app.bind('change:userAuth', this.setAuth);
 			this.setAuth(false,this.app.get('userAuth'));
-			
-			
-			
 		},
 				
 		login: function(){
@@ -596,8 +600,6 @@ TweetView			- individual tweet comment
 		className:'channelHomeItem',
 		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
 		render: function(){
-			console.log(this.model.toJSON());
-			
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		}
