@@ -141,8 +141,8 @@ body,
 
 /* main blocks */
 #OnsideApp 		{overflow:hidden;}
-#listGroups 	{right:auto; width:325px; z-index:2; background:#282a2c url(/i/sprites/noise2.png) 0 0 repeat;}
-#listChat 		{left:auto; width:325px; background:#282a2c url(/i/sprites/noise2.png) 0 0 repeat;}
+#listGroups 	{right:auto; width:265px; z-index:2; background:#282a2c url(/i/sprites/noise2.png) 0 0 repeat;}
+#listChat 		{left:auto; width:265px; background:#282a2c url(/i/sprites/noise2.png) 0 0 repeat;}
 
 #main 			{right:0; width:auto; z-index:3;}
 	#appNav 		{top:auto; z-index:3; left:5px; right:5px;}
@@ -343,10 +343,9 @@ body,
 /* ==|== reused styles ===================================================== */
 
 /* ==|== media querys ===================================================== */
-.showchannels #main {left:320px; right:-320px}
 
-
-.showcomments #main {left:-320px; right: 320px}
+.showchannels #main {left:260px; right:-260px}
+.showcomments #main {left:-260px; right: 260px}
 .showcomments #listChat {z-index:2}
 
 .showchannels .show.channels,
@@ -354,34 +353,45 @@ body,
 .showchannels .show.channels {background-position:-160px -40px;}
 .showcomments .show.comments {background-position:-360px -40px;}
 
-.showsearch #main {left:320px; right:-320px}
+.showsearch #main {left:260px; right:-260px}
 
 @media only screen and (max-width: 480px) {
+/* bug fix when both left and right cols would overlap */
 .showchannels #listChat {}
-.showcomments #listGroups {left:-320px}
+.showcomments #listGroups {left:-260px}
 }
-
-
 @media only screen and (min-width: 480px) {
 	#main {left:45px}
+	.showcomments #main {left:-215px;}
+
 	#navSearch input {width: 22px;}
 	.showchannels #navSearch input {width: 100%;}
 }
 @media only screen and (min-width: 620px) {
 	#main {right:45px}
-	#listChat .content form input, #listChat .content form textarea {width:22px; left:275px}
-	.showcomments #listChat .content form input, .showcomments #listChat .content form textarea {width:290px; left:0}
+	.showchannels #main {left:260px; right:-215px}
+	.showcomments #main {left:-215px; right: 260px}
+
+	#listChat .content form input, #listChat .content form textarea {width:22px; left:215px}
+	.showcomments #listChat .content form input, .showcomments #listChat .content form textarea {width:230px; left:0}
 }
 
 @media only screen and (min-width: 1000px) {
-	#main {left:280px;}
-	#listGroups {width:285px}
+	#main {left:260px;}
+	.showchannels #main {left:260px; right:45px}
+	.showcomments #main {left:0px; right: 260px}
+
+	#listGroups {width:265px}
 	#navSearch input {width:100%;}
 	.show.channels {display:none}
 }
 @media only screen and (min-width: 1200px) {
-	#main {right:220px}
-	#listChat {width:225px}
+	#main {right:260px}
+	.showchannels #main {left:260px; right:260px}
+	.showcomments #main {left:260px; right: 260px}
+
+	#listChat {width:265px}
+	#listChat .content form input, #listChat .content form textarea {width:230px; left:0}
 	.show.comments {display:none}
 }
 
