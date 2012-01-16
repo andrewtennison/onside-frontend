@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.07')
+console.log('1. namespace - 0.08')
 
 on.logger = [];
 on.helper = {
@@ -65,7 +65,7 @@ $LAB
 .script(
 	on.path.js + 'lib/backbone-0.5.3.min.js',
 	on.path.js + 'lib/pretty.js',
-//	on.path.js + 'lib/iscroll.js',
+	on.path.js + 'lib/iscroll.js',
 //	on.path.js + 'lib/mbp.helper.js',
 	'http://connect.facebook.net/en_US/all.js'
 )
