@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.17')
+console.log('1. namespace - 0.18')
 
 on.logger = [];
 on.helper = {
@@ -61,7 +61,6 @@ $LAB
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js',
-	'http://connect.facebook.net/en_US/all.js'
 )
 .wait(function(){
 	$(document).ready(function(){ on.env.docReady = true; })
@@ -69,7 +68,8 @@ $LAB
 .script(
 	on.path.js + 'lib/backbone-0.5.3.min.js',
 	on.path.js + 'lib/pretty.js',
-	on.path.js + 'lib/iscroll.js'
+	on.path.js + 'lib/iscroll.js',
+	'http://connect.facebook.net/en_US/all.js'
 //	on.path.js + 'lib/mbp.helper.js',
 )
 .wait()
@@ -156,18 +156,15 @@ $LAB
 	function init(){
 		console.log('5. doc ready')
 
+		if(iScroll) $('body').addClass('iScrollEnabled');
+
 		$LAB
 		.script(on.path.js + 'app/views.js')
 		.wait()
 		.script(on.path.js + 'app.js')
 		.wait(function(){console.log('6. app loaded')});
 
-
-
-
-
 		/*
-		if(iScroll) $('body').addClass('iScrollEnabled');
 		
 		MBP.scaleFix(); 
 		MBP.hideUrlBar();

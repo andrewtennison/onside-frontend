@@ -356,7 +356,6 @@ body,
 .showsearch #main {left:260px; right:-260px}
 
 @media only screen and (max-width: 480px) {
-/* bug fix when both left and right cols would overlap */
 .showchannels #listChat {}
 .showcomments #listGroups {left:-260px}
 }
