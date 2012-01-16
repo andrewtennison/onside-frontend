@@ -80,9 +80,6 @@ $LAB
 	// Modernizr.mq('(min-width:0)') || document.write('<script src="js/libs/respond.min.js"><\/script>');
 	console.log('3. models + collections')
 
-	
-	if(iScroll) $('body').addClass('iScrollEnabled');
-	
 	// prevent conflict with .ejs backend templates
 	_.templateSettings = { 
 		interpolate : /\<\@\=(.+?)\@\>/gim, 
@@ -119,8 +116,8 @@ $LAB
 		}
 	});
 
-  // Cached regex to split keys for `delegate`.
-  var eventSplitter = /^(\S+)\s*(.*)$/;
+	// Cached regex to split keys for `delegate`.
+	var eventSplitter = /^(\S+)\s*(.*)$/;
 
 	_.extend(Backbone.View.prototype, Backbone.Events, {
 		delegateEvents : function(events) {
@@ -147,25 +144,26 @@ $LAB
 		},
 	});
 
-
-})
-.wait(function(){
-
 	console.log('4. helpers')
 
 	// iPhone Scale Bug Fix, read this when using http://www.blog.highub.com/mobile-2/a-fix-for-iphone-viewport-scale-bug/
 	window.onload = function() { 
-		MBP.scaleFix(); MBP.hideUrlBar();
+		//MBP.scaleFix(); MBP.hideUrlBar();
 	};
 	
 	function init(){
 		console.log('5. doc ready')
-
+		if(iScroll) $('body').addClass('iScrollEnabled');
+		
+		MBP.scaleFix(); 
+		MBP.hideUrlBar();
+	
 		$LAB
 			.script(on.path.js + 'app/views.js')
 			.wait()
 			.script(on.path.js + 'app.js')
-			.wait(function(){	console.log('6. app loaded')});
+			.wait(function(){console.log('6. app loaded')});
+			
 	};
 
 	console.log('on.env.docready = ' + on.env.docReady);
@@ -174,4 +172,4 @@ $LAB
 	} else {
 		$(document).ready(init);
 	}
-})
+});

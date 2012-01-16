@@ -263,10 +263,13 @@ TweetView			- individual tweet comment
 
 			alert('appView init');
 			
-			$('#listDetail .detailHead h1').click(function(){
-				console.log('H1 title clicked');
-				console.log(this);
-			});
+		$('#listDetail').delegate('.detailHead h1','click', function(){
+			console.log('H1 title clicked');
+			console.log(this);
+		}).delegate('.detailHead h1','ontouchstart', function(){
+			console.log('H1 title touched');
+			console.log(this);
+		});
 
 			_.bindAll(this, 'onResize', 'show', 'setAuth');
 			this.app = this.options.app;
