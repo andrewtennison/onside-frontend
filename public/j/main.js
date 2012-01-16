@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.11')
+console.log('1. namespace - 0.12')
 
 on.logger = [];
 on.helper = {
@@ -154,22 +154,24 @@ $LAB
 	function init(){
 		console.log('5. doc ready')
 
-		$('#listDetail').on('click', '.detailHead h1', function(){
-			console.log('H1 title clicked');
-			console.log(this);
+		var left = $('#listGroups'),
+			center = $('#main'),
+			//detail = $('#listDetail'),
+			//article = $('#listArticle'),
+			right = $('#listChat');
+		
+		
+		left.click(function(){
+			console.log('left')
 		});
-		$('#listDetail').on('ontouchstart', '.detailHead h1', function(){
-			console.log('H1 title touched');
-			console.log(this);
+		right.click(function(){
+			console.log('right')			
 		});
-		$('#listDetail').click(function(e){
-			console.log('list detail click');
-			console.log(this);
-		});
-		$('#listDetail').bind('ontouchstart', function(){
-			console.log('list detail touch');
-			console.log(this);
-		});
+		center.delegate('#listDetail', 'click', function(){
+			console.log('detail')			
+		});		
+		
+		console.log(FB)
 
 
 
