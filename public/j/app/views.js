@@ -254,8 +254,8 @@ TweetView			- individual tweet comment
 		},
 		
 		events: {
-			'click .login'	: 'login'
-			//,'click .show'	: 'show' 
+			'click .login'	: 'login',
+			'click .show'	: 'show' 
 		},
 		
 		initialize: function(){
