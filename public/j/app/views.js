@@ -260,24 +260,7 @@ TweetView			- individual tweet comment
 		
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
-
-			alert('appView init');
 			
-			console.log(this);
-			console.log($('#OnsideApp'));
-			console.log($('#listGroups'));
-			console.log($('#main'));
-			console.log($('#listChat'));
-
-			
-			$('#listDetail').on('click', '.detailHead h1', function(){
-				console.log('H1 title clicked');
-				console.log(this);
-			}).on('ontouchstart', '.detailHead h1', function(){
-				console.log('H1 title touched');
-				console.log(this);
-			});
-
 			_.bindAll(this, 'onResize', 'show', 'setAuth');
 			this.app = this.options.app;
 

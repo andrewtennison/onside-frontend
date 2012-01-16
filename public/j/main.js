@@ -153,6 +153,31 @@ $LAB
 	
 	function init(){
 		console.log('5. doc ready')
+
+		$('#listDetail').on('click', '.detailHead h1', function(){
+			console.log('H1 title clicked');
+			console.log(this);
+		});
+		$('#listDetail').on('ontouchstart', '.detailHead h1', function(){
+			console.log('H1 title touched');
+			console.log(this);
+		});
+		$('#listDetail').click(function(e){
+			console.log('list detail click');
+			console.log(this);
+		});
+		$('#listDetail').bind('ontouchstart', function(e){
+			console.log('list detail touch');
+			console.log(this);
+		});
+
+
+
+
+
+
+
+		/*
 		if(iScroll) $('body').addClass('iScrollEnabled');
 		
 		MBP.scaleFix(); 
@@ -163,6 +188,7 @@ $LAB
 			.wait()
 			.script(on.path.js + 'app.js')
 			.wait(function(){console.log('6. app loaded')});
+		*/
 			
 	};
 
