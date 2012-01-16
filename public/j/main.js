@@ -17,7 +17,7 @@ on.env = {
 	docReady			: false
 };
 
-console.log('1. namespace - 0.13')
+console.log('1. namespace - 0.15')
 
 on.logger = [];
 on.helper = {
@@ -64,7 +64,6 @@ $LAB
 	'http://connect.facebook.net/en_US/all.js'
 )
 .wait(function(){
-	console.log('2. libs');
 	$(document).ready(function(){ on.env.docReady = true; })
 })
 .script(
