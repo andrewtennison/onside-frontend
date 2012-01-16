@@ -162,7 +162,7 @@ exports.index = function(req, res){
 	// for new dev
 	baseAuthObject.preload = true;
 	baseAuthObject.authReq = true;	
-	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/index-1.0.ejs', { title: 'Onside', cssPath: '.index-1.0', jsPath:'.test', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }) }; 
+	baseAuthObject.pass = function(res,loggedIn, content){ res.render('pages/index-1.0.ejs', { title: 'Onside', cssPath: '.index-1.0', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }) }; 
 	checkAuth( baseAuthObject );
 	//baseAuthObject.pass(res, false)
 };
