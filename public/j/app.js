@@ -2,11 +2,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
-		''				: 'home',
-		'event/:id'		: 'getEvent',
-		'channel/:id'	: 'getChannel',
-		'search/:id'	: 'getSearch',
-		':service/:id/article-:id2'	: 'getArticle'
+		''								: 'home',
+		'/event/:id'					: 'getEvent',
+		'/channel/:id'					: 'getChannel',
+		'/search/:id'					: 'getSearch',
+		'/:service/:id/article-:id2'	: 'getArticle'
 	},
 	
 	initialize: function(){
@@ -82,4 +82,4 @@ BB.appRoutes = Backbone.Router.extend({
 });
 
 var onside = new BB.appRoutes();
-Backbone.history.start();
+Backbone.history.start({pushState: true});

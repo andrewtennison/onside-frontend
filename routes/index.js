@@ -3,7 +3,8 @@
  */
 var rest 		= require('restler'),
 	Config 		= require('../lib/conf'),
-	conf 		= new Config();
+	conf 		= new Config(),
+	twitter		= require('ntwitter');
 
 var preload = function(req, callback){
 	var content = {},
@@ -81,7 +82,7 @@ var preload = function(req, callback){
 			console.log('Preloading complete')
 			clearInterval( timer );
 			callback(content);
-		} else if(i === 30000){
+		} else if(i === 3000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			callback(content);
@@ -312,10 +313,11 @@ exports.getDetailApi = function(req,res){
 	
 	
 	// get related channels
-	req.url = '/channel?'+action+'='+id;
-	callApi(req, res, 'get', false, false, function(r){
-		content.channels = (r.success)? r.success.resultset.channels : false;
-	});
+	// req.url = '/channel?'+action+'='+id;
+	// callApi(req, res, 'get', false, false, function(r){
+		// content.channels = (r.success)? r.success.resultset.channels : false;
+		content.channels = [];
+	// });
 
 	// get related events
 	req.url = '/event?'+action+'='+id;
@@ -330,10 +332,10 @@ exports.getDetailApi = function(req,res){
 	});
 	
 	function onComplete(){
-		if( content.error || (content.channels && content.events && content.articles && content.author) ){
+		if( content.error || (/*content.channels &&*/ content.events && content.articles && content.author) ){
 			clearInterval( timer );
 			res.json(content)
-		} else if(i === 30000){
+		} else if(i === 3000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			res.send('load detailed failed, request timed out')
@@ -346,51 +348,18 @@ exports.getDetailApi = function(req,res){
 };
 
 exports.tweet = function(req,res){
-	if(!req.xhr) return;
+	var twit = new twitter({
+		consumer_key: conf.twit.consumerKey,
+		consumer_secret: conf.twit.consumerSecret,
+		access_token_key: req.session.auth.twitter.accessToken,
+		access_token_secret: req.session.auth.twitter.accessTokenSecret
+	});
 	
-	var url = 'http://api.twitter.com/1/statuses/update.json',
-		obj = {
-			token: {
-				oauth_token_secret: req.session.auth.twitter.accessTokenSecret,
-				oauth_token: req.session.auth.twitter.accessToken
-			},
-			wrap_links : true,
-			status : req.body.message
-		};
-
-	console.log(req.session.auth.twitter)
-
-	rest.post(url,obj).on('complete', function(data) {
-		console.log(data);
-		res.json(err)
-	}).on('error', function(err){
-		console.error(err);
-		res.json(err)
+	twit.updateStatus(req.body.message,
+		function (err, data) {
+		console.log(console.dir(data));
+		res.json(data)
 	});
-
-	//encodeURIComponent()
-	/*
-
-twitterClient.apiCall('POST', '/statuses/update.json',
-    {token: 
-    	{
-    		oauth_token_secret: req.param('oauth_token_secret'), 
-    		oauth_token: req.param('oauth_token')
-    	}, 
-    	status: req.param('message')
-    	},
-    
-
-	rest.post(url,obj).on('complete', function(data) {
-		console.log(data);
-		//response.success = data;
-		//callback(response);
-	}).on('error', function(err){
-		console.error(err);
-		//response.error = 'error calling API';
-		//callback(response);
-	});
-	*/
 }
 
 exports.cms = function(req,res){

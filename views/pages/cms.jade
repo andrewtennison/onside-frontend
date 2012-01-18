@@ -17,12 +17,22 @@ section.list
 section.form
 
 section.hiddenForms
-	form#addUser
+	form#addUser(method="post", action="/api/user")
 		h2 Modify User
 		input(type="text", name="name", placeholder="User Name")
+		input(type="text", name="email", placeholder="User email")
+		input(type="text", name="admin", placeholder="User is admin (0/1)")
+		input(type="text", name="enabled", placeholder="User enabled (0/1)")
+		input(type="text", name="status", placeholder="User status (0-9)")
+		hr
+		input(type="text", name="facebook", placeholder="facebook UID")
+		input(type="text", name="google", placeholder="Google UID")
+		input(type="text", name="twitter", placeholder="Twitter UID")
+		input(type="text", name="password", placeholder="Password")
 		footer
 			button(type="submit") edit user
-
+			
+			
 	form#followChannel
 		h2 Follow Channel
 		input(type="text", name="user", placeholder="User ID")

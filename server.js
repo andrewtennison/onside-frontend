@@ -95,14 +95,9 @@ app.get('/signup', function(req,res){
 
 
 app.get('/', routes.index);
-app.get('/demo', routes.demo1);
-app.get('/demo2', routes.demo2);
-
-app.get('/login', function(req,res){
-	res.render('pages/login', { title: 'Log In', cssPath: '' });
-});
-
-app.get('/test', function(req,res){ res.render('pages/test.ejs', { title: 'Log In', cssPath: '', jsPath: '' }); });
+// app.get('/demo', routes.demo1);
+// app.get('/demo2', routes.demo2);
+// app.get('/login', function(req,res){ res.render('pages/login', { title: 'Log In', cssPath: '' }); });
 
 app.get('/cms', routes.cms);
 

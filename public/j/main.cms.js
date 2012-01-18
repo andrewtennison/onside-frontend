@@ -25,13 +25,14 @@ $LAB
 			console.log(arr);
 			list.empty();
 			$.each(arr, function(i,val){
+				console.log(val)
 				var el = $('<li id="_'+ val.id +'">'); 
 				val.service = service;
 				val.form = form;
 				el.data('props', val);
-				el.text(val.name);
+				el.text(val.name || val.email);
 				list.append(el);
-			})
+			});
 		};
 		
 		// middle list - populate form
@@ -141,8 +142,19 @@ $LAB
 					break;				
 				case 'users':
 					var form = $('#addUser',hiddenForm).clone();
-					//$.get('/api/channel', function(json){ updateList(json.resultset.channels, json.service, form) });
+					$.get('/api/user/list', function(json){ updateList(json.resultset.users, json.service, form) });
 					formSection.append(form);
+					
+					console.log('!! form added')
+					form.submit(function(e){
+						e.preventDefault();
+						var id = form.attr('data-id'),
+							url = (id === undefined)? form.attr('action') : form.attr('action')  +'/'+ form.attr('data-id');
+						
+						console.log('! user form submitted')
+						$.post(url, form.serialize(), function(d){console.log(d)});
+						return false;
+					});
 					break;
 				case 'save':
 					var form = $('#saveSearch',hiddenForm).clone();

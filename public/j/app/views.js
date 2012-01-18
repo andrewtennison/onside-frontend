@@ -626,8 +626,9 @@ TweetView			- individual tweet comment
 
 			// set page route
 			var s = model.get('originUId').split('|'),
-				route = s[0] + "/" + s[1];
-			this.app.route.navigate(route);
+				route = '/' + s[0] + "/" + s[1];
+				
+			if(s[1] !== 'null') this.app.route.navigate(route);
 		},
 		addAll: function(models){
 			on.helper.log('View.DetailList.addAll');
@@ -853,7 +854,7 @@ TweetView			- individual tweet comment
 			} else if(id === null) {
 				this.hide();
 				// set page route
-				var route = s[0] + "/" + s[1];
+				var route = '/' + s[0] + "/" + s[1];
 				this.app.route.navigate(route);
 			} else {
 				var list = this.app.get('selectedArticleList'),
@@ -865,7 +866,7 @@ TweetView			- individual tweet comment
 				this.show();
 				
 				// set page route
-				var route = s[0] + "/" + s[1] + '/article-' + model.id;
+				var route = '/' + s[0] + "/" + s[1] + '/article-' + model.id;
 				this.app.route.navigate(route);
 			}
 		},
@@ -952,6 +953,7 @@ TweetView			- individual tweet comment
 		
 	});
 	var PostTweet = _form.extend({
+		escapeValue: false,
 		el: $('#twitterComments form'),
 		escapeVal: false,
 		initialize : function(){
@@ -993,8 +995,16 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			_.bindAll(this, 'empty', 'addOne', 'addAll', 'addOneTweet', 'addAllTweets', 'changeTab', 'facebookComments', 'updateScroll');
 			
-			this.app.bind('change:selectedItemUID', this.empty);
-			this.app.bind('change:selectedArticle', this.empty);
+			this.app.bind('change:selectedItemUID', function(m,v){
+				this.empty()
+				alert(v.split('|')[1]);
+				if(v.split('|')[1] === 'null'){
+					this.el.addClass('showHidden');
+				}else{
+					this.el.removeClass('showHidden');
+				};
+			});
+			this.app.bind('change:selectedArticle', this.empty );
 
 			this.collection = this.app.comments;
 			this.collection.bind('add', this.addOne);
@@ -1025,13 +1035,13 @@ TweetView			- individual tweet comment
 				}
 			}, 100);
 		},
-		empty:  function(){
+		empty:  function(val){
 			this.$el.fb_block.empty();
 			this.$el.go_block.empty();
 			this.$el.tw_block.empty();
 			this.$el.on_block.empty();
 			ev.trigger('update:commentContent');
-			if(this.activeBlock === '#facebookComments') this.facebookComments();
+			//if(this.activeBlock === '#facebookComments') this.facebookComments();
 		},
 		changeTab: function(e){
 			e.preventDefault();
@@ -1097,10 +1107,9 @@ TweetView			- individual tweet comment
 		}
 	});
 	var TweetView 	= CommentView.extend({
-		className: 'tweet bb',
-		template:  _.template( $('#tweetTemplate').html() ),
-		render: function(){
-			//console.log(this.model.toJSON())
+		className	: 'tweet bb',
+		template	:  _.template( $('#tweetTemplate').html() ),
+		render		: function(){
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		}

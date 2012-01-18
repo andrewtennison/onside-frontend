@@ -4,7 +4,11 @@
 		<a href="">Support</a>
 		<a href="">Contact Us</a>
 		<a href="">FAQ</a-->
-		<a href="/login">Login</a>
+		<% if(loggedIn) { %>
+			<a href="/logout">Sign out</a>
+		<% } else { %>
+			<a href="/login">Sign in</a>
+		<% } %>
 	</div>
 </nav>
 
