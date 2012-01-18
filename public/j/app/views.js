@@ -993,17 +993,10 @@ TweetView			- individual tweet comment
 		
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'empty', 'addOne', 'addAll', 'addOneTweet', 'addAllTweets', 'changeTab', 'facebookComments', 'updateScroll');
+			_.bindAll(this, 'commentsActive', 'empty', 'addOne', 'addAll', 'addOneTweet', 'addAllTweets', 'changeTab', 'facebookComments', 'updateScroll');
 			
-			this.app.bind('change:selectedItemUID', function(m,v){
-				this.empty()
-				alert(v.split('|')[1]);
-				if(v.split('|')[1] === 'null'){
-					this.el.addClass('showHidden');
-				}else{
-					this.el.removeClass('showHidden');
-				};
-			});
+			this.app.bind('change:selectedItemUID', this.empty); 
+			this.app.bind('change:selectedItemUID', this.commentsActive); 			
 			this.app.bind('change:selectedArticle', this.empty );
 
 			this.collection = this.app.comments;
@@ -1018,6 +1011,14 @@ TweetView			- individual tweet comment
 			
 			ev.bind('update:commentContent', this.updateScroll, this);
 			ev.trigger('update:commentContent');
+		},
+		commentsActive: function(model, val){
+			alert(val);
+			if(val.split('|')[1] === 'null'){
+				this.el.addClass('showHelp');
+			}else{
+				this.el.removeClass('showHelp');
+			};
 		},
 		updateScroll: function(){
 			var self = this;

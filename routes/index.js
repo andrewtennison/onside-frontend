@@ -3,8 +3,8 @@
  */
 var rest 		= require('restler'),
 	Config 		= require('../lib/conf'),
-	conf 		= new Config();
-	//twitter		= require('ntwitter');
+	conf 		= new Config(),
+	twitter		= require('ntwitter');
 
 var preload = function(req, callback){
 	var content = {},
@@ -348,7 +348,9 @@ exports.getDetailApi = function(req,res){
 };
 
 exports.tweet = function(req,res){
-	/*
+	if(!req.xhr || !req.session.auth.twitter) return;
+	
+		
 	var twit = new twitter({
 		consumer_key: conf.twit.consumerKey,
 		consumer_secret: conf.twit.consumerSecret,
@@ -361,7 +363,6 @@ exports.tweet = function(req,res){
 		console.log(console.dir(data));
 		res.json(data)
 	});
-	*/
 }
 
 exports.cms = function(req,res){

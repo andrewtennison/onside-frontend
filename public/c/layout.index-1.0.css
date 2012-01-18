@@ -182,8 +182,8 @@ body,
 #listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea
 {-webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
 
-/* ==|== listGroups styles ===================================================== */
 
+/* ==|== listGroups styles ===================================================== */
 #listGroups  header h1 {position:relative; display:block; background:url(/i/sprites/d3_logo.png) 10px center no-repeat; width:200px; height:60px; text-indent:-999px; overflow:hidden }
 
 #navSearch {position: relative; display: block; padding: 10px 20px 10px 10px; border-top:0px none}
@@ -237,10 +237,10 @@ body,
 #appNav nav a.comments {float:right}
 
 
-
 /* ==|== listDetail styles ===================================================== */
 #listDetail .detailItem > header {border-radius:6px 6px 0 0 /*background:#065ea5; */}
 #listDetail .detailItem > .contentWrapper {}
+
 
 /* Header */
 .detailHead {border-bottom:1px solid #2a2a2a}
@@ -328,6 +328,7 @@ body,
 #listChat .content form input {padding:7px 4px 5px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
+/* comment-default */
 #listChat .inner .comment {min-height:45px;}
 	#listChat .comment img {position:absolute; right:0; margin:5px}
 	#listChat .comment time, #listChat .comment cite {padding:5px 0 0 10px; font-size:1.2em; position:relative; display:inline-block; color:#999}
@@ -337,6 +338,7 @@ body,
 #listChat .comment nav {}
 #listChat .comment nav a {}
 
+/* comment-tweet */
 #listChat .tweet {position:relative; margin:10px 10px 10px 65px; background:#fff}
 #listChat .tweet .user {padding:6px 10px; border-bottom:1px solid#333}
 	#listChat .tweet img {position:absolute; left:-55px; margin:0 10px 0  0}
@@ -346,16 +348,15 @@ body,
 	#listChat .tweet .wrapComment {padding:10px;}
 	#listChat .tweet .wrapComment p {font-size:1.3em; color:#333}
 
+
+/* toggle help content */
+#listChat .help {display:none}
+#listChat.showHelp .help {display:block}
+#listChat.showHelp .scroller {display:none}
+
 /* ==|== reused styles ===================================================== */
 
-/* ==|== media querys ===================================================== 
-csstransforms
-no-csstransforms3d
-csstransitions
-
- * */
-
-
+/* ==|== media querys ===================================================== */
 
 .no-csstransforms .showchannels #main {left:260px; right:-260px}
 .no-csstransforms .showcomments #main {left:-260px; right: 260px}
@@ -365,7 +366,6 @@ csstransitions
 .csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
 .csstransforms .showchannels #main {-moz-transform: translate(260px, 0px); -webkit-transform: translate(260px, 0px); -o-transform: translate(260px, 0px); -ms-transform: translate(260px, 0px); transform: translate(260px, 0px);}
 .csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
-
 
 .showchannels .show.channels,
 .showcomments .show.comments {background-color:#444; box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset;}
@@ -418,41 +418,3 @@ csstransitions
 	#listChat .content form input, #listChat .content form textarea {width:230px; left:0}
 	.show.comments {display:none}
 }
-
-
-/*
-@media only screen and (min-width: 1024px) {
-	#listDetail, #listArticle {left:250px; right:0; width:auto; padding-right:250px}
-	.showsearch #listDetail, .showsearch #listArticle {top:50px}
-	
-	#navUser, #navSearch {opacity:0; z-index:0;}
-	#listGroups, #listChat, .showsearch #navSearch {opacity:1; z-index:3}
-	#navSearch {left:250px; right:250px}	
-}
-
-@media only screen and (min-width: 650px) and (max-width: 1024px) {
-	#listDetail, #listArticle {left:55px; right:2px; width:auto;}
-	.showchannels #listDetail, .showchannels #listArticle {left:250px}
-	.showcomments #listDetail, .showcomments #listArticle {right:250px}
-	.showsearch #listDetail, .showsearch #listArticle {top:50px}
-	
-	#navUser, #navSearch, #listChat {opacity:0; z-index:0;}
-	
-	.showchannels #listGroups,
-	.showcomments #listChat,
-	.showsearch #navSearch {opacity:1; z-index:1}
-}
-
-@media only screen and (max-width: 650px) {
-}
-
-@media only screen and (min-width: 768px) {}
-
-@media only screen and (min-width: 1025px) {}
-
-
-@media only screen and (max-width: 640px) {}
-
-
-*/
-
