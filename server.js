@@ -6,6 +6,9 @@
  * 			- cluster module, investigate
  * 
  */
+
+global._ = require("./public/j/lib/underscore-1.2.1.min.js");
+
 var express			= require('express')
 //	, resource		= require('express-resource')
 	, RedisStore	= require('connect-redis')(express)	// redis is used for user session store
@@ -20,7 +23,7 @@ var express			= require('express')
 	// for login
 	, everyauth 	= require('everyauth')
 //	, graph 		= require('fbgraph')
-	, login		= require('./lib/login').all(conf)
+	, login			= require('./lib/login').all(conf)
 	
 	// Email
 	, email 		= require('./lib/email')
@@ -49,7 +52,7 @@ app.configure(function(){
 	app.use(everyauth.middleware());
 	app.use(app.router);
 	app.set('views', __dirname + '/views');
-	app.set('view engine', 'jade');
+	app.set('view engine', 'ejs');
 	app.use(express.static(__dirname + '/public'));
 	everyauth.helpExpress(app);
 });
@@ -80,7 +83,6 @@ app.get('/fb_channel', function(req,res){
 	res.render('channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false, loggedIn: false});
 });
 
-
 app.get('*', function(req, res, next){
 	if(req.headers.host === 'test.onside.me') {
 		routes.demo1();
@@ -89,27 +91,23 @@ app.get('*', function(req, res, next){
 	}
 }); 
 
-app.get('/signup', function(req,res){
-	res.render('pages/signup.ejs', { title: 'Onside Signup', cssPath: '.signup', jsPath:'.signup', loggedIn:true });
-});
-
 
 app.get('/', routes.index);
-// app.get('/demo', routes.demo1);
-// app.get('/demo2', routes.demo2);
-// app.get('/login', function(req,res){ res.render('pages/login', { title: 'Log In', cssPath: '' }); });
-
-app.get('/cms', routes.cms);
+app.get('/enter', routes.enter);
+app.get('/exit', routes.exit);
 
 // API proxy requests
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
-
 app.post('/tweet', routes.tweet);
 
 // fake call to proxy multiple calls to API 
 app.get('/detail/:action?/:id?', routes.getDetailApi);
+
+// CMS 
+app.get('/cms', routes.cms);
+
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

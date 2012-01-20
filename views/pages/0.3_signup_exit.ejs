@@ -1,0 +1,59 @@
+<nav>
+	<div class="inner">
+		<!--a href="">Help</a>
+		<a href="">Support</a>
+		<a href="">Contact Us</a>
+		<a href="">FAQ</a-->
+		<% if(loggedIn) { %>
+			<a href="/logout">Sign out</a>
+		<% } else { %>
+			<a href="/enter">Sign in</a>
+		<% } %>
+	</div>
+</nav>
+
+<header>
+	<div class="inner">
+		<article id="signupOpts">
+			<hgroup>
+				<h1>Onside Beta</h1>
+				<h2>Delivering Fans Personalised Sport Content</h2>
+				<p>Available to all early 2012</p>
+			</hgroup>
+			
+			<% if(loggedIn) { %>
+			<article>
+				<h1><%= everyauth.user.name %> - Thanks for signing up</h1>
+				<p>We will send you an email with your invitation once we release to more people.</p>
+			</article>
+			<% } else { %>
+			<article>
+				<h1>Thanks for using onside.. we hope to see you back soon.</h1>
+
+				<div class="forIE6">
+					<p>You appear to be using IE6. This now 11 years old and is not supporoted by Onside, please signup using a more recent browser such as <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/new/">firefox</a>.</p>
+				</div>
+			</article>
+			<% } %>
+
+		</article>
+		<article id="devices">
+			<div class="d_iphone">available on mobile devices</div>
+			<div class="d_ipad">available on tablet devices</div>
+			<div class="d_desktop">available on desktop</div>
+		</article>
+		
+	</div>	
+</header>
+<section id="reasons">
+	<div class="inner">
+	</div>
+</section>
+
+
+<footer>
+	<div class="inner">
+		<small>&copy; Onside Media</small>
+	</div>
+</footer>
+

@@ -82,4 +82,4 @@ BB.appRoutes = Backbone.Router.extend({
 });
 
 var onside = new BB.appRoutes();
-Backbone.history.start({pushState: true});
+Backbone.history.start({pushState: false});

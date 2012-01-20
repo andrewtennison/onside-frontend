@@ -330,6 +330,7 @@ body,
 
 /* comment-default */
 #listChat .inner .comment {min-height:45px;}
+	#listChat .inner .comment .user {padding-right:50px}
 	#listChat .comment img {position:absolute; right:0; margin:5px}
 	#listChat .comment time, #listChat .comment cite {padding:5px 0 0 10px; font-size:1.2em; position:relative; display:inline-block; color:#999}
 	#listChat .comment .wrapComment p {padding:5px 10px;  color:#fff} 
