@@ -90,19 +90,19 @@ TweetView			- individual tweet comment
 			auth: false,
 			unauth: false
 		},
-		msg:{
-			empty: false,
-			low: false
-		},
-
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'addOne', 'addAll');
-			
+			if(this.options.type) this.type = this.options.type;
+
+			_.bindAll(this, 'addOne', 'addAll', 'addHelp');
+
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
 		},
 		addOne: function(item){
+			// overwritten in extended object
+		},
+		addHelp: function(){
 			// overwritten in extended object
 		},
 		
@@ -113,20 +113,17 @@ TweetView			- individual tweet comment
 			/* set title */
 			var userAuth = (this.app)? this.app.get('userAuth') : null;
 			if(this.title.auth && userAuth) {
-				$(this.el).prepend('<h2>'+this.title.auth+'</h2>');
+				$(this.el).prepend('<h2 class="groupTitle">'+this.title.auth+'</h2>');
 			} else if(this.title.unauth/* && userAuth*/){
-				$(this.el).prepend('<h2>'+this.title.unauth+'</h2>');
+				$(this.el).prepend('<h2 class="groupTitle">'+this.title.unauth+'</h2>');
 			};
-
-			/* set message */
-			if(this.collection.length === 0 && this.msg.empty) {
-				$(this.el).append(this.emptyMsg);
-			} else if(this.collection.length < 5 && this.msg.low){
-				$(this.el).append(this.lowMsg);
+			
+			if(this.collection.length === 0){
+				this.addHelp();
+			}else{
+				this.collection.each(this.addOne);
 			}
-
-			var l = this.collection.length;
-			this.collection.each(this.addOne);		
+				
 		}
 		
 	});
@@ -143,7 +140,7 @@ TweetView			- individual tweet comment
 			this.app.bind('change:selectedItemUID', this.updateItem)
 		},
 		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+			$(this.el).html(this.template( this.model.toJSON() ));
 		    return this;
 		},
 		updateItem: function(appModel,val){
@@ -242,6 +239,25 @@ TweetView			- individual tweet comment
 		}
 	});
 
+	_HelpView = Backbone.View.extend({
+		tagName: 'article',
+		className: 'help',
+		events: {
+			'click .help' : 'hide'
+		},
+		
+		initialize: function(){
+			_.bindAll(this, 'render', 'hide');
+		},	
+		render: function(){
+			$(this.el).html(this.template());
+		    return this;
+		},
+		hide: function(e){
+			e.preventDefault();
+			$(this.el).slideUp(200);
+		}
+	})
 
 
 // MAIN VIEWS ///////////////////////////////////////////////////////////
@@ -256,6 +272,7 @@ TweetView			- individual tweet comment
 		events: {
 			'click .login'	: 'login',
 			'click .show'	: 'show' 
+			//'click focusSearch' : focus on the search box from anywhere
 		},
 		
 		initialize: function(){
@@ -336,7 +353,8 @@ TweetView			- individual tweet comment
 		el: $('#listGroups'),
 		scroll: null,
 		events: {
-			'click .toggleList'		: 'changeGroup',
+			'click nav .channels'	: 'changeGroup',
+			'click nav .events'		: 'changeGroup',
 			'click .toggleSize'		: 'expandContainer',
 			'click .toggleBlock'	: 'toggleBlocks'
 		},
@@ -345,16 +363,13 @@ TweetView			- individual tweet comment
 			on.helper.log('# View.Nav.initialize', 'info');
 			
 			this.app = this.options.app;
-			this.$eventButton = this.$('.toggleList .event');
-			this.$channelButton = this.$('.toggleList .channel');
+			this.$eventButton = this.$('nav .events');
+			this.$channelButton = this.$('nav .channels');
 			
 			_.bindAll(this, 'updateView', 'changeGroup', 'toggleBlocks', 'updateScroll');
 			
-			// BIND: if model.app.selectedServiceName changes this view will get updated
-			this.app.bind('change:selectedServiceName', this.updateView);
-			
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
-			var channelList = new ChannelListView({ collection: this.app.channels, app: this.options.app }),
+			var channelList = new ChannelListView({ collection: this.options.app.channels, app: this.options.app }),
 				eventList = new EventListView({ collection: this.app.events, app: this.options.app }),
 				searchList = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
 	
@@ -366,6 +381,10 @@ TweetView			- individual tweet comment
 			
 			ev.bind('update:navContent', this.updateScroll, this);
 			ev.trigger('update:navContent');
+
+			// BIND: if model.app.selectedServiceName changes this view will get updated
+			this.app.bind('change:selectedServiceName', this.updateView);
+			
 		},
 		
 		updateScroll: function(){
@@ -411,7 +430,7 @@ TweetView			- individual tweet comment
 			on.helper.log('! click.toggleGroup => View.Nav.changeGroup');
 	
 			var c = e.target.className,
-				val = (c.indexOf('event') === -1)? 'channel' : 'event';
+				val = (c.indexOf('event') === -1)? 'channels' : 'events';
 			
 			this.app.set({
 				selectedItemUID		: val + '|null',
@@ -421,15 +440,14 @@ TweetView			- individual tweet comment
 		
 		updateView: function(){
 			on.helper.log('* View.Nav.updateView');
-			
 			switch(this.app.get('selectedServiceName')){
 				case 'event':
 				case 'events':
 					this.$content.append(this.$events);
 					this.$channels.detach();
 					this.$searches.detach();
-					this.$eventButton.addClass('on');
-					this.$channelButton.removeClass('on');
+					this.$eventButton.addClass('active');
+					this.$channelButton.removeClass('active');
 					break;
 					
 				case 'channel':
@@ -438,8 +456,8 @@ TweetView			- individual tweet comment
 					this.$content.append(this.$channels);
 					this.$content.append(this.$searches);
 					this.$events.detach();
-					this.$channelButton.addClass('on');
-					this.$eventButton.removeClass('on');
+					this.$channelButton.addClass('active');
+					this.$eventButton.removeClass('active');
 					break;
 				
 				default:
@@ -456,7 +474,14 @@ TweetView			- individual tweet comment
 
 	var SearchView 		= _form.extend({
 		el: $('#navSearch > form'),
-		
+		initialize : function(){
+			this.app = this.options.app;
+			_.bindAll(this, 'submit', 'search');
+
+			// hack to fix iScroll focus issue
+			var selectField = document.getElementById('groupSearch');
+			selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+		},
 		search: function(value){
 			var self = this,
 				model = new BB.Search();
@@ -471,7 +496,7 @@ TweetView			- individual tweet comment
 						selectedItemTitle	: searchModel.title
 					});
 				},
-				error:function(){alert('search failed')}
+				error:function(){console.error('search failed')}
 			})
 		}
 		
@@ -485,16 +510,15 @@ TweetView			- individual tweet comment
 			auth: 'Your channels',
 			unauth: 'Popular channels'
 		},
-		msg:{
-			empty: '<div class="help"><p>No channels currently listed, search to find new ones</p></div>',
-			low: '<div class="help"><p>Why not add some more channels</p></div>'
-		},
-
 		addOne: function(channel, index){
-	//		on.helper.log('=> View.ChannelListView.addOne');
 			var view = new ChannelView({model:channel, app:this.options.app})
 			$(this.el).append(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
+		},
+		addHelp: function(){
+			var view = new HelpChannelView();
+			$(this.el).append(view.render().el);
+			ev.trigger('update:navContent');
 		}
 	});
 	var EventListView 	= _ListView.extend({
@@ -503,16 +527,15 @@ TweetView			- individual tweet comment
 			auth: 'Your events',
 			unauth: 'Popular events'
 		},
-		msg:{
-			empty: '<div class="help"><p>No events currently listed for your choosen channels</p></div>',
-			low: '<div class="help"><p>To find more events search for new channels</p></div>'
-		},
-
 		addOne: function(event, index){
-	//		on.helper.log('=> View.EventListView.addOne');
 			var view = new EventView({model:event, app:this.options.app})
 			$(this.el).append(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
+		},
+		addHelp: function(){
+			var view = new HelpEventView();
+			$(this.el).append(view.render().el);
+			ev.trigger('update:navContent');
 		}
 	});
 	var SavedSearchListView = _ListView.extend({
@@ -525,6 +548,11 @@ TweetView			- individual tweet comment
 			var view = new SaveSearchView({model:search, app:this.options.app});
 			$(this.el).append(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
+		},
+		addHelp: function(){
+			var view = new HelpSearchView();
+			$(this.el).append(view.render().el);
+			ev.trigger('update:navContent');
 		}
 	});
 	
@@ -549,20 +577,57 @@ TweetView			- individual tweet comment
 			});
 		}
 	});
+	var HelpChannelView = _HelpView.extend({
+		template: _.template( $('#help_channelItemTemplate').html() )
+	});
+	var HelpEventView = _HelpView.extend({
+		template: _.template( $('#help_eventItemTemplate').html() )
+	});
+	var HelpSearchView = _HelpView.extend({
+		template: _.template( $('#help_savedSearchTemplate').html() )
+	});
+	var Help_detail_search = _HelpView.extend({
+		template: _.template( $('#help_detail_searchTemplate').html() )
+	});
+	var Help_detail_channel = _HelpView.extend({
+		template: _.template( $('#help_detail_channelTemplate').html() )
+	});
+	var Help_detail_home = _HelpView.extend({
+		template: _.template( $('#help_detail_homeTemplate').html() )
+	});
+
 
 // Detail View
 	// List views for related items in detail view
-	var ChannelListDetailView = ChannelListView.extend({
+	var ChannelListDetailView = _ListView.extend({
 		tagName: 'section',
 		className: 'content channelList',
-		msg:{ empty: false, low: false },
 		title: { auth: 'Related channels', unauth: 'Related channels' },
 		addOne: function(channel){
 			var view = ( channel.get('defaultArticle') )? new ChannelDetailHomeView({model:channel, app:this.options.app}) : new ChannelDetailView({model:channel, app:this.options.app}),
 				render = view.render().el;
 			
 			$(this.el).append(render);
+		},
+		addHelp: function(){
+			alert('// '+this.type);
+			var view = false;
+			switch(this.type){
+				case 'search':
+					view = new Help_detail_search();
+					break;
+				case 'channel':
+				case 'event':
+					//view = new Help_detail_channel();
+					break;
+				case 'home':
+					view = new Help_detail_home();
+				default:
+					break;
+			};
+			if(view) $(this.el).append(view.render().el);
 		}
+
 	});
 	var EventListDetailView = EventListView.extend({
 		tagName: 'section',
@@ -572,7 +637,8 @@ TweetView			- individual tweet comment
 		addOne: function(event){
 			var view = new EventDetailView({model:event, app:this.options.app})
 			$(this.el).append(view.render().el);
-		}
+		},
+		addHelp: function(){}
 	});
 
 	// Item view for related items in detail view
@@ -613,6 +679,9 @@ TweetView			- individual tweet comment
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('remove', this.removeOne);
+			
+			this.app.bind('change:selectedItemUID', this.collection.checkSetCreate)
+			
 		},
 		
 		addOne: function(model){
@@ -673,9 +742,9 @@ TweetView			- individual tweet comment
 			$(this.el).html(this.template(json));
 			this.$('.contentWrapper').attr({id: this.id});
 
-			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app }),
-			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app }),
-			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app });
+			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.model.get('type') }),
+			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.model.get('type') }),
+			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.model.get('type') });
 
 			this.app.set({selectedArticleList:this.viewA.collection});
 
@@ -772,8 +841,9 @@ TweetView			- individual tweet comment
 		className: 'content articleList',
 		initialize: function(){
 			on.helper.log('# View.ArticleList.initialize');
-			_.bindAll(this, 'addAll', 'addOne');
+			_.bindAll(this, 'addAll', 'addOne', 'addHelp');
 			
+			this.type = this.options.type;
 			this.app = this.options.app;
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('add', this.addOne);
@@ -781,6 +851,7 @@ TweetView			- individual tweet comment
 		
 		addAll: function(){
 			this.collection.each(this.addOne);
+			if(this.collection.length === 0) this.addHelp();
 		},
 		addOne: function(article){
 			var view = false,
@@ -805,6 +876,23 @@ TweetView			- individual tweet comment
 			if(!view) return;
 			
 			$(this.el).append(view.render().el);
+		},
+		addHelp: function(){
+			alert(this.type);
+			var view = false;
+			switch(this.type){
+				case 'search':
+					view = new Help_detail_search();
+					break;
+				case 'channel':
+				case 'event':
+					view = new Help_detail_channel();
+					break;
+				case 'home':
+				default:
+					break;
+			}
+			if(view) $(this.el).append(view.render().el);
 		}
 	});
 
@@ -1013,7 +1101,6 @@ TweetView			- individual tweet comment
 			ev.trigger('update:commentContent');
 		},
 		commentsActive: function(model, val){
-			alert(val);
 			if(val.split('|')[1] === 'null'){
 				this.el.addClass('showHelp');
 			}else{

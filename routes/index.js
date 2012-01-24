@@ -7,18 +7,19 @@ var rest 		= require('restler'),
 	twitter		= require('ntwitter');
 
 
-
 // Base object for checkAuth function
 baseAuthObject = {
-	pass	: function(res, loggedIn, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', loggedIn:loggedIn, channels: content.channels, events: content.events, searches: content.searches }) }, 
+	pass	: function(res, loggedIn, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', loggedIn:loggedIn, data: { channels: content.channels, events	: content.events,  searches: content.searches, popular: content.popularChannels } })}, 
 	fail	: function(res, loggedIn){ res.render('pages/0.0_signup.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:loggedIn }) },
 	reject	: function(res){  res.render('pages/0.1_signup_suspended.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup', loggedIn:req.loggedIn }); },
 	preload	: true,
 	authReq	: true
 	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
-}
+};
 
 exports.index = function(req, res){
+	req.session.redirectTo = req.url;
+	
 	var obj = { req : req, res : res };
 	_.defaults(obj, baseAuthObject);
 	checkAuth( obj );
@@ -40,8 +41,10 @@ exports.exit = function(req, res){
 };
 
 exports.cms = function(req,res){
-	if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
-		res.render('pages/cms', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
+	if(!req.loggedIn){
+		res.redirect('/');
+	}else if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
+		res.render('pages/cms.jade', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
 	} else {
 		res.redirect('/', 401);
 	}
@@ -54,30 +57,27 @@ exports.cms = function(req,res){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 exports.getApi = function(req,res){
-	callApi(req, res, 'get', false, true, function(r){
+	var userReq = false;
+	if( ((/myChannel/gi).test(req.url)) ) {
+		userReq = true;
+		req.url = req.url.replace('mychannel','channel');
+	}
+	callApi(req, res, 'get', false, userReq, function(r){
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
 
 exports.postApi = function(req,res){
-	console.log(req.url);
-	console.log((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url))
-	
-	if((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url)){
-		callApi(req, res, 'post', true, false, function(r){
-			(r.error)? res.send(r.error) : res.json(r.success);
-		});
-	}else{
-		callApi(req, res, 'post', false, false, function(r){
-			(r.error)? res.send(r.error) : res.json(r.success);
-		});
-	}
+	var authReq = ((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url));
+	callApi(req, res, 'post', authReq, false, function(r){
+		(r.error)? res.send(r.error) : res.json(r.success);
+	});
 };
 
 exports.delApi = function(req,res){
-	 callApi(req, res, 'del', true, false, function(){
+	callApi(req, res, 'del', true, false, function(){
 		(r.error)? res.send(r.error) : res.json(r.success);
-	 });
+	});
 };
 
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -154,11 +154,11 @@ var checkAuth = function(opts){
 	// wont reach here on fail
 	if(opts.preload){
 		preload(opts.req, function(json){
-			var content = {channels: json.channels, events: json.events, searches: json.searches};
+			var content = {channels: json.channels, events: json.events, searches: json.searches, popularChannels: json.popularChannels};
 			( opts[stage] )? opts[stage](res,loggedIn,content) : opts.pass(res,loggedIn,content);
 		});
 	}else{
-		var content = {channels: undefined, events: undefined, searches: undefined};
+		var content = {channels: false, events: false, searches: false, popularChannels: false};
 		( opts[stage] )? opts[stage](res,content) : opts.pass(res,loggedIn,content);
 	}
 }
@@ -167,10 +167,10 @@ var checkAuth = function(opts){
 /* API Call + grouped calls to API */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-function callApi(req, res, action, authRequired, forceUser, callback){
+function callApi(req, res, action, authReq, userReq, callback){
 	var response = {};
 	
-	if(authRequired && !req.loggedIn){
+	if(authReq && !req.loggedIn){
 		response.error = 'User must be logged in to perform this action';
 		console.err('user must be auth')
 		callback(response);
@@ -178,10 +178,9 @@ function callApi(req, res, action, authRequired, forceUser, callback){
 	};
 	
 	if(req.xhr){
-		console.log('/////////////// = ' + req.url)
-		
 		var path = req.url.replace('/api',''),
-			url = conf.apiPath;
+			url = conf.apiPath,
+			token = req.session.onsideToken || false,
 			obj	= {
 				headers:{
 					OnsideAuth : conf.onsideAuthKey,
@@ -196,10 +195,13 @@ function callApi(req, res, action, authRequired, forceUser, callback){
 		switch(action){
 			case 'post':
 				obj.data = req.body;
-				if(req.loggedIn && forceUser) obj.data.user = UID;
+				if(req.loggedIn && userReq) obj.data.user = UID;
+				if(token) obj.data.token = token;
+
 				break;
 			case 'get':
-				if(req.loggedIn && forceUser) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + UID;
+				if(req.loggedIn && userReq) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + UID;
+				if(token) path += ((path.indexOf('?') === -1)? '?' : '&') + 'token=' + token;
 				break
 
 			case 'del':
@@ -210,10 +212,8 @@ function callApi(req, res, action, authRequired, forceUser, callback){
 		url += path;
 		
 		console.log('callAPI - ' + action + ' to - ' + url);
-		//console.log(obj);
 		
 		rest[action](url,obj).on('complete', function(data) {
-			console.log(data);
 			data.auth = req.loggedIn;
 			response.success = data;
 			callback(response);
@@ -300,18 +300,24 @@ var preload = function(req, callback){
 		i = 0,
 		timer = setInterval ( onComplete, 100 ),
 		user = req.user,
-		userString = (user)? '?user=' + user.id : '?user=1';
-
-	var getFirstArticle = function( channel, index, length, callback ){
-		var url = conf.apiPath + '/article?channel='+channel.id+'&limit=1',
-			req = {index:index};
+		userString = (user)? 'user=' + user.id : false,
+		popularUserString = 'user=1',
+		token = (req.session.onsideToken)? req.session.onsideToken : false;
 		
-		console.log(index +' / '+length+' / '+url)
+	var buildUrl = function(path, userParam){
+		var p = conf.apiPath + path;
+		if(token) p += '?token=' + token;
+		if(userParam) p += '&' + userParam;
+		return p;
+	}	
+	
+	var getFirstArticle = function( channel, index, length, callback ){
+		var url = buildUrl('/article?channel='+channel.id+'&limit=1', false),
+			req = {index:index};
 		
 		rest.get(url)
 			.on('success', function(data){ 
 				req.defaultArticle = data.resultset.articles[0];
-				//req.defaultArticle = undefined;
 				callback(req);
 			})
 			.on('error', function() { 
@@ -320,54 +326,65 @@ var preload = function(req, callback){
 			});
 	};
 
-	
-	// get channels
-	console.log(conf.apiPath + '/channel' + userString)
-	rest.get(conf.apiPath + '/channel' + userString)
-		.on('success', function(data) {
-			console.log('////////////////////// success channel ')
-			var channels = data.resultset.channels,
-				l = channels.length,
+	function getNestedInfo(path, service, serviceLoad, serviceName){
+		rest
+		.get(path)
+		.on('success', function(data) { 
+			var list = data.resultset[service],
+				l = list.length,
 				ii = 0,
 				j = 0;		// tracks how many callbacks complete as dont execute in order
 				
-			if(l >= 1){
+			if(l === 0 || list === undefined){
+				content[serviceLoad] = true;
+				content[ ((serviceName)? serviceName : service) ] = '[]';				
+			}else{
 				for(ii; ii < l; ii++){
-					getFirstArticle(channels[ii], ii, l, function(req){
-						channels[req.index].defaultArticle = req.defaultArticle;
+					getFirstArticle(list[ii], ii, l, function(req){
+						list[req.index].defaultArticle = req.defaultArticle;
 						j += 1;
 						if( j === l ){
 							console.log('Preload of article for each channel complete')
-							content.channelsLoaded = true;
-							content.channels = JSON.stringify(channels);
+							content[serviceLoad] = true;
+							content[ ((serviceName)? serviceName : service) ] = JSON.stringify(list);
 						}else{
-							content.channelsLoaded = false;
+							content[serviceLoad] = false;
 						}
 					});
 				};
-			}else{
-				content.loadChannels = true;
-				return content.channels = false;
 			}
+
 		})
-		.on('error', function() { return content.channels = undefined; });
+		.on('error', function() { 
+			content[service] = false;
+			content[serviceLoaded] = true;
+		});
+	};
 
-	// get events
-	console.log(conf.apiPath + '/event' + userString)
-	rest.get(conf.apiPath + '/event' + userString)
-		.on('success', function(data) { content.events = (data.resultset.events.length >= 1)? JSON.stringify(data.resultset.events) : false })
-		.on('error', function() { content.events = undefined})
-		.on('complete', function(){ content.eventsLoaded = true });
-
-	// get searches if user exist
-	console.log(conf.apiPath + '/search/list' + userString)
-	rest.get(conf.apiPath + '/search/list' + userString)
-		.on('success', function(data) { return content.searches = (data.resultset.searches.length >= 1)? JSON.stringify(data.resultset.searches) : false })
-		.on('error', function() { return content.channels = undefined})
-		.on('complete', function(){ content.searchesLoaded = true });
+	function getInfo(path, service, serviceLoaded){
+		if(!userString) {
+			content[service] = false;
+			content[serviceLoaded] = true;
+			return;
+		};
+		
+		rest
+		.get(path)
+		.on('success', function(data) { content[service] = (data.resultset[service].length >= 1)? JSON.stringify(data.resultset[service]) : '[]' })
+		.on('error', function() { content[service] = false})
+		.on('complete', function(){ content[serviceLoaded] = true });
+	};
+		
+	// get single level content
+	getInfo(buildUrl('/event', userString), 'events', 'eventsLoaded');
+	getInfo(buildUrl('/search/list', userString), 'searches', 'searchesLoaded');
 	
+	// get nested content
+	getNestedInfo(buildUrl('/channel', userString), 'channels', 'channelsLoaded');
+	getNestedInfo(buildUrl('/channel', popularUserString), 'channels', 'popularChannelsLoaded', 'popularChannels');
+
 	function onComplete(){
-		if(content.channelsLoaded && content.eventsLoaded && content.searchesLoaded){
+		if(content.channelsLoaded && content.eventsLoaded && content.searchesLoaded && content.popularChannelsLoaded){
 			console.log('Preloading complete')
 			clearInterval( timer );
 			callback(content);
@@ -377,7 +394,7 @@ var preload = function(req, callback){
 			callback(content);
 		} else{
 			i += 100;
-			console.log('proloading content from API, timer = ' + i + '//'+ content.channelsLoaded +' // '+ content.eventsLoaded +' // '+ content.searchesLoaded)
+			console.log('proloading content from API, timer = ' + i + '// channel-'+ content.channelsLoaded +' // event-'+ content.eventsLoaded +' // search-'+ content.searchesLoaded +' // popular-'+ content.popularChannelsLoaded)
 		}
 	}
 };

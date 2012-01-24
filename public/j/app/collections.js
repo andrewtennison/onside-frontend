@@ -14,7 +14,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var ChannelList = _Lists.extend({
 		model : BB.Channel,
-		url: on.path.api + '/channel',
+		url: on.path.api + '/mychannel',
 		parse: function(resp, xhr) {
 			return resp.resultset.channels;
 		}
@@ -74,7 +74,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// sort models.. by the users default order if available?
 		},
 		selected: false,
-		initialize: function(app){
+		initialize: function(models,app){
 			on.helper.log('# Collection.DetailList.initialize','info');
 
 			this.app = app;
@@ -125,7 +125,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				function setSearchModel(){
 					model.set({
 						originUId	: selectedItemUID,
-						type 		: author.get('type'),
+						type 		: author.get('type') || 'search',
 						title 		: author.escape('title'),
 						events 		: author.get('events'),
 						channels 	: author.get('channels'),
@@ -185,7 +185,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		comparator : function(Comment) {
 			//return Comment.get("created_at");
 		},
-		initialize: function(app){
+		initialize: function(models,app){
 			on.helper.log('# Collection.CommentList.initialize','info');
 			this.app = app;
 			_.bindAll(this, 'updateCollection');
@@ -218,7 +218,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.refreshUrl = resp.refresh_url;
 			return resp.results;
 		},
-		initialize: function(app){
+		initialize: function(models,app){
 			on.helper.log('# Collection.CommentList.initialize','info');
 			this.app = app;
 			_.bindAll(this, 'updateCollection');

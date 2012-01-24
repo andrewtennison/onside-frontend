@@ -10,7 +10,7 @@
 			<div class="scroller">
 				<div id="navSearch" class="bb">
 					<form action="/search">
-						<input class="formEl" id="groupSearch" type="search" placeholder="search" name="q" />
+						<input class="formEl" id="groupSearch" type="search" placeholder="search" name="q" value="" />
 					</form>
 				</div>
 				
@@ -18,12 +18,15 @@
 					<% if (everyauth.loggedIn) { %>	
 					<a class="toggleBlock bb" href="#navUser"><span class="icon user"></span><%= user.name %></a>
 					<div id="navUser" class="block">
-						<a class="settings bb" href="/settings"><span class="icon settings"></span>Your settings</a>
+						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
+						<% if (everyauth.user.admin === '1') { %>
+						<a class="cms bb" href="/cms"><span class="icon cms"></span>CMS</a>
+						<% } %>
 						<a class="logout bb" href="/logout"><span class="icon login"></span>Sign out</a>
 					</div>
-					<a class="bb" href="/"><span class="icon channels"></span>All Channels</a>
-					<a class="bb" href="/"><span class="icon events"></span>All Events</a>
-					<a class="bb" href="/"><span class="icon save"></span>Saved Items</a>
+					<a class="bb" href="#"><span class="icon home"></span>Home</a>
+					<!--a class="bb" href="/"><span class="icon events"></span>All Events</a>
+					<a class="bb" href="/"><span class="icon save"></span>Saved Items</a-->
 					
 					<% } else { %>
 					<a class="toggleBlock bb" href="#navUser"><span class="icon login"></span>Sign In</a>
@@ -45,10 +48,8 @@
 		</div><!-- /.contentWrapper -->
 		<footer>
 			<nav>
-				<a class="toggleList toggleButton" href="#">
-					<span class"channel">channels</span>
-					<span class="event">events</span>
-				</a>
+				<a class="icon channels" href="#">your channels</a>
+				<a class="icon events" href="#">your events</a>
 			</nav>
 		</footer>
 	</section><!-- /#listGroups -->
@@ -58,7 +59,7 @@
 			<nav>
 				<a class="show channels icon" href="#channels">show channels</a>
 				<a class="show comments icon" href="#comments">show comments</a>
-				<a class="show events icon" href="#events">show events</a>
+				<!--a class="show events icon" href="#events">show events</a-->
 				<a class="show search icon" href="#search">show search</a>
 			</nav>
 		</section>
@@ -122,27 +123,14 @@
 <%- partial('partials/articles') %>
 <%- partial('partials/articleDetail') %>
 
-<% if(channels) { %>
-<script type="text/javascript"> 
+<script type="text/javascript">
 var on = window.on || {};
-on.preload = {
-	auth		: <%- loggedIn %>,
-	channels	: <%- channels %>,
-	events		: <%- events %>, 
-	searches	: <%- searches %>,
-	user		: <%- JSON.stringify(everyauth) %>
-};
+on.preload = {};
+on.preload.auth		= <%- loggedIn %>;			
+on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
+on.preload.popular	= <% if(data.popularChannels) { %> <%- data.popularChannels %> <% } else { %>false<% } %>;
+on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;
+on.preload.searches	= <% if(data.searches) { %><%- data.searches %><% } else { %>false<% } %>;
+on.preload.path		= <% if(data.sessionPath) { %> <%- data.sessionPath %> <% } else { %>false<% } %>;
 </script>
-<% } else { %>
-<script type="text/javascript"> 
-var on = window.on || {};
-on.preload = {
-	auth		: <%- loggedIn %>,
-	channels	: '',
-	events		: '', 
-	searches	: '',
-	user		: ''
-};
-</script>
-<% } %>
 

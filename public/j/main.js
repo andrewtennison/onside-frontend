@@ -13,7 +13,7 @@ on.env = {
 	internetConnection	: true,
 	server				: 'development',
 	articleMax			: 20,
-	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'click',
+	touchClick			: ("ontouchstart" in window)? 'ontouchstart' : 'mousedown',
 	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}()),
 	docReady			: false
 };

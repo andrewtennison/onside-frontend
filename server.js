@@ -44,10 +44,9 @@ var app = module.exports = express.createServer();
 app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.session({ 
-		secret	: "testsecret",
-		store	: new RedisStore({host:'127.0.0.1', port:'6379'})
-	}));
+	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
+	app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
+	
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());
 	app.use(app.router);
@@ -64,7 +63,7 @@ app.configure('development', function(){
 
 app.configure('production', function(){
 	app.use(express.logger());
-	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+	app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 	//app.use(express.errorHandler()); 
 });
 
@@ -80,7 +79,7 @@ app.get('/fb_channel', function(req,res){
 	res.header('Pragma' , 'public' );
 	res.header('Cache-Control' , 'max-age=' + $cache_expire );
 	res.header('Expires' , d );
-	res.render('channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false, loggedIn: false});
+	res.render('facebook_channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false, loggedIn: false});
 });
 
 app.get('*', function(req, res, next){
@@ -96,17 +95,22 @@ app.get('/', routes.index);
 app.get('/enter', routes.enter);
 app.get('/exit', routes.exit);
 
+//app.all('/channel/*', function(){});
+//app.all('/event/:id/:article', function(){});
+
+// CMS 
+app.get('/cms', routes.cms);
+
+
 // API proxy requests
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
-app.post('/tweet', routes.tweet);
-
+app.post('/tweet/', routes.tweet);
 // fake call to proxy multiple calls to API 
 app.get('/detail/:action?/:id?', routes.getDetailApi);
 
-// CMS 
-app.get('/cms', routes.cms);
+
 
 
 app.listen(3000);

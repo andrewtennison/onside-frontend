@@ -14,13 +14,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// create + init collections for channels + events
 			this.channels = new BB.ChannelList();
 			this.events = new BB.EventList();
-			this.detailedList = new BB.DetailList(app);
-			this.searches = new BB.SavedSearchList(app);
-			this.comments = new BB.CommentList(app);
-			this.tweets = new BB.TweetList(app);
+			this.detailedList = new BB.DetailList(false,app);
+			this.searches = new BB.SavedSearchList();
+			this.comments = new BB.CommentList(false,app);
+			this.tweets = new BB.TweetList(false,app);
 			
 			this.bind('change:selectedItemUID', this.updateService);
 			this.bind('change:selectedArticle', this.updateService);
+			
 		},
 		defaults: {
 			selectedServiceName: null,

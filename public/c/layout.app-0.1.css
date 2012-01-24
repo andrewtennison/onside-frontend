@@ -190,13 +190,10 @@ body,
 #navSearch input {width:100%; display:inline}
 #navUser {display:none; border:5px solid #111}
 
-#listGroups h2 {
-	font-weight:bold; color:#79838d; text-transform:uppercase; line-height:1em; padding:5px 8px; letter-spacing:0.05em; font-size:1.1em; border-bottom:1px solid #212324; text-align:right;
+#listGroups h2.groupTitle {
+	font-weight:bold; color:#79838d; text-transform:uppercase; line-height:1em; padding:5px 16px; letter-spacing:0.05em; font-size:1.1em; border-bottom:1px solid #212324; text-align:right;
 	background: #424549; /* Old browsers */background: -moz-linear-gradient(top,  #424549 0%, #333639 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#424549), color-stop(100%,#333639)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #424549 0%,#333639 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #424549 0%,#333639 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #424549 0%,#333639 100%); /* IE10+ */background: linear-gradient(top,  #424549 0%,#333639 100%); /* W3C */
 }
-
-#listGroups .help {padding:8px 8px 0 50px}
-#listGroups .help p {padding-bottom:8px; font-size:1.2em; color:#aeb9c4}
 
 
 #listGroups #navGlobal a,
@@ -230,10 +227,11 @@ body,
 */
 
 /* ==|== appNav styles ===================================================== */
-#appNav nav {}
+#appNav nav {text-align:center}
 #appNav nav a {border-radius:5px; margin:6px}
 #appNav nav a:hover,
 #appNav nav a.active {box-shadow:-1px -1px 0px 0px #444 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #444 inset, 1px 1px 0px #000 inset; background-color:#222;}
+#appNav nav a.channels {float:left}
 #appNav nav a.comments {float:right}
 
 
@@ -408,6 +406,7 @@ body,
 	#listGroups {width:265px}
 	#navSearch input {width:100%;}
 	.show.channels {display:none}
+	.showcomments .show.channels {display:inline-block}
 }
 @media only screen and (min-width: 1200px) {
 	#main {right:260px}
