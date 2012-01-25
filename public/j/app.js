@@ -21,6 +21,9 @@ BB.appRoutes = Backbone.Router.extend({
 		// App model	
 		on.m.app = new BB.App(this);
 		on.m.app.set({ userAuth : (on.preload.auth === true)? true : false });
+		on.m.app.set({ user : (on.preload.user)? on.preload.user : false });
+		on.m.app.set({ twitter : (on.preload.twitter)? on.preload.twitter : false });
+		on.m.app.set({ facebook : (on.preload.facebook)? on.preload.facebook : false });
 		
 		// Create main views
 		// Application view
@@ -39,10 +42,6 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Search view
 		on.v.search = new BB.SearchView({ app: on.m.app });
-		
-		// Post Comment view
-		on.v.postComment = new BB.CommentPostView({ app: on.m.app });
-		on.v.postTweet	= new BB.TweetPostView({ app: on.m.app });
 		
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });

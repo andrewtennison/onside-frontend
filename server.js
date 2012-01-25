@@ -68,6 +68,7 @@ app.configure('production', function(){
 });
 
 //setup the errors
+
 app.error(function(err, req, res, next){
 	if (err instanceof NotFound) {
 	    res.render('404.ejs', { locals: { 
@@ -130,17 +131,20 @@ app.get('/cms', routes.cms);
 app.get('/api/*', routes.getApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
-app.post('/tweet/', routes.tweet);
+app.post('/tweet', routes.postTweet);
+app.get('/tweet/*', routes.getTweet);
+
 // fake call to proxy multiple calls to API 
 app.get('/detail/:action?/:id?', routes.getDetailApi);
 
+
 //A Route for Creating a 500 Error (Useful to keep around)
-server.get('/500', function(req, res){
+app.get('/500', function(req, res){
     throw new Error('This is a 500 Error');
 });
-
 //The 404 Route (ALWAYS Keep this as the last route)
-server.get('/*', function(req, res){
+/*
+app.get('/*', function(req, res){
     throw new NotFound;
 });
 function NotFound(msg){
@@ -148,5 +152,5 @@ function NotFound(msg){
     Error.call(this, msg);
     Error.captureStackTrace(this, arguments.callee);
 }
-
+*/
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

@@ -84,23 +84,44 @@ exports.delApi = function(req,res){
 /* Twitter Proxy */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
-exports.tweet = function(req,res){
+exports.postTweet = function(req,res){
+	console.log('post tweet');
 	if(!req.xhr || !req.session.auth.twitter) return;
-	
-		
 	var twit = new twitter({
 		consumer_key: conf.twit.consumerKey,
 		consumer_secret: conf.twit.consumerSecret,
 		access_token_key: req.session.auth.twitter.accessToken,
 		access_token_secret: req.session.auth.twitter.accessTokenSecret
 	});
-	
-	twit.updateStatus(req.body.message,
-		function (err, data) {
-		console.log(console.dir(data));
-		res.json(data)
+	console.log(req.session.auth.twitter.accessToken +' / '+ req.session.auth.twitter.accessTokenSecret);
+	console.log(req.body.message);	
+	twit.updateStatus(req.body.message, function (err, data) {
+		if(err){
+			console.log(console.dir(err));
+			res.json(err)			
+		}else{
+			console.log(console.dir(data));
+			res.json(data)
+		}
 	});
-}
+};
+exports.getTweet = function(req,res){
+	console.log('Get tweets');
+	if(!req.xhr) return;
+	var twit = new twitter({
+		consumer_key: conf.twit.consumerKey,
+		consumer_secret: conf.twit.consumerSecret,
+		access_token_key: conf.twit.accessToken,
+		access_token_secret: conf.twit.accessSecret
+	});
+	var hash = '#' + req.url.replace('/tweet/','');
+	twit.search(hash, function(err, data) {
+		console.log(console.dir(data));
+		res.json(data);
+    });
+};
+
+
 
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* Check user authentication */
@@ -129,8 +150,8 @@ var checkAuth = function(opts){
 	// We can extend this property for different scenarios later
 	switch(userStatus){
 		case '0':						// default - user new, not yet invited
-			opts.fail(res,loggedIn);
-			return;
+			//opts.fail(res,loggedIn);
+			//return;
 		case '1':						// user has been sent invite - more info/action required
 		case '2':						// user has visited site and completed required signup tasks
 		case '3':

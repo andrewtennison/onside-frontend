@@ -89,8 +89,6 @@
 					<form action="/">
 						<% if(!everyauth.loggedIn) { %>
 							<p class="forUnAuth">You need to be logged in and have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
-						<% } else if (everyauth.loggedIn && everyauth.user.twitter === null) { %>	
-							<p class="forAuth">You need to have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
 						<% } else if(everyauth.loggedIn && everyauth.user.twitter) { %>
 							<textarea class="forAuth formEl comment" id="tweetAdd" type="text" placeholder="tweet your comment" name="tweet"></textarea>
 							<button type="submit">tweet now</button>
@@ -117,10 +115,26 @@
 <%- partial('partials/articles') %>
 <%- partial('partials/articleDetail') %>
 <%- partial('partials/helpers') %>
+<% 
+var cleanUser = false, facebookUser = false, twitterUser = false;
+if(user) {
+	cleanUser = user;
+	delete cleanUser.password;
+	delete cleanUser.email;
+	delete cleanUser.admin;
+	delete cleanUser.enabled;
+	
+	if(cleanUser.twitter.length >= 2) twitterUser = JSON.stringify(everyauth.twitter.user);
+	if(cleanUser.facebook.length >= 2) facebookUser = JSON.stringify(everyauth.facebook.user);
+}
+%>
 
 <script type="text/javascript">
 var on = window.on || {};
 on.preload = {};
+on.preload.user		= <%- JSON.stringify(cleanUser) %>;
+on.preload.twitter	= <%- twitterUser %>;			
+on.preload.facebook	= <%- facebookUser %>;			
 on.preload.auth		= <%- loggedIn %>;			
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
 on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;

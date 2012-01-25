@@ -171,6 +171,20 @@
 		<p><@= text @></p>
 	</div>
 </script>
+<script id="officialTweetTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( created_at ); @>
+	<img src="<@= user.profile_image_url @>" />
+	
+	<div class="user">
+		<cite>
+			<a href='https://twitter.com/#!/<@= user.screen_name @>' ><@= user.screen_name @> </a> - <a class="reply" href="#">reply</a>
+		</cite>
+		<time><@= time @></time>
+	</div>
+	<div class="wrapComment">
+		<p><@= text @></p>
+	</div>
+</script>
 
 
 

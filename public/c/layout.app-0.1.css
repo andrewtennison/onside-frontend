@@ -324,6 +324,7 @@ body,
 #listChat .content .inner {border-top: 1px solid #393B3D;}
 #listChat .content form input,
 #listChat .content form textarea {width:230px; background:#fff url(/i/sprites/icon_comment.png) 5px 4px no-repeat; text-indent:30px}
+#listChat .content form textarea#tweetAdd {background:url("/i/sprites/twitter.png") no-repeat scroll -20px -18px #FFFFFF}
 #listChat .content form input {padding:7px 4px 5px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
@@ -348,11 +349,8 @@ body,
 	#listChat .tweet .wrapComment {padding:10px;}
 	#listChat .tweet .wrapComment p {font-size:1.3em; color:#333}
 
-
-/* toggle help content */
-#listChat .help {display:none}
-#listChat.showHelp .help {display:block}
-#listChat.showHelp .scroller {display:none}
+#twitterComments button {font-size:1.4em; padding:5px 10px; margin-top:10px; border:0px none}
+#twitterComments button span {position:relative; display:inline-block; width:20px; height:20px; background:url(/i/sprites/twitter.png) 0 0 no-repeat; }
 
 /* ==|== reused styles ===================================================== */
 
@@ -393,8 +391,10 @@ body,
 
 	.csstransforms .showcomments #main {-moz-transform: translate(-215px, 0px); -webkit-transform: translate(-215px, 0px); -o-transform: translate(-215px, 0px); -ms-transform: translate(-215px, 0px); transform: translate(-215px, 0px);}
 
-	#listChat .content form input, #listChat .content form textarea {width:22px; left:215px}
-	.showcomments #listChat .content form input, .showcomments #listChat .content form textarea {width:230px; left:0}
+	#listChat .content form input {width:22px; left:215px}
+	#listChat .content form textarea {width:25px; left:215px}
+	.showcomments #listChat .content form input {width:238px; left:0}
+	.showcomments #listChat .content form textarea {width:240px; left:0}
 }
 
 @media only screen and (min-width: 1000px) {

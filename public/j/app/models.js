@@ -153,7 +153,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// saved 		: false,
 		},
 		refresh: function(){
-			console.log(this)
 			this.get('channels').reset(this.get('channelJson'));
 			this.get('events').reset(this.get('eventJson'));
 			this.get('articles').reset(this.get('articleJson'));
@@ -205,6 +204,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Tweet = Backbone.Model.extend({
+		url: '/tweet'
+		/*
 		methodToURL: {
 			'read': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
 			'update': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
@@ -217,6 +218,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			options.url = model.methodToURL[method.toLowerCase()];
 			Backbone.sync(method, model, options);
 		}
+		*/
 	});
 	
 	

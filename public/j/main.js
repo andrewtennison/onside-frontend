@@ -17,6 +17,8 @@ on.env = {
 	isTouch				: (function() {try { document.createEvent("TouchEvent"); return true; } catch (e) { return false; }}()),
 	docReady			: false
 };
+on.env.twitterKey =  (on.env.server === 'development')? 'K2PPhkjulGIReJQsvhsZg' : 'eACWy9QqyIOyWUjREhh08Q';
+	
 
 console.log('1. namespace - ' + on.env.v)
 
@@ -58,6 +60,8 @@ window.fbAsyncInit = function() {
 $LAB
 .script( 
 	// put in head, use instead of lib.js & user modernizr.load() - libs/modernizr-custom.js
+	//'http://platform.twitter.com/anywhere.js?id=' + on.env.twitterKey + '&v=1',
+	'http://connect.facebook.net/en_US/all.js',
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js'
@@ -68,8 +72,7 @@ $LAB
 .script(
 	on.path.js + 'lib/backbone-0.5.3.min.js',
 	on.path.js + 'lib/pretty.js',
-	on.path.js + 'lib/iscroll.js',
-	'http://connect.facebook.net/en_US/all.js'
+	on.path.js + 'lib/iscroll.js'
 //	on.path.js + 'lib/mbp.helper.js',
 )
 .wait()

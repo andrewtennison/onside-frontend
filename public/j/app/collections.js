@@ -218,37 +218,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 		
 	});
-	var ChatList = Backbone.Collection.extend({});
-
 	var TweetList = Backbone.Collection.extend({
 		model : BB.tweet,
 		hash: false,
 
 		url : function(){
 			if(!this.hash) return;
-			return 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?';
+			return '/tweet/' + this.hash.replace('#','');
 		},
 		parse: function(resp, xhr){
 			this.refreshUrl = resp.refresh_url;
 			return resp.results;
-		},
-		initialize: function(models,app){
-			on.helper.log('# Collection.CommentList.initialize','info');
-			this.app = app;
-			_.bindAll(this, 'updateCollection');
-			this.app.bind('change:selectedItemUID', this.updateCollection);
-		},
-		updateCollection: function(){
-			var s = this.app.get('selectedItemUID').split('|');
-			
-			this.reset();
-			if(s[1] === 'null') {
-				on.helper.log('Model.App.updateTweets - selectedItemUID = ' + s[0] +'|'+ s[1], 'error');
-			} else if(this.app.channels.get(s[1])) {
-				var name = this.app.channels.get(s[1]).get('name').replace(/\s/g,'_').replace(/\'/g,'');
-				this.hash = name + '@onside';
-				this.fetch();
-			}
 		}
 	});
 
@@ -259,7 +239,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.DetailList = DetailList;
 	BB.ArticleList = ArticleList;
 	BB.CommentList = CommentList;
-	BB.ChatList = ChatList;
 	BB.TweetList = TweetList;
 
 })(this.BB);
