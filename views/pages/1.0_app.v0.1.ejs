@@ -60,7 +60,7 @@
 				<a class="show channels icon" href="#channels">show channels</a>
 				<a class="show comments icon" href="#comments">show comments</a>
 				<!--a class="show events icon" href="#events">show events</a-->
-				<a class="show search icon" href="#search">show search</a>
+				<a class="show search icon triggerSearch" href="#search">show search</a>
 			</nav>
 		</section>
 
@@ -73,12 +73,6 @@
 			<h1>Comment @ <em></em><span class="icon comment"></span></h1>
 		</header>
 		<div class="contentWrapper" id="chatContentWrap">
-			<div class="help">
-				<span class="icon think"></span>
-				<h2>Please choose a channel or article to comment on</h2>
-				<p>You can comment using any of your favourite social networks, facebook, twitter or right here on Onside</p>
-			</div>
-			
 			<div class="scroller">
 		 		<section class="content" id="onsideComments">
 					<form action="/">
@@ -90,7 +84,7 @@
 					</form>
 					<div class="inner"></div>
 		 		</section>
-		 		<section class="content" id="facebookComments"></section><!-- /#facebookComments -->
+		 		<section class="content" id="facebookComments"><div class="inner"></div></section><!-- /#facebookComments -->
 		 		<section class="content" id="twitterComments">
 					<form action="/">
 						<% if(!everyauth.loggedIn) { %>
@@ -104,7 +98,7 @@
 					</form>
 					<div class="inner"></div>
 		 		</section>
-		 		<section class="content" id="googleComments"></section>
+		 		<!--section class="content" id="googleComments"><div class="inner"></div></section-->
 		 	</div><!-- /.scroller -->
 		</div><!-- /.contentWrapper -->
 
@@ -112,7 +106,7 @@
 			<nav>
 				<a class="icon facebook" href="#facebookComments">facebook</a>
 				<a class="icon twitter" href="#twitterComments">twitter</a>
-				<a class="icon google" href="#googleComments">G+</a>
+				<!--a class="icon google" href="#googleComments">G+</a-->
 				<a class="icon onside" href="#onsideComments">onside</a>
 			</nav>
 		</footer>
@@ -122,13 +116,14 @@
 <%- partial('partials/general') %>
 <%- partial('partials/articles') %>
 <%- partial('partials/articleDetail') %>
+<%- partial('partials/helpers') %>
 
 <script type="text/javascript">
 var on = window.on || {};
 on.preload = {};
 on.preload.auth		= <%- loggedIn %>;			
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
-on.preload.popular	= <% if(data.popularChannels) { %> <%- data.popularChannels %> <% } else { %>false<% } %>;
+on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;
 on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;
 on.preload.searches	= <% if(data.searches) { %><%- data.searches %><% } else { %>false<% } %>;
 on.preload.path		= <% if(data.sessionPath) { %> <%- data.sessionPath %> <% } else { %>false<% } %>;

@@ -53,7 +53,9 @@ TweetView			- individual tweet comment
 
 (function(BB){
 
-// BASE OBJECTS ///////////////////////////////////////////////////////////		
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BASE OBJECTS ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	var ev = {};
 	_.extend(ev, Backbone.Events);
@@ -245,22 +247,59 @@ TweetView			- individual tweet comment
 		events: {
 			'click .help' : 'hide'
 		},
+
+		template	: _.template( $('#help_defaultTemplate').html() ),
+		
+		templates: {
+			// left nav helpers
+			navChannel				: _.template( $('#help_navChannelTemplate').html() ),
+			navEvent				: _.template( $('#help_navEventTemplate').html() ),
+			navSearch				: _.template( $('#help_navSearchTemplate').html() ),
+			
+			// detail item helpers
+			// detail type=home
+			detailHomeChannel		: _.template( $('#help_detailHomeChannelTemplate').html() ),
+			
+			// detail type=search
+			detailSearchChannel		: _.template( $('#help_detailSearchChannelTemplate').html() ),
+			detailSearchEvent		: _.template( $('#help_detailSearchEventTemplate').html() ),
+			detailSearchArticle		: _.template( $('#help_detailSearchArticleTemplate').html() ),
+
+			// detail type=channel / event
+			detailDefaultChannel	: _.template( $('#help_detailDefaultChannelTemplate').html() ),
+			detailDefaultEvent		: _.template( $('#help_detailDefaultEventTemplate').html() ),
+			detailDefaultArticle	: _.template( $('#help_detailDefaultArticleTemplate').html() ),
+			
+			// comment helpers
+			commentOnside			: _.template( $('#help_commentOnsideTemplate').html() ),
+			commentFacebook			: _.template( $('#help_commentFacebookTemplate').html() ),
+			commentTwitter			: _.template( $('#help_commentTwitterTemplate').html() ),
+			commentGoogle			: _.template( $('#help_commentGoogleTemplate').html() ),
+		},
 		
 		initialize: function(){
 			_.bindAll(this, 'render', 'hide');
 		},	
-		render: function(){
-			$(this.el).html(this.template());
+		render: function(name){
+			// console.info(name)
+			// console.info(this.templates)
+			// console.info(this.templates[name])
+			if(this.templates[name]){
+				$(this.el).html(this.templates[name]());
+			}else{
+				$(this.el).html(this.template());
+			}
 		    return this;
 		},
 		hide: function(e){
 			e.preventDefault();
 			$(this.el).slideUp(200);
 		}
-	})
+	});
 
-
-// MAIN VIEWS ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MAIN views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	var AppView 		= Backbone.View.extend({
 		el: $(window),
 		currentShow: false,
@@ -271,14 +310,17 @@ TweetView			- individual tweet comment
 		
 		events: {
 			'click .login'	: 'login',
-			'click .show'	: 'show' 
-			//'click focusSearch' : focus on the search box from anywhere
+			'click .show'	: 'triggerShow',
+			'click .triggerSearch' : 'triggerSearch'
+			//'click triggerFeedback' : open feedback form
+			//triggerAddChannel
+			//triggerAddSource
 		},
 		
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
 			
-			_.bindAll(this, 'onResize', 'show', 'setAuth');
+			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch');
 			this.app = this.options.app;
 
 			$(window).bind('resize', this.onResize);
@@ -301,14 +343,15 @@ TweetView			- individual tweet comment
 				$(this.el).addClass('unAuth').removeClass('auth');
 			}
 		},
-		
-		show: function(e){
+		triggerShow: function(e){
 			e.preventDefault();
-			var id = $(e.target).attr('href').replace('#',''),
-				newShow = 'show'+id,
-				oldShow = this.currentShow;
+			var id = $(e.target).attr('href').replace('#','');
+			this.show('show'+id, false);
+		},
+		show: function(newShow, force){
+			var oldShow = this.currentShow;
 				
-			if(oldShow === newShow){
+			if(oldShow === newShow && !force){
 				this.$el.app.removeClass(oldShow);
 				this.currentShow = false;
 			}else if( !oldShow ){
@@ -323,6 +366,7 @@ TweetView			- individual tweet comment
 		
 		onResize : function(e){
 			on.helper.log('App.onResize')
+			/*
 			var $el = $('#OnsideApp'),
 				w = $el.width(),
 				h = $el.height(),
@@ -345,7 +389,18 @@ TweetView			- individual tweet comment
 					
 				//$c.css('height', nh)
 			});
-			
+			*/
+		},
+		triggerSearch: function(e){
+			e.preventDefault();
+
+			this.show('showchannels', true);
+
+			$('#groupSearch')
+			.addClass('flash')
+			.animate({'delay':1},500, function(){
+				$(this).removeClass('flash').focus();	
+			});
 		}
 	});
 	
@@ -501,7 +556,11 @@ TweetView			- individual tweet comment
 		}
 		
 	});
-	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Left navigation views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Left Nav
 	// List Views for left nav
 	var ChannelListView = _ListView.extend({
@@ -516,8 +575,8 @@ TweetView			- individual tweet comment
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
 		},
 		addHelp: function(){
-			var view = new HelpChannelView();
-			$(this.el).append(view.render().el);
+			var view = new _HelpView();
+			$(this.el).append(view.render('navChannel').el);
 			ev.trigger('update:navContent');
 		}
 	});
@@ -533,8 +592,8 @@ TweetView			- individual tweet comment
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
 		},
 		addHelp: function(){
-			var view = new HelpEventView();
-			$(this.el).append(view.render().el);
+			var view = new _HelpView();
+			$(this.el).append(view.render('navEvent').el);
 			ev.trigger('update:navContent');
 		}
 	});
@@ -550,8 +609,8 @@ TweetView			- individual tweet comment
 			if(index === this.collection.length - 1) ev.trigger('update:navContent');
 		},
 		addHelp: function(){
-			var view = new HelpSearchView();
-			$(this.el).append(view.render().el);
+			var view = new _HelpView();
+			$(this.el).append(view.render('navSearch').el);
 			ev.trigger('update:navContent');
 		}
 	});
@@ -577,86 +636,11 @@ TweetView			- individual tweet comment
 			});
 		}
 	});
-	var HelpChannelView = _HelpView.extend({
-		template: _.template( $('#help_channelItemTemplate').html() )
-	});
-	var HelpEventView = _HelpView.extend({
-		template: _.template( $('#help_eventItemTemplate').html() )
-	});
-	var HelpSearchView = _HelpView.extend({
-		template: _.template( $('#help_savedSearchTemplate').html() )
-	});
-	var Help_detail_search = _HelpView.extend({
-		template: _.template( $('#help_detail_searchTemplate').html() )
-	});
-	var Help_detail_channel = _HelpView.extend({
-		template: _.template( $('#help_detail_channelTemplate').html() )
-	});
-	var Help_detail_home = _HelpView.extend({
-		template: _.template( $('#help_detail_homeTemplate').html() )
-	});
 
 
-// Detail View
-	// List views for related items in detail view
-	var ChannelListDetailView = _ListView.extend({
-		tagName: 'section',
-		className: 'content channelList',
-		title: { auth: 'Related channels', unauth: 'Related channels' },
-		addOne: function(channel){
-			var view = ( channel.get('defaultArticle') )? new ChannelDetailHomeView({model:channel, app:this.options.app}) : new ChannelDetailView({model:channel, app:this.options.app}),
-				render = view.render().el;
-			
-			$(this.el).append(render);
-		},
-		addHelp: function(){
-			alert('// '+this.type);
-			var view = false;
-			switch(this.type){
-				case 'search':
-					view = new Help_detail_search();
-					break;
-				case 'channel':
-				case 'event':
-					//view = new Help_detail_channel();
-					break;
-				case 'home':
-					view = new Help_detail_home();
-				default:
-					break;
-			};
-			if(view) $(this.el).append(view.render().el);
-		}
-
-	});
-	var EventListDetailView = EventListView.extend({
-		tagName: 'section',
-		className: 'content eventList',
-		msg:{ empty: '<p>This channel has no associated events</p>', low: false },
-		title: { auth: false, unauth: false },
-		addOne: function(event){
-			var view = new EventDetailView({model:event, app:this.options.app})
-			$(this.el).append(view.render().el);
-		},
-		addHelp: function(){}
-	});
-
-	// Item view for related items in detail view
-	var ChannelDetailView 	= ChannelView.extend({
-		template: _.template( $('#channelDetailItemTemplate').html() )
-	});
-	var ChannelDetailHomeView = ChannelView.extend({
-		className:'channelHomeItem',
-		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
-		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
-		    return this;
-		}
-	});
-	var EventDetailView = EventView.extend({
-		template: _.template( $('#eventDetailItemTemplate').html() )
-	});
-	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail View ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Detail List views
 	var DetailListView 	= Backbone.View.extend({
 		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
@@ -680,7 +664,7 @@ TweetView			- individual tweet comment
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('remove', this.removeOne);
 			
-			this.app.bind('change:selectedItemUID', this.collection.checkSetCreate)
+			//this.app.bind('change:selectedItemUID', this.collection.checkSetCreate)
 			
 		},
 		
@@ -690,7 +674,7 @@ TweetView			- individual tweet comment
 			this.el.append(view.render().el);
 			
 			setTimeout(function () {
-				view.scroll = new iScroll(view.id, {scrollbarClass: 'detailScrollbar', zoom:false});
+				view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
 			}, 100);
 
 			// set page route
@@ -706,15 +690,15 @@ TweetView			- individual tweet comment
 			on.helper.log('View.DetailList.removeOne');
 		}
 	});
-	
+
 	var DetailView		= Backbone.View.extend({
 		tagName: 'article',
 		className: 'detailItem',
-		id: 'detailContentWrap',
+		baseID: 'detailContentWrap',
 		template: _.template( $('#detailTemplate').html() ),
 		errorTemplate: _.template( $('#detail404Template').html() ),
 		events: {
-			'click .save': 'saveAction'
+			'click a.save': 'saveAction'
 		},
 		
 		initialize: function(){
@@ -722,8 +706,7 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton');
 			this.app = this.options.app;
 
-			this.id += '_' + this.model.cid;
-			
+			this.baseID += '_' + this.model.cid;
 			this.model.bind('change:selected', this.toggleDisplay);
 			this.model.bind('change:saved', this.toggleButton);
 			this.toggleButton();
@@ -740,7 +723,7 @@ TweetView			- individual tweet comment
 			};
 			
 			$(this.el).html(this.template(json));
-			this.$('.contentWrapper').attr({id: this.id});
+			this.$('.contentWrapper').attr({id: this.baseID});
 
 			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.model.get('type') }),
 			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.model.get('type') }),
@@ -763,7 +746,7 @@ TweetView			- individual tweet comment
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
 				$(this.el).fadeIn(200,function(){
-					self.scroll = new iScroll(self.id, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
+					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
 				});
 			}else{
 				$(this.el).fadeOut(200,function(){
@@ -785,7 +768,7 @@ TweetView			- individual tweet comment
 			e.preventDefault();
 			var that = this,
 				OUID = this.model.get('originUId').split('|'),
-				saved = this.model.get('saved'),
+				saved = this.model.get('saved') || this.app.channels.get(this.model.id),
 				title = this.model.get('title');
 			
 			switch(OUID[0]){
@@ -799,6 +782,7 @@ TweetView			- individual tweet comment
 					}, function(res){
 						on.helper.log(res);
 						that.model.set({saved:true});
+						that.app.searches.fetch();
 					})
 					break;
 				case 'channel':
@@ -811,7 +795,7 @@ TweetView			- individual tweet comment
 							on.helper.log(res)
 							//  that.model.set({saved:res.saved}); - once saved is setup, needs to be added to backend
 							that.model.set({saved:false});
-							this.app.searches.fetch();
+							that.app.channels.fetch();
 						})
 					}else{
 						// if not saved, then save
@@ -827,7 +811,6 @@ TweetView			- individual tweet comment
 					}
 					break
 				case 'event':
-					break;
 				default:
 					on.helper.log('DetailView.save failed service = ' + this.model.get('service'), 'error')
 					break;
@@ -835,7 +818,73 @@ TweetView			- individual tweet comment
 		}
 	});
 
-	// Article views
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail View Lists ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// List views for related items in detail view
+	var ChannelListDetailView = _ListView.extend({
+		tagName: 'section',
+		className: 'content channelList',
+		title: { auth: 'Related channels', unauth: 'Related channels' },
+		addOne: function(channel){
+			var view = ( channel.get('defaultArticle') )? new ChannelDetailHomeView({model:channel, app:this.options.app}) : new ChannelDetailView({model:channel, app:this.options.app}),
+				render = view.render().el;
+			
+			$(this.el).append(render);
+		},
+		addHelp: function(){
+			var view = false, name = false;
+			switch(this.type){
+				case 'search':
+					view = new _HelpView();
+					name = 'detailSearchChannel';
+					break;
+				case 'channel':
+				case 'event':
+					view = new _HelpView();
+					name = 'detailDefaultChannel';
+					break;
+				case 'home':
+					view = new _HelpView();
+					name = 'detailHomeChannel';
+				default:
+					break;
+			};
+			if(view) $(this.el).append(view.render(name).el);
+		}
+
+	});
+	var EventListDetailView = EventListView.extend({
+		tagName: 'section',
+		className: 'content eventList',
+		msg:{ empty: '<p>This channel has no associated events</p>', low: false },
+		title: { auth: false, unauth: false },
+		addOne: function(event){
+			var view = new EventDetailView({model:event, app:this.options.app})
+			$(this.el).append(view.render().el);
+		},
+		addHelp: function(){
+			var view = false, name = false;
+			switch(this.type){
+				case 'search':
+					view = new _HelpView();
+					name = 'detailSearchEvent';
+					break;
+				case 'channel':
+				case 'event':
+					view = new _HelpView();
+					name = 'detailDefaultEvent';
+					break;
+				case 'home':
+				default:
+					break;
+			};
+			if(view) $(this.el).append(view.render(name).el);
+		}
+	});
+
 	var ArticleListView = Backbone.View.extend({
 		tagName: 'section',
 		className: 'content articleList',
@@ -850,8 +899,11 @@ TweetView			- individual tweet comment
 		},
 		
 		addAll: function(){
-			this.collection.each(this.addOne);
-			if(this.collection.length === 0) this.addHelp();
+			if(this.collection.length === 0) {
+				this.addHelp()
+			}else{
+				this.collection.each(this.addOne);
+			};
 		},
 		addOne: function(article){
 			var view = false,
@@ -878,23 +930,51 @@ TweetView			- individual tweet comment
 			$(this.el).append(view.render().el);
 		},
 		addHelp: function(){
-			alert(this.type);
-			var view = false;
+			var view = false, name = false;
 			switch(this.type){
 				case 'search':
-					view = new Help_detail_search();
+					view = new _HelpView();
+					name = 'detailSearchArticle';
 					break;
 				case 'channel':
 				case 'event':
-					view = new Help_detail_channel();
+					view = new _HelpView();
+					name = 'detailDefaultArticle';
 					break;
 				case 'home':
 				default:
 					break;
-			}
-			if(view) $(this.el).append(view.render().el);
+			};
+			if(view) $(this.el).append(view.render(name).el);
 		}
 	});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail List Items ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Item view for related items in detail view
+	var ChannelDetailView 	= ChannelView.extend({
+		template: _.template( $('#channelDetailItemTemplate').html() )
+	});
+	var ChannelDetailHomeView = ChannelView.extend({
+		className:'channelHomeItem',
+		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
+		render: function(){
+			$(this.el).html(this.template(this.model.toJSON()));
+		    return this;
+		}
+	});
+	var EventDetailView = EventView.extend({
+		template: _.template( $('#eventDetailItemTemplate').html() )
+	});
+	
+	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Article item views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	var ArticleView_twitter = _ArticleView.extend({
 		className: 'twitter',
@@ -918,8 +998,9 @@ TweetView			- individual tweet comment
 		}
 	});
 
-
-// Article Detail Views (overlays)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Article Detail Views (overlays) ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	var ArticleDetailView = Backbone.View.extend({
 		el: $('#listArticle'),
 		view: false,
@@ -1015,7 +1096,9 @@ TweetView			- individual tweet comment
 	});
 
 	
-	// Comment views
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Comment views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	var CommentPostView = _form.extend({
 		el: $('#onsideComments form'),
 		escapeVal: false,
@@ -1040,7 +1123,7 @@ TweetView			- individual tweet comment
 		}
 		
 	});
-	var PostTweet = _form.extend({
+	var TweetPostView = _form.extend({
 		escapeValue: false,
 		el: $('#twitterComments form'),
 		escapeVal: false,
@@ -1069,43 +1152,29 @@ TweetView			- individual tweet comment
 			'click nav > a'		: 'changeTab'
 		},
 		
+		defaultTab: false,
 		activeTab: false,
 		activeBlock: false,
 		
 		$el: {
-			on_block: this.$('#onsideComments > .inner'),
-			fb_block: this.$('#facebookComments'),
-			tw_block: this.$('#twitterComments > .inner'),
-			go_block: this.$('#googleComments')
+			on_block		: this.$('#onsideComments'),
+			fb_block		: this.$('#facebookComments'),
+			tw_block		: this.$('#twitterComments'),
+			go_block		: this.$('#googleComments'),
 		},
 		
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'commentsActive', 'empty', 'addOne', 'addAll', 'addOneTweet', 'addAllTweets', 'changeTab', 'facebookComments', 'updateScroll');
+			_.bindAll(this, 'changeTab', 'facebookComments', 'updateScroll');
 			
-			this.app.bind('change:selectedItemUID', this.empty); 
-			this.app.bind('change:selectedItemUID', this.commentsActive); 			
-			this.app.bind('change:selectedArticle', this.empty );
-
-			this.collection = this.app.comments;
-			this.collection.bind('add', this.addOne);
-			this.collection.bind('reset', this.addAll);
-
-			this.tweets = this.app.tweets;
-			this.tweets.bind('add', this.addOneTweet);
-			this.tweets.bind('reset', this.addAllTweets);
+			var onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments});
+				// twitterComments = new OnsideCommentListView({app: this.options.app, collection:this.app.tweets}),
+				// facebookComments = new OnsideCommentListView({app: this.options.app});
 			
 			this.$('nav a.onside').click();
 			
-			ev.bind('update:commentContent', this.updateScroll, this);
-			ev.trigger('update:commentContent');
-		},
-		commentsActive: function(model, val){
-			if(val.split('|')[1] === 'null'){
-				this.el.addClass('showHelp');
-			}else{
-				this.el.removeClass('showHelp');
-			};
+			ev.bind('update:scroll:comments', this.updateScroll, this);
+			ev.trigger('update:scroll:comments');
 		},
 		updateScroll: function(){
 			var self = this;
@@ -1122,14 +1191,6 @@ TweetView			- individual tweet comment
 					self.scroll = null;
 				}
 			}, 100);
-		},
-		empty:  function(val){
-			this.$el.fb_block.empty();
-			this.$el.go_block.empty();
-			this.$el.tw_block.empty();
-			this.$el.on_block.empty();
-			ev.trigger('update:commentContent');
-			//if(this.activeBlock === '#facebookComments') this.facebookComments();
 		},
 		changeTab: function(e){
 			e.preventDefault();
@@ -1148,41 +1209,111 @@ TweetView			- individual tweet comment
 			if(newBlock === '#facebookComments' && this.$el.fb_block.is(':empty')){
 				this.facebookComments();
 			}
-			ev.trigger('update:commentContent');
-		},
-		addOne: function(comment, index){
-			var view = new CommentView({model:comment, app:this.options.app})
-			this.$el.on_block.append(view.render().el);
-			
-			if(index === this.collection.length - 1) ev.trigger('update:commentContent');
-		},
-		addAll: function(comment){
-			this.$el.on_block.empty();
-			this.collection.each(this.addOne);
-		},
-		addOneTweet: function(tweet){
-			var view = new TweetView({model:tweet, app:this.options.app})
-			this.$el.tw_block.append(view.render().el);
-			
-			if(index === this.tweets.length - 1) ev.trigger('update:commentContent');
-		},
-		addAllTweets: function(tweet){
-			this.$el.tw_block.empty();
-			this.tweets.each(this.addOneTweet);
+			ev.trigger('update:scroll:comments');
 		},
 		facebookComments: function(){
 			var url = document.location.href.replace('#',''),
 				width = $(this.el).width(),
 				comments = '<input type="hidden" value="'+url+'" /><div class="fb-comments" data-href="'+url+'" data-num-posts="2" data-width="'+width+'" data-colorscheme="dark" css=" '+on.path.facebookCss+' " simple="false"></div>';
 				
-			this.$el.fb_block.html(comments);
+			$('.inner', this.$el.fb_block).html(comments);
 			if (typeof FB  != "undefined"){
 			    FB.XFBML.parse(document.getElementById('facebookComments'));
-			    ev.trigger('update:commentContent');
+			    ev.trigger('update:scroll:comments');
 			}
 		} 
 	});
-	var CommentView 	= Backbone.View.extend({
+
+	var _genericCommentListView = Backbone.View.extend({
+		//el : $('#onsideComments'),
+		$inner: $('.inner', this.el),
+		$form: $('form', this.el),
+		helpGeneral: 'commentOnside',
+		helpAuth: 'commentOnside',
+		active: false,
+		help: {
+			type: false,
+			el: false
+		},
+		initialize: function(){
+			this.app = this.options.app;
+			this.collection = this.options.collection;
+			
+			_.bindAll(this, 'onInit', 'reset', 'addOne', 'addAll', 'toggleContent');
+			this.app.bind('change:selectedItemUID', this.reset); 
+			this.app.bind('change:selectedArticle', function(){
+				var val = this.app.get('selectedItemUID');
+				this.reset(false, val);
+			});
+
+			if(this.collection) {
+				this.collection.bind('add', this.addOne);
+				this.collection.bind('reset', this.addAll);
+			}
+			this.onInit();
+		},
+		reset: function(model,val){},
+		onInit: function(){},
+		addOne: function(comment, index){},
+		addAll: function(comment){
+			this.$inner.empty();
+			this.collection.each(this.addOne);
+		},
+		toggleContent: function(model, val){
+			var s = val.split('|');
+			if(s[1] === 'null' || s[0 === 'search']){
+				// home/search - no comments
+				this.showHelp('general');
+			}else if(!auth){
+				// not auth to use this module - login help
+				this.showHelp('auth');
+			}else{
+				this.showComments();
+			};
+		},
+		showHelp: function(type){
+			if(this.helpActive === type) return;
+			if(this.helpActive !== false){
+				
+			}
+			var help = (type === 'general')? this.helpGeneral : this.helpAuth,
+				view = new _HelpView();
+			this.el.append(view.render(help).el);
+			ev.trigger('update:scroll:comments');
+		},
+		showComments: function(){
+			
+		}
+	});
+
+
+			// commentOnside			: _.template( $('#help_commentOnsideTemplate').html() ),
+			// commentFacebook			: _.template( $('#help_commentFacebookTemplate').html() ),
+			// commentTwitter			: _.template( $('#help_commentTwitterTemplate').html() ),
+			// commentGoogle			: _.template( $('#help_commentGoogleTemplate').html() ),
+
+	
+	var OnsideCommentListView = _genericCommentListView.extend({
+		el : $('#onsideComments'),
+		addOne: function(comment, index){
+			var view = new CommentView({model:comment, app:this.options.app})
+			this.$inner.append(view.render().el);
+			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
+		},
+	});
+	var TwitterCommentListView = _genericCommentListView.extend({
+		el : $('#twitterComments'),
+		addOne: function(tweet, index){
+			//var view = new TweetView({model:tweet, app:this.options.app});
+			//this.$el.append(view.render().el);
+			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
+		},
+	});
+	var FacebookCommentListView = _genericCommentListView.extend({
+		el : $('#facebookComments'),
+	});
+
+	var CommentView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'comment bb',
 		template:  _.template( $('#commentTemplate').html() ),
@@ -1194,10 +1325,10 @@ TweetView			- individual tweet comment
 		    return this;
 		}
 	});
-	var TweetView 	= CommentView.extend({
-		className	: 'tweet bb',
-		template	:  _.template( $('#tweetTemplate').html() ),
-		render		: function(){
+	var TweetView = CommentView.extend({
+		className: 'tweet bb',
+		template:  _.template( $('#tweetTemplate').html() ),
+		render: function(){
 			$(this.el).html(this.template(this.model.toJSON()));
 		    return this;
 		}
@@ -1210,7 +1341,7 @@ TweetView			- individual tweet comment
 	BB.DetailListView 	= DetailListView;
 	BB.ArticleDetailView = ArticleDetailView;
 	BB.CommentPostView 	= CommentPostView;
-	BB.PostTweet		= PostTweet; 
+	BB.TweetPostView	= TweetPostView; 
 	BB.CommentListView 	= CommentListView; 
 
 })(this.BB);

@@ -149,6 +149,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaults: {
 			selected 	: true,
+			type		: 'default'
 			// saved 		: false,
 		},
 		refresh: function(){

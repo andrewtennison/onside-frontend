@@ -98,18 +98,27 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				model.bind('error', function(model,error){
 					console.error('error - detailed model does not exist');
 				});
+				
+			console.info(selectedItemUID + ' / ' + detailUID)
+			console.info('Detailed Model - check set create')
+			console.info('currently Selected = ' + this.selected)
+			console.info('exists = ' + existingModel)
 
-			// if current model selected, change to hidden
+			// if there is a current model hide it
 			if(this.selected !== false) {
 				this.get(this.selected).set({ selected : false});
 			}
 
-			// service, but no item selected stop.
+			// if model exists show it
 			if(existingModel) {
 				// if exists get model
 				existingModel.set({selected:true});
 				this.selected = detailUID;
-			} else if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
+				return;
+			} 
+
+			// else create model
+			if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
 				// load home page
 				model.set({
 					title		: 'Onside home',
@@ -119,13 +128,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				})
 				self.createModel(model);
 
-			} else if(search){
+			} else if(s[0] === 'search'){
 				var author = this.app.get('searchModel');
 				
 				function setSearchModel(){
 					model.set({
 						originUId	: selectedItemUID,
-						type 		: author.get('type') || 'search',
+						type 		: s[0],
 						title 		: author.escape('title'),
 						events 		: author.get('events'),
 						channels 	: author.get('channels'),
@@ -145,12 +154,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				}else{
 					setSearchModel();
 				}
-			} else {
+			} else if(s[0] === 'channel' || s[0] === 'event') {
+				model.set({
+					type : s[0]
+				})
 				model.fetch({
 					success:function(){
 						self.createModel(model);
 					}
 				});
+			} else {
+				alert('unknown detail item - ' + selectedItemUID)
 			}
 		},
 		createModel: function(model){

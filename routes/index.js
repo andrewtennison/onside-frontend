@@ -68,8 +68,8 @@ exports.getApi = function(req,res){
 };
 
 exports.postApi = function(req,res){
-	var authReq = ((/(\/follow|\/unfollow|\/search\/save)/gi).test(req.url));
-	callApi(req, res, 'post', authReq, false, function(r){
+	var authReq = ((/(\/follow|\/unfollow|\/search\/save|\/search\/list)/gi).test(req.url));
+	callApi(req, res, 'post', authReq, true, function(r){
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
@@ -154,6 +154,7 @@ var checkAuth = function(opts){
 	// wont reach here on fail
 	if(opts.preload){
 		preload(opts.req, function(json){
+			console.log(json)
 			var content = {channels: json.channels, events: json.events, searches: json.searches, popularChannels: json.popularChannels};
 			( opts[stage] )? opts[stage](res,loggedIn,content) : opts.pass(res,loggedIn,content);
 		});
@@ -191,7 +192,7 @@ function callApi(req, res, action, authReq, userReq, callback){
 			};
 		
 		var UID = (req.loggedIn)? req.user.id : 1;
-		
+
 		switch(action){
 			case 'post':
 				obj.data = req.body;
@@ -211,8 +212,8 @@ function callApi(req, res, action, authReq, userReq, callback){
 		}
 		url += path;
 		
-		console.log('callAPI - ' + action + ' to - ' + url);
-		
+		console.log(action + ' // ' + url)
+
 		rest[action](url,obj).on('complete', function(data) {
 			data.auth = req.loggedIn;
 			response.success = data;
@@ -308,6 +309,7 @@ var preload = function(req, callback){
 		var p = conf.apiPath + path;
 		if(token) p += '?token=' + token;
 		if(userParam) p += '&' + userParam;
+		console.log(p.replace(token,'token123'));
 		return p;
 	}	
 	

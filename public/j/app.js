@@ -1,4 +1,5 @@
 var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
+on.preload = window.on.preload || {};
 
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
@@ -12,6 +13,10 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	initialize: function(){
 		console.info('# appRoutes.initialize');
+		
+		/*
+		 look for local.session storage - saved preferences to load
+		 */
 		
 		// App model	
 		on.m.app = new BB.App(this);
@@ -37,10 +42,11 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Post Comment view
 		on.v.postComment = new BB.CommentPostView({ app: on.m.app });
-		on.v.postTweet	= new BB.PostTweet({ app: on.m.app });
+		on.v.postTweet	= new BB.TweetPostView({ app: on.m.app });
 		
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
+		//on.v.comment.defaultTab = false;
 		
 		// If JSON is preloaded use it, else fetch from server
 		function preLoadContent(type,data){
@@ -56,7 +62,6 @@ BB.appRoutes = Backbone.Router.extend({
 			};
 		};
 		
-		on.preload = window.on.preload || {};
 		preLoadContent('channels', on.preload.channels);
 		preLoadContent('events', on.preload.events);
 		preLoadContent('searches', on.preload.searches);		
