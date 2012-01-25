@@ -67,8 +67,33 @@ app.configure('production', function(){
 	//app.use(express.errorHandler()); 
 });
 
+//setup the errors
+app.error(function(err, req, res, next){
+	if (err instanceof NotFound) {
+	    res.render('404.ejs', { locals: { 
+		  title : '404 - Not Found'
+		 ,description: ''
+		 ,author: ''
+		 ,analyticssiteid: 'XXXXXXX' 
+		},status: 404 });
+	} else {
+	    res.render('500.ejs', { locals: { 
+		  title : 'The Server Encountered an Error'
+		 ,description: ''
+		 ,author: ''
+		 ,analyticssiteid: 'XXXXXXX'
+		 ,error: err 
+		},status: 500 });
+    }
+});
 
-// Routes
+app.listen(3000);
+
+
+///////////////////////////////////////////
+//              Routes                   //
+///////////////////////////////////////////
+
 app.get('/fb_channel', function(req,res){
 	var $cache_expire = 60*60*24*365 * 1000,
 		d = new Date();
@@ -90,7 +115,6 @@ app.get('*', function(req, res, next){
 	}
 }); 
 
-
 app.get('/', routes.index);
 app.get('/enter', routes.enter);
 app.get('/exit', routes.exit);
@@ -110,8 +134,19 @@ app.post('/tweet/', routes.tweet);
 // fake call to proxy multiple calls to API 
 app.get('/detail/:action?/:id?', routes.getDetailApi);
 
+//A Route for Creating a 500 Error (Useful to keep around)
+server.get('/500', function(req, res){
+    throw new Error('This is a 500 Error');
+});
 
+//The 404 Route (ALWAYS Keep this as the last route)
+server.get('/*', function(req, res){
+    throw new NotFound;
+});
+function NotFound(msg){
+    this.name = 'NotFound';
+    Error.call(this, msg);
+    Error.captureStackTrace(this, arguments.callee);
+}
 
-
-app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
