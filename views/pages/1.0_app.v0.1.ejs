@@ -19,7 +19,7 @@
 					<a class="toggleBlock bb" href="#navUser"><span class="icon user"></span><%= user.name %></a>
 					<div id="navUser" class="block">
 						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
-						<% if (everyauth.user.admin === '1') { %>
+						<% if (user.admin === '1') { %>
 						<a class="cms bb" href="/cms"><span class="icon cms"></span>CMS</a>
 						<% } %>
 						<a class="logout bb" href="/logout"><span class="icon login"></span>Sign out</a>
@@ -115,17 +115,18 @@
 <%- partial('partials/articles') %>
 <%- partial('partials/articleDetail') %>
 <%- partial('partials/helpers') %>
+
 <% 
 var cleanUser = false, facebookUser = false, twitterUser = false;
 if(user) {
 	cleanUser = user;
-	delete cleanUser.password;
-	delete cleanUser.email;
-	delete cleanUser.admin;
-	delete cleanUser.enabled;
+	// delete cleanUser.password;
+	// delete cleanUser.email;
+	// delete cleanUser.admin;
+	// delete cleanUser.enabled;
 	
-	if(cleanUser.twitter.length >= 2) twitterUser = JSON.stringify(everyauth.twitter.user);
-	if(cleanUser.facebook.length >= 2) facebookUser = JSON.stringify(everyauth.facebook.user);
+	if(cleanUser.twitter && cleanUser.twitter.length >= 2 && everyauth.twitter.user) twitterUser = JSON.stringify(everyauth.twitter.user);
+	if(cleanUser.facebook && cleanUser.facebook.length >= 2 && everyauth.facebook.user) facebookUser = JSON.stringify(everyauth.facebook.user);
 }
 %>
 
@@ -135,7 +136,7 @@ on.preload = {};
 on.preload.user		= <%- JSON.stringify(cleanUser) %>;
 on.preload.twitter	= <%- twitterUser %>;			
 on.preload.facebook	= <%- facebookUser %>;			
-on.preload.auth		= <%- loggedIn %>;			
+on.preload.auth		= <%- loggedIn %>;
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
 on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;
 on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;

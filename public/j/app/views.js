@@ -1228,7 +1228,7 @@ TweetView			- individual tweet comment
 		helpAuth: 'commentOnside',
 		active: false,
 		initialize: function(){		
-			_.bindAll(this, 'onInit', 'setupComments', 'addOne', 'addAll', 'reset', 'checkContent', 'showHelp');
+			_.bindAll(this, 'onInit', 'setupComments', 'addOne', 'addAll', 'reset', 'checkContent', 'showHelp', 'createHash');
 			
 			this.app = this.options.app;
 			this.collection = this.options.collection;		
@@ -1287,18 +1287,27 @@ TweetView			- individual tweet comment
 			this.$form.hide();
 			this.$inner.hide();
 			ev.trigger('update:scroll:comments');
+		},
+		createHash: function(val){
+			var s = val.split('|');
+			s[0] = s[0].substring(0,1).toUpperCase();
+			var hash = 'On' + s[0] + s[1];
+			if(s[2]) hash += s[2];
+			return hash;
 		}
 	});
 	
 	var OnsideCommentListView = _genericCommentListView.extend({
 		el : $('#onsideComments'),
-		auth : true,
+		onInit: function(){
+			this.auth = true;
+		},
 		addOne: function(comment, index){
 			var view = new CommentView({model:comment, app:this.options.app})
 			this.$inner.append(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
 		}
-	});
+	});	
 	var TwitterCommentListView = _genericCommentListView.extend({
 		el : $('#twitterComments'),
 		auth: function(){
@@ -1308,6 +1317,7 @@ TweetView			- individual tweet comment
 		helpAuth: 'commentTwitter',
 		onInit: function(){
 			this.postView = new TweetPostView({ app: this.options.app, collection: this.options.collection });
+			this.auth = this.app.get('twitter');
 		},
 		addOne: function(tweet, index){
 			var view = new TweetView({model:tweet, app:this.options.app});
@@ -1315,7 +1325,7 @@ TweetView			- individual tweet comment
 			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
 		},
 		setupComments: function(val){
-			var hash = 'onside|' + val;
+			var hash = this.createHash(val);
 			this.collection.hash = hash;
 			this.postView.updateContent(hash);
 			this.collection.fetch();
@@ -1324,19 +1334,20 @@ TweetView			- individual tweet comment
 	var FacebookCommentListView = _genericCommentListView.extend({
 		el : $('#facebookComments'),
 		helpAuth: 'commentFacebook',
-		
-		facebookComments: function(){
+		onInit: function(){
+			this.auth = this.app.get('facebook');
+		},
+		setupComments: function(val){
 			var url = document.location.href.replace('#',''),
-				width = $(this.el).width(),
+				width = '265px', //this.$inner.width(),
 				comments = '<input type="hidden" value="'+url+'" /><div class="fb-comments" data-href="'+url+'" data-num-posts="2" data-width="'+width+'" data-colorscheme="dark" css=" '+on.path.facebookCss+' " simple="false"></div>';
-				
-			$('.inner', this.$el.fb_block).html(comments);
+
+			this.$inner.html(comments);
 			if (typeof FB  != "undefined"){
 			    FB.XFBML.parse(document.getElementById('facebookComments'));
 			    ev.trigger('update:scroll:comments');
 			}
-		},
-		setupComments: function(){},
+		}
 	});
 
 	var CommentView = Backbone.View.extend({

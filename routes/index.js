@@ -41,6 +41,9 @@ exports.exit = function(req, res){
 };
 
 exports.cms = function(req,res){
+	console.log('/ cms redirect /')
+	console.log(req)
+	
 	if(!req.loggedIn){
 		res.redirect('/');
 	}else if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
@@ -50,6 +53,9 @@ exports.cms = function(req,res){
 	}
 }
 
+exports.cms2 = function(req,res){
+	res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms2', jsPath:'.cms2' });
+}
 
 
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
@@ -145,7 +151,7 @@ var checkAuth = function(opts){
 	userStatus = (!opts.authReq && user.status === 0)? '1' : user.status;
 	
 	// hack for admin accounts not setup properly
-	if(user.enabled === '1' && user.admin === '1' && user.status === '0') userStatus = '2';
+	//if(user.enabled === '1' && user.admin === '1' && user.status === '0') userStatus = '2';
 
 	// We can extend this property for different scenarios later
 	switch(userStatus){

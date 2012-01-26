@@ -5,13 +5,16 @@
 
 var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, _ = window._ || {}; $ = window.$ || {}, Backbone = window.Backbone || {}, $LAB = window.$LAB || {};
 
+
 on.path = {
 	js: '/j/'
 };
 
 $LAB
 .script( 
-	on.path.js + 'lib/jquery-1.6.4.min.js'
+	on.path.js + 'lib/json2.js', 
+	on.path.js + 'lib/jquery-1.7.1.min.js',
+	on.path.js + 'lib/underscore-1.2.1.min.js'
 )
 .wait(function(){
 	$(document).ready(function(){

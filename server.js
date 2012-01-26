@@ -125,6 +125,7 @@ app.get('/exit', routes.exit);
 
 // CMS 
 app.get('/cms', routes.cms);
+app.get('/cms2', routes.cms2);
 
 
 // API proxy requests

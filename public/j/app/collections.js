@@ -164,7 +164,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					}
 				});
 			} else {
-				alert('unknown detail item - ' + selectedItemUID)
+				console.error('unknown detail item - ' + selectedItemUID)
 			}
 		},
 		createModel: function(model){
