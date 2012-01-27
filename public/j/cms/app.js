@@ -18,7 +18,6 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// App model	
 		on.m.cms = new BB.CMS(this);
-		
 		var cmsView = new BB.cmsView({ cms:on.m.cms });
 
 	},

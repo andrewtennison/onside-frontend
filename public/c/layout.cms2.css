@@ -7,9 +7,66 @@
 */
 
 
-@import "http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css";
+/* ==|== twitter bootstrap ====================================================== */
+@import "/c/bootstrap.min.css";
+
+/* ==|== sprites ====================================================== */
+@import "/c/sprites.css";
+
 body { padding-top: 60px; }
 
 .container-fluid > .content { margin-left: 20px; }
 .container-fluid > .sidebar { left: 20px; position: absolute; top: 0; width: 0px;}
-#overlay .modal-body {overflow:auto}
+#overlay .modal-body {overflow:auto; max-height:400px}
+table{border-bottom:2px solid #ddd}
+table th {vertical-align:baseline}
+table td span {position:relative; display:block; text-overflow: ellipsis; white-space:nowrap; max-width:200px; overflow:hidden}
+.modal .alert-message .close {margin-top:1px}
+
+.page {display:none}
+.page.active {display:block}
+
+h1 button {float:right}
+
+.key_geolat,
+.key_geolng,
+.key_language,
+td[class*='key_map'],
+th[class*='key_map'] {display:none}
+th.key_map_type, td.key_map_type {display:table-cell}
+
+span.expand,
+td.edit span,
+td.key_admin span,
+td.key_enabled span,
+td.key_google span,
+td.key_facebook span,
+td.key_password span,
+td.key_twitter span {width:30px; height:30px; position:relative; display:block; text-indent:-999px; overflow:hidden;}
+
+
+.key_password .hasValue,
+.key_admin .hasValue,
+.key_enabled .hasValue,
+.key_google .hasValue,
+.key_facebook .hasValue,
+.key_twitter .hasValue {background:url(/i/cms/yes.png) center center no-repeat;}
+
+.key_password .noValue,
+.key_admin .noValue,
+.key_enabled .noValue,
+.key_google .noValue,
+.key_facebook .noValue,
+.key_twitter .noValue {background:url(/i/cms/no.png) center center no-repeat;}
+
+span.expand {background:url(/i/cms/add.png) center center no-repeat; cursor: pointer}
+td.edit span {background:url(/i/cms/edit.png) center center no-repeat; cursor: pointer}
+
+form .well .clearfix {margin-bottom: 0px; }
+form .well .input {float:left; margin-left:20px}
+form .well .btn {float:right}
+
+.filter {position:relative; margin-bottom:50px}
+.filter .filterToggle {position:absolute; display:inline-block; padding:0px 10px; height:30px; line-height:30px; bottom:-30px; right:20px; background:#F5F5F5; border:1px solid rgba(0, 0, 0, 0.05); border-top:0px}
+.filter .well {}
+.filter .hide {height:0; padding-top:0; padding-bottom:0; min-height:0; display:block; overflow:hidden}

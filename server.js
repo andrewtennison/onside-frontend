@@ -130,6 +130,7 @@ app.get('/cms2', routes.cms2);
 
 // API proxy requests
 app.get('/api/*', routes.getApi);
+app.put('/api/*', routes.postApi);
 app.post('/api/*', routes.postApi);
 app.del('/api/*', routes.delApi);
 app.post('/tweet', routes.postTweet);

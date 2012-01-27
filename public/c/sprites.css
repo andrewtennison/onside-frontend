@@ -1,0 +1,56 @@
+.icon,
+.toggleBlock:after 		{position:relative; display:inline-block; width:40px; height:40px; text-indent:-999px; overflow:hidden; background:url(/i/sprites/icons.png) 0 0 no-repeat;}
+
+span.icon {vertical-align:middle;}
+
+.onside		{background-position: 0px 0}
+.facebook	{background-position:-40px 0}
+.twitter	{background-position:-80px 0}
+.google		{background-position:-120px 0}
+.channels	{background-position:-160px 0}
+.share		{background-position:-200px 0}
+.save 		{background-position:-240px 0}
+.search 	{background-position:-280px 0}
+.refresh 	{background-position:-320px 0}
+.comments	{background-position:-360px 0}
+.comment	{background-position:-400px 0}
+.settings	{background-position:-440px 0}
+.events		{background-position:-480px 0}
+.user		{background-position:-520px 0}
+.login		{background-position:-560px 0}
+.arrow-s	{background-position:-600px 0}
+.arrow-n	{background-position:-640px 0}
+.arrow-w	{background-position:-680px 0}
+.arrow-s	{background-position:-720px 0}
+.close		{background-position:-760px 0}
+.play		{background-position:-800px 0}
+.filter		{background-position:-840px 0}
+.bookmark	{background-position:-880px 0}
+.think		{background-position:-920px 0}
+
+.onside.active, .onside:hover, a.active .onside, a:hover .onside			{background-position: 0px -40px}
+.facebook.active, .facebook:hover, a.active .facebook, a:hover .facebook	{background-position:-40px -40px}
+.twitter.active, .twitter:hover, a.active .twitter, a:hover .twitter		{background-position:-80px -40px}
+.google.active, .google:hover, a.active .google, a:hover .google			{background-position:-120px -40px}
+.channels.active, .channels:hover, a.active .channels, a:hover .channels	{background-position:-160px -40px}
+.share.active, .share:hover, a.active .share, a:hover .share				{background-position:-200px -40px}
+.save.active, .save:hover, a.active .save, a:hover .save 					{background-position:-240px -40px}
+.search.active, .search:hover, a.active .search, a:hover .search			{background-position:-280px -40px}
+.refresh.active, .refresh:hover, a.active .refresh, a:hover .refresh		{background-position:-320px -40px}
+.comments.active, .comments:hover, a.active .comments, a:hover .comments	{background-position:-360px -40px}
+.comment.active, .comment:hover, a.active .comment, a:hover .comment		{background-position:-400px -40px}
+.settings.active, .settings:hover, a.active .settings, a:hover .settings	{background-position:-440px -40px}
+.events.active, .events:hover, a.active .events, a:hover .events			{background-position:-480px -40px}
+.user.active, .user:hover, a.active .user, a:hover .user					{background-position:-520px -40px}
+.login.active, .login:hover, a.active .login, a:hover .login				{background-position:-560px -40px}
+.arrow-s.active, .arrow-s:hover, a.active .arrow-s, a:hover .arrow-s		{background-position:-600px -40px}
+.arrow-n.active, .arrow-n:hover, a.active .arrow-n, a:hover .arrow-n		{background-position:-640px -40px}
+.arrow-w.active, .arrow-w:hover, a.active .arrow-w, a:hover .arrow-w		{background-position:-680px -40px}
+.arrow-s.active, .arrow-s:hover, a.active .arrow-s, a:hover .arrow-s		{background-position:-720px -40px}
+.close.active, .close:hover, a.active .close, a:hover .close				{background-position:-760px -40px}
+.play.active, .play:hover, a.active .play, a:hover .play					{background-position:-800px -40px}
+.filter.active, .filter:hover, a.active .filter, a:hover .filter			{background-position:-840px -40px}
+.bookmark.active, .bookmark:hover, a.active .bookmark, a:hover .bookmark	{background-position:-880px -40px}
+
+.toggleBlock:after {content:""; position:absolute; right:10px; background-position:-600px 0;}
+.toggleBlock.active:after {background-position:-640px 0}

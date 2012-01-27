@@ -15,7 +15,14 @@ on.path = {
 };
 on.env = {
 	docReady : false
-}
+};
+on.settings = {
+	sports 		: ['', 'football', 'cricket', 'tennis', 'golf', 'badminton'],
+	channelType	: ['', 'team', 'player', 'competition', 'sponsor'],
+	eventType	: ['', 'match', 'league', 'tournament'],
+	articleTypes: ['', 'rss', 'youtube', 'twitter']
+};
+
 
 $LAB
 .script( 
@@ -32,7 +39,9 @@ $LAB
 	on.path.js + 'cms/models.js',
 	on.path.js + 'cms/collections.js',
 	on.path.js + 'lib/jquery.tablesorter.min.js',
-	on.path.js + 'lib/bootstrap-modal.js'
+	on.path.js + 'lib/bootstrap-modal.js',
+	on.path.js + 'lib/bootstrap-alerts.js',
+	on.path.js + 'lib/bootstrap-buttons.js'
 )
 .wait(function(){
 	function init(){
