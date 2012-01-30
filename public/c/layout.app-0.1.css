@@ -12,6 +12,7 @@
 
 /* ==|== typography ====================================================== */
 @import "/c/type.css";
+@import url(http://fonts.googleapis.com/css?family=Glegoo);
 
 /* ==|== sprites ====================================================== */
 @import "/c/sprites.css";
@@ -226,7 +227,7 @@ body,
 .detailItem .eventList {}
 
 .detailItem .articleList {}
-	.detailItem article h1 {padding:15px 40px 5px 15px; font-size:1.4em; color:#333; font-weight:normal}
+	.detailItem article h1 {padding:15px 40px 5px 15px; font-size:1.4em; color:#333; font-weight:normal; font-family: 'Glegoo', serif;}
 	.detailItem article .content {font-size:1.2em; padding:5px 40px 10px 15px; line-height: 1.5em}
 	.detailItem article footer {height:20px; background:#eee; padding:0 15px; line-height:20px; box-shadow:0 1px 2px 0px #999 inset; -webkit-box-shadow:0 1px 2px 0px #999 inset}
 	.detailItem article a.open {float:none; margin:0 0 10px 15px}

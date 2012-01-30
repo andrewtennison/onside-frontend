@@ -41,27 +41,18 @@ exports.exit = function(req, res){
 };
 
 exports.cms = function(req,res){
-	console.log('/ cms redirect /')
-	console.log(req)
-	
-	if(!req.loggedIn){
-		res.redirect('/');
-	}else if(process.env.NODE_ENV === 'development' || (req.loggedIn && req.user.admin === '1') ){
-		res.render('pages/cms.jade', { title: 'Add Content', cssPath: '.cms', jsPath:'.cms' });
-	} else {
+	if(req.loggedIn && req.user.admin === 0){
 		res.redirect('/', 401);
+	}else{
+		res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms', jsPath:'.cms' });
 	}
-}
+};
 
-exports.cms2 = function(req,res){
-	res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms2', jsPath:'.cms2' });
-}
 
 
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* API Proxy routes */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
-
 exports.getApi = function(req,res){
 	var userReq = false;
 	if( ((/myChannel/gi).test(req.url)) ) {

@@ -4,6 +4,7 @@
 			<div class="container-fluid">
 				<a class="brand" href="#">Onside CMS</a>
 
+				<% if(everyauth.loggedIn){ %>
 				<ul class="nav" id="primaryNav">
 					<li><a href="#dashboard">Dashboard</a></li>
 					<li><a href="#users">Users</a></li>
@@ -12,15 +13,21 @@
 					<li><a href="#sources">Sources</a></li>
 					<li><a href="#articles">Articles</a></li>
 				</ul>
-				<p class="pull-right">Logged in as <a href="#">name</a></p>
+				<p class="pull-right">Logged in as <a href="#"><%= everyauth.user.name %></a></p>
+				<% }else{ %>
+				<p class="pull-right">Log in with <a href="/auth/facebook">facebook</a> or <a href="/auth/twitter">twitter</a> to access cms</p>					
+				<% } %>
+
 
 			</div>
 		</div>
 	</div>
+	
 
 	<div class="container-fluid">
 		<div class="sidebar"></div>
 		<div class="content">
+			<% if(everyauth.loggedIn){ %>
 			<section id="dashboard" class="page">
 				<div class="page-header">
 					<h1>Dashboard <small></small></h1>
@@ -125,7 +132,7 @@
 					<tbody></tbody>
 				</table>
 			</section>
-
+			<% } %>
 			<footer>
 				<p>&copy; Company 2011</p>
 
