@@ -15,7 +15,7 @@
 				</ul>
 				<p class="pull-right">Logged in as <a href="#"><%= everyauth.user.name %></a></p>
 				<% }else{ %>
-				<p class="pull-right">Log in with <a href="/auth/facebook">facebook</a> or <a href="/auth/twitter">twitter</a> to access cms</p>					
+				<p class="pull-right">You are not logged in.</p>					
 				<% } %>
 
 
@@ -132,6 +132,12 @@
 					<tbody></tbody>
 				</table>
 			</section>
+			<% } else { %>
+				<section id="login">
+					<div class="page-header">
+						<h1>Login <small>to make changes - <a href="/auth/facebook" class="btn success">facebook</a> or <a href="/auth/twitter" class="btn success">twitter</a></small></h1>
+					</div>
+				</section>
 			<% } %>
 			<footer>
 				<p>&copy; Company 2011</p>

@@ -110,6 +110,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				arr = sortObject(json),
 				defaults = this.model.defaultOptions;
 				
+			html += '<td class="edit"><span>edit</span></td>'
 			_.each(arr,function(key,i){
 				var opts = defaults[key],
 					v = json[key];
@@ -123,7 +124,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					html += '<td class="key_'+key+'"><span class="'+existsString+'">'+v+'</span></td>';
 				}
 			});
-			html += '<td class="edit"><span>edit</span></td>'
 			return html;
 		},
 		updateRow: function(){
