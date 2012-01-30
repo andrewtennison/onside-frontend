@@ -99,11 +99,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					console.error('error - detailed model does not exist');
 				});
 				
-			console.info(selectedItemUID + ' / ' + detailUID)
-			console.info('Detailed Model - check set create')
-			console.info('currently Selected = ' + this.selected)
-			console.info('exists = ' + existingModel)
-
 			// if there is a current model hide it
 			if(this.selected !== false) {
 				this.get(this.selected).set({ selected : false});

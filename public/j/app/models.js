@@ -61,6 +61,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		service: 'channel',
 		initialize: function(){
 			on.helper.log('# Model.Channel.initialize','info');
+			var i = this.get('image');
+			if( i === 'null' || i === null || i.length === 0) this.set({image:'/i/placeholder/listIcon2.png'});
 		},
 		parse: function(resp){
 			return resp.resultset.channels[0];
@@ -68,7 +70,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selected	: false,
 			service		: 'channel',
-			img			: '/i/placeholder/listIcon2.png'
+			image		: '/i/placeholder/listIcon2.png'
 			
 		// DB model structure
 			// id 				: undefined,
@@ -143,13 +145,23 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Detail = Backbone.Model.extend({
 		initialize: function(){
+			_.bindAll(this, 'setImage' );
+			this.bind('change', this.setImage)
+		},
+		setImage: function(){
+			var a = this.get('author');
+			if(a){
+				if( a.image === 'null' || a.image === null || a.image.length === 0) a.image = '/i/placeholder/listIcon2.png';
+				this.set({image:a.image});
+			}
 		},
 		url: function(){
 			return '/' + this.id.replace(/\|/g,'/');
 		},
 		defaults: {
 			selected 	: true,
-			type		: 'default'
+			type		: 'default',
+			image		: '/i/placeholder/listIcon2.png'
 			// saved 		: false,
 		},
 		refresh: function(){

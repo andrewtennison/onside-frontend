@@ -80,20 +80,46 @@
 				<div class="page-header">
 					<h1>Articles <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
 				</div>
-				<div class="filter">
-					<form class="well">
-						<div class="clearfix inline">
-            				<label for="normalSelect">Select channel</label>
-							<div class="input">
-								<select id="normalSelect" name="normalSelect">
-									<option>1</option>
-								</select>
+				<article class="well filter">
+					<header>
+						<h3>Filter articles</h3>
+						<span class="filterToggle btn">toggle filters</span>
+					</header>
+					<form class="form-stacked">
+					<div class="row">
+							<div class="span4">
+								<div class="clearfix">
+		            				<label for="channel">Select channel</label>
+									<div class="input">
+										<select id="channelSelect" name="channel" class="dynamicSelect" data-content="channels">
+											<option>all</option>
+										</select>
+									</div>
+								</div>
 							</div>
-							<input type="submit" value="Get articles" class="btn primary">
-						</div>
+
+							<div class="span4">
+								<div class="clearfix">
+		            				<label for="limit">Select limit</label>
+									<div class="input">
+										<select id="limitSelect" name="limit">
+											<option>10</option>
+											<option>20</option>
+											<option>30</option>
+											<option>40</option>
+											<option>50</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="span4 foot">
+								<input type="submit" value="Get articles" class="btn primary">
+							</div>
+					</div>
 					</form>
-					<span class="filterToggle">show filters</span>
-				</div>
+				</article>
+
 				<table class="zebra-striped">
 					<thead></thead>
 					<tbody></tbody>

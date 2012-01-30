@@ -5,7 +5,7 @@
 
 <script id="channelItemTemplate" class="tmpl" type="text/template">
 	<a href="#">
-		<@ if(img) { @><img src="<@= img @>" /><@ } @>
+		<img src="<@= image @>" />
 		<h1><@= name @></h1>
 	</a>
 </script>
@@ -76,7 +76,7 @@
 <script id="detailTemplate" class="tmpl" type="text/template">
 	<header class="detailHead bb">
 		<h1>
-			<img class="badge" src="/i/placeholder/listIcon2.png" />
+			<img class="badge" src="<@= image @>" />
 			<@= title @>
 		</h1>
 		<nav>
@@ -107,7 +107,7 @@
 
 <script id="channelDetailItemTemplate" class="tmpl" type="text/template">
 	<a href="#">
-		<img class="badge" src="/i/placeholder/listIcon2.png" />
+		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
 	</a>
 </script>
@@ -115,7 +115,7 @@
 <script id="channelDetailHomeItemTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( defaultArticle.publish ); @>
 	<header>
-		<img class="badge" src="/i/placeholder/listIcon2.png" />
+		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
 		<p>[[ 120 followers / 20 articles since last visit ]]</p>
 	</header>

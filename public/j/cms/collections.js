@@ -3,45 +3,46 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 // Onside Models
 (function(BB){
 	
+	var _default = Backbone.Collection.extend({
+		url: function(){
+			return on.path.api + '/' + this.path + '?' + this.params;
+		},
+		path: '',
+		params: '',
+		parseName: function(){
+			return (this.path)? this.path + 's' : false;
+		},
+		parse: function(resp, xhr) {
+			var p = (typeof this.parseName === 'function')? this.parseName() : this.parseName;
+			return (this.parseName)? resp.resultset[p] : resp;
+		}
+	});
 
-	var Users = Backbone.Collection.extend({
+	var Users = _default.extend({
 		model : BB.User,
-		url: on.path.api + '/user/list',
-		parse: function(resp, xhr) {
-			return resp.resultset.users;
-		}
+		path: 'user/list',
+		parseName: 'users'
 	});
 	
-	var Channels = Backbone.Collection.extend({
+	var Channels = _default.extend({
 		model : BB.Channel,
-		url: on.path.api + '/channel',
-		parse: function(resp, xhr) {
-			return resp.resultset.channels;
-		}
+		path : 'channel'
 	});
 	
-	var Events = Backbone.Collection.extend({
+	var Events = _default.extend({
 		model : BB.Event,
-		url: on.path.api + '/event',
-		parse: function(resp, xhr) {
-			return resp.resultset.events;
-		}
+		path : 'event'
 	});
 
-	var Sources = Backbone.Collection.extend({
+	var Sources = _default.extend({
 		model : BB.Source,
-		url: on.path.api + '/source',
-		parse: function(resp, xhr) {
-			return resp.resultset.sources;
-		}
+		path : 'source'
 	});
 
-	var Articles = Backbone.Collection.extend({
+	var Articles = _default.extend({
 		model : BB.Article,
-		url: on.path.api + '/article?limit=20',
-		parse: function(resp, xhr) {
-			return resp.resultset.articles;
-		}
+		path : 'article',
+		params: 'limit=20',
 	});
 
 	BB.Users = Users;

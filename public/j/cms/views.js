@@ -8,19 +8,18 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		for(key in obj){
 			if(key !== 'id') a.push(key);
 		}
-		a.sort();
-		a.splice(0,0,'id');
-		console.log(a);
 		return a;
 	}
 
 	var _pageView = Backbone.View.extend({
 		events: {
-			'click .create' : 'createModel'
+			'click .create'			: 'createModel',
+			'click .filterToggle'	: 'toggleFilters',
+			'submit .filter form'	: 'submitFilters'
 		},
 		title: 'Unknown',
 		initialize: function(){
-			_.bindAll(this, 'createModel', 'addOne', 'addAll', 'setupTable' );
+			_.bindAll(this, 'createModel', 'toggleFilters', 'submitFilters', 'addOne', 'addAll', 'setupTable' );
 			this.cms = this.options.cms;
 			this.overlay = this.options.overlay;
 
@@ -32,6 +31,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.collection = this.options.collection;
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
+			this.collection.bind('error', function(xhr){
+				console.error('error on collection')
+				console.log(xhr);
+			});
 		},
 		createModel: function(){
 			var self = this,
@@ -44,6 +47,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				self.overlay.show();
 			});
 		},
+		toggleFilters: function(e){
+			e.preventDefault();
+			this.$('.filter form').toggle();
+		},
+		submitFilters: function(e){
+			e.preventDefault();
+			this.collection.params = this.$('.filter form').serialize();
+			this.collection.fetch();
+		},
 		addOne: function(model, index){
 			if(!this.headBuilt && index === 0) this.setupTable(model);
 			var view = new _rowView({model:model, cms:this.options.cms, overlay: this.options.overlay, title: this.title})
@@ -55,8 +67,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				this.$tbody.append( $('<tr><td><p>There are currently no items to see. Please add one.</p></td></tr>') );
 			}else{
 				this.collection.each(this.addOne);
+				this.$table.tablesorter({ sortList: [[1,0]] });
 			}
-			this.$table.tablesorter({ sortList: [[1,0]] });
 		},
 		setupTable: function(model){
 			var json = model.toJSON(),
@@ -252,12 +264,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var cmsView = Backbone.View.extend({
 		el : $('#OnsideCMS'),
 		events: {
-			'click #primaryNav a' : 'updateNav'
+			'click #primaryNav a' : 'updateNav',
+			'focus .dynamicSelect' : 'buildSelect'
 		},
 		initialize: function(){
 			console.info('# View.cms.init');
-			_.bindAll(this, 'updateNav');
+			_.bindAll(this, 'updateNav', 'buildSelect');
 			//this.app = this.options.app;
+			this.cms = this.options.cms;
 			
 			var overlay 	= new overlayView();
 			this.users 		= new userPageView(		{cms: this.options.cms, collection: this.options.cms.users, overlay:overlay});
@@ -289,6 +303,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			this.activeLink = $li;
 			this.activeTab = $id;
+		},
+		buildSelect: function(e){
+			var $el = $(e.target),
+				d = $el.attr('data-content'),
+				html ='';
+				
+			if(this.cms[d] && this.cms[d].models.length) {
+				html += '<option value="">all</option>';
+				$.each(this.cms[d].models, function(){
+					html += '<option value="'+this.id+'">'+this.get('name')+'</option>';
+				});
+				$el.html(html);
+			};
 		}
 		
 	});

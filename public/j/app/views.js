@@ -716,7 +716,8 @@ TweetView			- individual tweet comment
 			on.helper.log('# View.Detail.render');
 			
 			var json = this.model.toJSON();
-			
+			console.info('JSONz')
+			console.log(json)
 			if(json.error) {
 				$(this.el).html(this.errorTemplate(json));
 				return this;
@@ -1247,8 +1248,6 @@ TweetView			- individual tweet comment
 				this.collection.bind('reset', this.addAll);
 			}
 			this.onInit();
-			console.info('COMMENTS   //')
-			console.log(this)
 		},
 		onInit: function(){},
 		setupComments: function(){},
