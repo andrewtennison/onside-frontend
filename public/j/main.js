@@ -99,7 +99,7 @@ $LAB
 		$LAB
 		.script(on.path.js + 'app/views.js?' + on.env.v)
 		.wait()
-		.script(on.path.js + 'app.js?' + on.env.v)
+		.script(on.path.js + 'app/app.js?' + on.env.v)
 		.wait(function(){console.log('6. app loaded')});
 
 	};

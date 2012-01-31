@@ -6,44 +6,44 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var _Lists = Backbone.Collection.extend({
 		// overiden in extended objects
-		defaultUrl:'',
+		urlPath:'',
+		parsePath: function(){
+			return this.urlPath + 's';
+		},
+		params: '',
+		url: function(){
+			return on.path.api + '/' + this.urlPath +'?'+ this.params;
+		},
+		parse: function(resp, xhr) {
+			//var p = this.parsePath();
+			if(this.parsePath) return resp.resultset[ this.parsePath() ];
+		},
 		initialize:function(){
-			on.helper.log('# Collection._Lists.initialize','info');
+			console.info('# Collection._Lists.initialize: ' + this.urlPath);
 		}
 	});
 	
 	var ChannelList = _Lists.extend({
-		model : BB.Channel,
-		url: on.path.api + '/mychannel',
-		parse: function(resp, xhr) {
-			return resp.resultset.channels;
-		}
+		urlPath: 'channel',
+		model : BB.Channel
     });
 
 	var EventList = _Lists.extend({
-		model : BB.Event,
-		url: on.path.api + '/event',
-		parse: function(resp, xhr) {
-			return resp.resultset.events;
-		}
+		urlPath: 'event',
+		model : BB.Event
 	});
 		
 	var SavedSearchList = _Lists.extend({
-		model : BB.SavedSearch,
-		url: on.path.api + '/search/list',
-		parse: function(resp, xhr) {
-			return resp.resultset.searches;
-		}
+		urlPath: 'search/list',
+		parsePath: function(){ return 'searches'; },
+		model : BB.SavedSearch
     });
 
 	var ArticleList = Backbone.Collection.extend({
+		urlPath: 'article',
 		model : BB.Article,
-		url: on.path.api + '/article',
 		filters:{},
 		selectedModel: false,
-		parse: function(resp, xhr) {
-			return resp.resultset.articles;
-		},
 		initialize: function(app){
 			this.app = app;
 		},
@@ -66,6 +66,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var DetailList = Backbone.Collection.extend({
 		model: BB.Detail,
+		parsePath: false,
 		url: function(action, id){
 			var arr = this.id.split('|');
 			return '/' +arr[0]+ '/' + arr[1] +'/'+ arr[2];

@@ -328,6 +328,9 @@ TweetView			- individual tweet comment
 			
 			this.app.bind('change:userAuth', this.setAuth);
 			this.setAuth(false,this.app.get('userAuth'));
+			
+			
+			
 		},
 				
 		login: function(){
@@ -371,24 +374,6 @@ TweetView			- individual tweet comment
 				w = $el.width(),
 				h = $el.height(),
 				c;
-			
-			if(w >= 1024){c='size_full';
-			}else if(w >=640 && w< 1024){c="size_med";
-			}else if(w < 640){c="size_min";				
-			}else{c="unknown";}
-			c = (w < h)? c+' landscape' : c+' portrait';
-			$el.attr('class',c);
-			
-			$('.page').each(function(){
-				var $p = $(this),
-					$c = $('section.content',$p),
-					c = $c.height(),
-					h = $('header',$p).height() | 0, 
-					f = $('footer',$p).height() | 0,
-					nh = $p.height() - h - f;
-					
-				//$c.css('height', nh)
-			});
 			*/
 		},
 		triggerSearch: function(e){

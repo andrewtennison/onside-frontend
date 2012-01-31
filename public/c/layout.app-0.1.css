@@ -101,10 +101,10 @@ body,
 
 #main 			{right:0; width:auto; z-index:3;}
 	#appNav 		{top:auto; z-index:3; left:5px; right:5px;}
-	#listDetail 	{box-shadow:0 0 8px 0px #000; }
+	#listDetail 	{box-shadow:0 0 4px 0px #000; }
 	#listArticle 	{z-index:2; display:none}
 	
-	#listDetail, #listArticle {background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; top:5px; left:5px; right:5px; border-radius:6px 6px 0 0;}
+	#listDetail, #listArticle {background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; left:5px; right:5px; /*top:5px; border-radius:6px 6px 0 0;*/}
 
 /* inner elements used for scrolling */
 #listGroups > header,
