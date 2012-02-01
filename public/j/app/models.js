@@ -13,9 +13,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			// create + init collections for channels + events
 			this.channels = new BB.ChannelList();
+			this.channels.params = {user:'me'};
+			
 			this.events = new BB.EventList();
-			this.detailedList = new BB.DetailList(false,app);
+			this.events.params = {user:'me'};
+			
 			this.searches = new BB.SavedSearchList();
+			this.searches.params = {user:'me'};
+
+			this.detailedList = new BB.DetailList(false,app);
 			this.comments = new BB.CommentList(false,app);
 			this.tweets = new BB.TweetList(false,app);
 			
@@ -145,8 +151,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Detail = Backbone.Model.extend({
 		initialize: function(){
+			console.info('# Model.Detail.init');
 			_.bindAll(this, 'setImage' );
-			this.bind('change', this.setImage)
+			//this.bind('change', this.setImage)
 		},
 		setImage: function(){
 			var a = this.get('author');
@@ -161,7 +168,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selected 	: true,
 			type		: 'default',
-			image		: '/i/placeholder/listIcon2.png'
+			image		: '/i/placeholder/listIcon2.png',
+			// channels	: new BB.ChannelList(),
+			// events		: new BB.EventList(),
+			// articles	: new BB.ArticleList(),
 			// saved 		: false,
 		},
 		refresh: function(){
@@ -169,11 +179,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.get('events').reset(this.get('eventJson'));
 			this.get('articles').reset(this.get('articleJson'));
 		},
-		validate: function(attrs) {
-			// if (attrs.error) {
-				// return "channel does not exist";
-			// }
-		}
+		validate: function(attrs) {}
 	});
 
 	var Article = Backbone.Model.extend({

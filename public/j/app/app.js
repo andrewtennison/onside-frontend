@@ -4,10 +4,16 @@ on.preload = window.on.preload || {};
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
-		'/event/:id'					: 'getEvent',
-		'/channel/:id'					: 'getChannel',
-		'/search/:id'					: 'getSearch',
 		'/:service/:id/article-:id2'	: 'getArticle',
+		'/:service/:id'					: 'getDetail',
+		'/search?q=:id'					: 'getSearch',
+		
+		// '/list/:id'						: 'getList',
+		// '/event/:id'					: 'getEvent',
+		// '/channel/:id'					: 'getChannel',
+		// '/search/:id'					: 'getSearch',
+		// '/search?q=:id'					: 'getSearch',
+		// '/:service/:id/article-:id2'	: 'getArticle',
 		'*path'							: 'home'
 	},
 	
@@ -45,8 +51,9 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		// Comment view
 		on.v.comment = new BB.CommentListView({ app: on.m.app });
-		//on.v.comment.defaultTab = false;
 		
+		//on.v.comment.defaultTab = false;
+		/*
 		// If JSON is preloaded use it, else fetch from server
 		function preLoadContent(type,data){
 			if(!data){
@@ -63,26 +70,45 @@ BB.appRoutes = Backbone.Router.extend({
 		
 		preLoadContent('channels', on.preload.channels);
 		preLoadContent('events', on.preload.events);
-		preLoadContent('searches', on.preload.searches);		
+		preLoadContent('searches', on.preload.searches);	
+		*/
+		// on.m.app.channels.fetch();
+		// on.m.app.events.fetch();
+		// on.m.app.searches.fetch();
 	},
 	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		on.m.app.set({ selectedItemUID : 'channel|null' });
+		on.m.app.set({ selectedItemUID : 'list|home' });
 	},
 	
-	getEvent: function( id ){
-		console.log('// Routes = "/events/'+id+'"');
-		if(id === '') id = null;
-		on.m.app.set({ selectedItemUID : 'event|'+id });
-	},
+	// getList: function(id){
+		// console.log('// Routes = "/events/'+id+'"');
+		// if(id === '') id = 'home';
+		// on.m.app.set({ selectedItemUID : 'list|'+id });
+	// },
+// 	
+	// getEvent: function( id ){
+		// console.log('// Routes = "/events/'+id+'"');
+		// if(id === '') id = null;
+		// on.m.app.set({ selectedItemUID : 'event|'+id });
+	// },
+// 	
+	// getChannel: function( id ){
+		// console.log('// Routes = "/channel/'+id+'"');
+		// if(id === '') id = null;
+		// on.m.app.set({ selectedItemUID : 'channel|'+id });
+	// },
 	
-	getChannel: function( id ){
-		console.log('// Routes = "/channel/'+id+'"');
-		if(id === '') id = null;
-		on.m.app.set({ selectedItemUID : 'channel|'+id });
+	getDetail: function(service, id){
+		console.log('// Routes = "/'+service+'/'+id+'"');
+		if(id === '') {
+			on.m.app.set({ selectedItemUID : 'list|home' });			
+		} else {
+			on.m.app.set({ selectedItemUID : service + '|' + id });
+		};
 	},
-	
+
 	getSearch: function( id ){
 		console.log('// Routes = "/search/'+id+'"');
 		on.m.app.set({ selectedItemUID : 'search|'+id });

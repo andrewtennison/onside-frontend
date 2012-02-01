@@ -10,12 +10,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		parsePath: function(){
 			return this.urlPath + 's';
 		},
-		params: '',
+		params: false,
 		url: function(){
-			return on.path.api + '/' + this.urlPath +'?'+ this.params;
+			return on.path.api + '/' + this.urlPath +'?'+ ( (typeof this.params === 'object')? $.param( this.params ) : this.params );
 		},
 		parse: function(resp, xhr) {
-			//var p = this.parsePath();
 			if(this.parsePath) return resp.resultset[ this.parsePath() ];
 		},
 		initialize:function(){
@@ -24,22 +23,26 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var ChannelList = _Lists.extend({
+		a: 'channelList',
 		urlPath: 'channel',
 		model : BB.Channel
     });
 
 	var EventList = _Lists.extend({
+		a: 'eventList',
 		urlPath: 'event',
 		model : BB.Event
 	});
 		
 	var SavedSearchList = _Lists.extend({
+		a: 'saveSearchList',
 		urlPath: 'search/list',
 		parsePath: function(){ return 'searches'; },
 		model : BB.SavedSearch
     });
 
 	var ArticleList = Backbone.Collection.extend({
+		a: 'articleList',
 		urlPath: 'article',
 		model : BB.Article,
 		filters:{},
@@ -65,6 +68,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 
 	var DetailList = Backbone.Collection.extend({
+		a: 'detailList',
 		model: BB.Detail,
 		parsePath: false,
 		url: function(action, id){
@@ -79,27 +83,65 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			on.helper.log('# Collection.DetailList.initialize','info');
 
 			this.app = app;
-			_.bindAll(this, 'manageCollection', 'createModel', 'checkSetCreate');
-			this.bind('add', this.manageCollection);
-			this.app.bind('change:selectedItemUID', this.checkSetCreate)
+			_.bindAll(this, 'createModel', 'checkSetCreate', 'check', 'fetchModel');
+			//this.bind('add', this.manageCollection);
+			//this.app.bind('change:selectedItemUID', this.checkSetCreate)
+			this.app.bind('change:selectedItemUID', this.check)
 		},
-		manageCollection: function(){
-			// possibly delete old if too many - manage memory
-			// on.helper.log(this)
+		check: function(app,selectedItemUID){
+			var s = selectedItemUID.split('|');
+			if(s[1] === ('null' || null || 'home' || 'popular')) s[0] = 'list'
+			
+			var detailUID = 'detail|' + selectedItemUID;
+			
+			// if there is a current model hide it
+			if(this.selected !== false) {
+				this.get(this.selected).set({ selected : false});
+			};
+
+			// if model exists show it
+			if( this.get( detailUID ) ) {
+				this.get(detailUID).set({selected:true});
+				this.selected = detailUID;
+			}else{
+				this.fetchModel(selectedItemUID, detailUID);
+			}	
 		},
-		checkSetCreate: function(){
+		fetchModel: function(selectedItemUID, detailUID){
 			var self = this,
-				selectedItemUID = this.app.get('selectedItemUID'),
+				s = selectedItemUID.split('|'),
+				type = s[0],
+				id = s[1],
+				model = new BB.Detail({id:detailUID}); //new this.model({id:detailUID});
+			
+			model.fetch({
+				success:function(data){
+					console.log('success');
+					self.createModel(model);
+				}, error:function(err){
+					console.error(err)
+				}
+			});
+		},
+		checkSetCreate: function(model,val){
+			var self = this,
+				selectedItemUID = val,
 				detailUID = 'detail|' + selectedItemUID,
 				s = selectedItemUID.split('|'),
 				existingModel = this.get( detailUID ),
 				search = (s[0] === 'search')? true : false,
 				model = new this.model({id:detailUID});
 				
-				model.bind('error', function(model,error){
-					console.error('error - detailed model does not exist');
-				});
-				
+			model.bind('error', function(model,error){
+				console.error('error - detailed model does not exist');
+			});
+			
+			console.error('checkset')
+			console.log(this.selected)
+			console.log(existingModel)
+			console.log(s[0])
+			console.log(s[1])
+			
 			// if there is a current model hide it
 			if(this.selected !== false) {
 				this.get(this.selected).set({ selected : false});
@@ -116,12 +158,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// else create model
 			if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
 				// load home page
+				console.log('home');
 				model.set({
 					title		: 'Onside home',
 					type		: 'home',
 					originUId	: selectedItemUID,
 					channels	: on.m.app.channels.toJSON()
-				})
+				});
 				self.createModel(model);
 
 			} else if(s[0] === 'search'){
@@ -164,6 +207,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			}
 		},
 		createModel: function(model){
+			console.info('createModel')
 			this.selected = model.id;
 			
 			model.set({

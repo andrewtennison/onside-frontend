@@ -20,7 +20,7 @@ baseAuthObject = {
 exports.index = function(req, res){
 	req.session.redirectTo = req.url;
 	
-	var obj = { req : req, res : res };
+	var obj = { req : req, res : res, preload:false };
 	_.defaults(obj, baseAuthObject);
 	checkAuth( obj );
 };
@@ -54,11 +54,16 @@ exports.cms = function(req,res){
 /* API Proxy routes */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 exports.getApi = function(req,res){
+	// if( ((/user/gi).test(req.url)) ) {
+		// req.send(req.user);
+		// return;
+	// };
+
 	var userReq = false;
 	if( ((/myChannel/gi).test(req.url)) ) {
 		userReq = true;
 		req.url = req.url.replace('mychannel','channel');
-	}
+	};
 	callApi(req, res, 'get', false, userReq, function(r){
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
@@ -187,6 +192,7 @@ var checkAuth = function(opts){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 function callApi(req, res, action, authReq, userReq, callback){
+	console.log('callAPI')
 	var response = {};
 	
 	if(authReq && !req.loggedIn){
@@ -209,7 +215,16 @@ function callApi(req, res, action, authReq, userReq, callback){
 				}
 			};
 		
-		var UID = (req.loggedIn)? req.user.id : 1;
+		var UID = (req.loggedIn)? req.user.id : false;
+		
+		if(path.indexOf('user=me') !== -1) {
+			if(!UID) {
+				response.error = 'User must be logged in to perform this action';
+				callback(response);
+				return;
+			}
+			path = path.replace('user=me','user='+UID);
+		}
 
 		switch(action){
 			case 'post':
@@ -233,11 +248,13 @@ function callApi(req, res, action, authReq, userReq, callback){
 		console.log(action + ' // ' + url)
 
 		rest[action](url,obj).on('complete', function(data) {
+			console.log('completet')
 			data.auth = req.loggedIn;
 			response.success = data;
 			callback(response);
 		}).on('error', function(err){
-			console.error(err);
+			console.log('error')
+			console.log(err);
 			response.error = 'error calling API';
 			callback(response);
 		});
@@ -249,13 +266,17 @@ function callApi(req, res, action, authReq, userReq, callback){
 };
 
 exports.getDetailApi = function(req,res){
+	console.log('getDetailedAPI')
+	
 	var action = req.params.action,
 		id = req.params.id,
 		timer = setInterval ( onComplete, 100 ),
 		i = 0,
+		required,
 		content = {
 			id			: 'detail|' + action +'|'+id,
 			originUId 	: action +'|'+id,
+			type		: action,
 
 			// default values to populate with content and pass back. Error is no content exists
 			error		: false,	
@@ -263,45 +284,120 @@ exports.getDetailApi = function(req,res){
 			title		: false,
 			channels	: false,
 			events 		: false,
-			articles 	: false
+			articles 	: false,
+			channelArticles: false
 		};
-	
-	// get Channel
-	req.url = '/channel/'+id;
-	callApi(req, res, 'get', false, false, function(r){
-		if( (r.success && r.success.count === 0) || !r.success ) {
-			content.error = true;
-		} else {
-			content.author = r.success.resultset.channels[0];
-			content.title = r.success.resultset.channels[0].name;
-		}
-	});
-	
-	
-	// get related channels
-	// req.url = '/channel?'+action+'='+id;
-	// callApi(req, res, 'get', false, false, function(r){
-		// content.channels = (r.success)? r.success.resultset.channels : false;
-		content.channels = [];
-	// });
 
-	// get related events
-	req.url = '/event?'+action+'='+id;
-	callApi(req, res, 'get', false, false, function(r){
-		content.events = (r.success)? r.success.resultset.events : false;
-	});
+	switch(action){
+		case 'list':
+			console.log('detail = list')
+			required = ['channels', 'channelArticles'];
+		
+			if(id === 'home' && !req.loggedIn) {
+				content.error = false;
+			} else {
+				// load channels, then loop through and append aticles
+				var uid;
+				if(id === 'home')
+					uid = req.user.id;
+				else if(id === 'popular')
+					uid = '1';
+				else 
+					content.error = true;
 
-	// get related articles
-	req.url = '/article?'+action+'='+id + '&limit=30';
-	callApi(req, res, 'get', false, false, function(r){
-		content.articles = (r.success)? r.success.resultset.articles : false;
-	});
-	
+				singleList(req, res, 'channels', '/channel?user='+uid, function(c){
+					console.log('channels loaded');
+					if(!c) {
+						content.error = true;
+					} else { 
+						var total = 0;
+						content.channels = c;
+						content.channels.forEach(function(channel,index){
+							singleList(req, res, 'articles', '/article?limit=1&channel='+channel.id, function(d){
+								if(!d) {
+									content.error = true;
+								} else {
+									channel.defaultArticle = d[0];
+									total += 1;
+									console.log(total +' / '+ content.channels.length);
+									if(total === content.channels.length) content.channelArticles = true;
+								}
+							});
+						})
+					}// end if
+				});// end singleList
+			}
+			content.title = id;
+			break;
+		case 'search':
+			console.log('detail = search')
+			required = ['events', 'channels', 'articles'];
+			content.title = id;
+			getSearch(req,res,content, function(c){
+				content = c;
+			});
+			break;
+		case 'channel':
+			console.log('detail = channel')
+			required = ['events', 'articles', 'author'];
+			singleList(req, res, 'channels', '/channel/'+id, function(c){
+				console.log('channel / author loaded')
+				if(!c) {
+					content.error = true;
+				} else { 
+					content.author = c[0]; 
+					content.title = content.author.name 
+				};
+			});
+			singleList(req, res, 'events', '/event?'+action+'='+id, function(c){
+				console.log('events loaded')
+				if(!c) content.error = true; else content.events = c;
+			});
+			singleList(req, res, 'articles', '/article?'+action+'='+id, function(c){
+				console.log('articles loaded')
+				if(!c) content.error = true; else content.articles = c;
+			});
+			break;
+		case 'event':
+			console.log('detail = event')
+			required = [content.channels, content.articles, content.author];
+			singleList(req, res, 'channels', '/event/'+id, function(c){
+				console.log('channel / author loaded')
+				if(!c) {
+					content.error = true;
+				} else { 
+					content.author = c[0]; 
+					content.title = content.author.name 
+				};
+			});
+			singleList(req, res, 'channels', '/channel?'+action+'='+id, function(c){
+				console.log('events loaded')
+				if(!c) content.error = true; else content.events = c;
+			});
+			singleList(req, res, 'articles', '/article?'+action+'='+id, function(c){
+				console.log('articles loaded')
+				if(!c) content.error = true; else content.articles = c;
+			});
+			break;
+		default:
+			break;
+	}
+
+
+	function checkRequired(){
+		var i = 0, l = required.length, complete = 0;
+		for(i;i<l;i++){
+			if(content[ required[i] ]) complete += 1;
+		};
+		var res = (complete === l)? true : false;
+		return res;
+	}
+
 	function onComplete(){
-		if( content.error || (/*content.channels &&*/ content.events && content.articles && content.author) ){
+		if( content && (content.error || checkRequired() ) ){
 			clearInterval( timer );
 			res.json(content)
-		} else if(i === 3000){
+		} else if(i === 9000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			res.send('load detailed failed, request timed out')
@@ -313,7 +409,30 @@ exports.getDetailApi = function(req,res){
 
 };
 
+function getSearch(req,res,content, callback){
+	req.url = '/search?'+id;
+	callApi(req, res, 'get', false, false, function(r){
+		if( (r.success && r.success.count === 0) || !r.success ) {
+			content.error = true;
+		} else {
+			content.articles = r.success.resultset.articles;
+			content.channels = r.success.resultset.channels;
+			content.events = r.success.resultset.events;
+		};
+		callback(content);
+	});
+}
 
+function singleList(req, res, service, url, callback){
+	req.url = url;
+	callApi(req, res, 'get', false, false, function(r){
+		var content = (r.success)? r.success.resultset[service] : true;
+		callback(content);
+	});
+};
+
+
+// may not be used anymore...
 var preload = function(req, callback){
 	var content = {},
 		i = 0,
