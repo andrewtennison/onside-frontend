@@ -114,13 +114,15 @@ TweetView			- individual tweet comment
 		onInit: function(){},
 		addOne: function(item, index){
 			var view = this.itemView(item);
+			if(!view) { console.error('no view to append'); return; };
 			this.activeViews.push(view);
 			$(this.el).append(view.render().el);
 			if(index === this.collection.length - 1) this.updateView() ;
 		},
 		addHelp: function(){
-			var view = new _HelpView();
-			$(this.el).append(view.render(this.helpViewTemplate).el);
+			var view = new _HelpView(),
+				name = (typeof this.helpViewTemplate === 'string')? this.helpViewTemplate : this.helpViewTemplate();
+			$(this.el).append(view.render(name).el);
 			this.updateView();
 		},
 		updateView: function(){
@@ -128,7 +130,6 @@ TweetView			- individual tweet comment
 		},
 		addAll: function(){
 			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
-			//$(this.el).empty();
 			this.destroyViews();
 
 			if(this.title) $(this.el).prepend('<h2 class="groupTitle">'+this.title+'</h2>');
@@ -142,6 +143,7 @@ TweetView			- individual tweet comment
 		activeViews : [],
 		destroyViews : function(){
 			$.each(this.activeViews, function(view){
+				console.log(view)
 				view.close();
 			});
 			this.activeViews = [];
@@ -336,18 +338,20 @@ TweetView			- individual tweet comment
 		
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
+			var self = this;
 			
 			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch');
 			this.app = this.options.app;
 
-			$(window).bind('resize', this.onResize);
-			this.onResize();
-			
+			$(window).bind('resize', this.onResize);			
 			this.app.bind('change:userAuth', this.setAuth);
+			ev.bind('update:view', function(val){
+				console.log('ev.bnd.updateView - ' + val) 
+				self.show(val,true)
+			});
+
 			this.setAuth(false,this.app.get('userAuth'));
-			
-			
-			
+			this.onResize();
 		},
 				
 		login: function(){
@@ -368,6 +372,7 @@ TweetView			- individual tweet comment
 			this.show('show'+id, false);
 		},
 		show: function(newShow, force){
+			console.log('show - ' + newShow)
 			var oldShow = this.currentShow;
 				
 			if(oldShow === newShow && !force){
@@ -542,23 +547,9 @@ TweetView			- individual tweet comment
 			this.app.set({
 				selectedItemUID: 'search|' + value
 			});
-			/*
-			var self = this,
-				model = BB.Detail(); //new BB.Search();
-				
-			//model.query = value.replace('q=','');
-			model.fetch({
-				success:function(searchModel){
-					console.info(searchModel)
-					self.app.set({
-						searchModel 		: searchModel,
-						selectedItemUID		: searchModel.service +'|'+value,
-						selectedItemTitle	: searchModel.title
-					});
-				},
-				error:function(){console.error('search failed')}
-			})
-			*/
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showchannels');
 		}
 		
 	});
@@ -621,6 +612,7 @@ TweetView			- individual tweet comment
 	var DetailListView = Backbone.View.extend({
 		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
 		el: $('#listDetail'),
+		selectedModel : false,
 
 		events: {
 			//'click .refresh'	: 'refresh',
@@ -632,7 +624,7 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
-			_.bindAll(this, 'addOne', 'addAll', 'removeOne');
+			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne');
 			
 			// BIND Collection
 			this.collection.bind('add', this.addOne);
@@ -641,11 +633,34 @@ TweetView			- individual tweet comment
 			this.collection.bind('error', function(){
 				console.error('detail list collection')
 			});
-			//this.app.bind('change:selectedItemUID', this.collection.checkSetCreate)
+			this.app.bind('change:selectedItemUID', this.updateView)
+		},
+		updateView: function(app,selectedItemUID){
+			$(this.el).addClass('loading');
+			
+			var s = selectedItemUID.split('|'),
+				detailUID = 'detail|' + selectedItemUID;
+				
+			if(s[1] === ('null' || null || 'home' || 'popular')) s[0] = 'list'
+			
+			// if there is a current model hide it
+			if(this.selectedModel !== false) {
+				this.collection.get(this.selectedModel).set({ selected : false});
+			};
+
+			// if model exists show it
+			if( this.collection.get( detailUID ) ) {
+				this.collection.get(detailUID).set({selected:true});
+				this.selectedModel = detailUID;
+				$(this.el).removeClass('loading');
+			}else{
+				this.collection.fetchModel(selectedItemUID, detailUID);
+			};
 		},
 		addOne: function(model){
 			console.log('# View.DetailList.addOne');
-			console.log(model.get('type'))
+			$(this.el).removeClass('loading');
+			this.selectedModel = model.id;
 			var view = new DetailView({model:model, app:this.options.app});
 			this.el.append(view.render().el);
 			setTimeout(function () {
@@ -690,8 +705,8 @@ TweetView			- individual tweet comment
 			console.log('# View.Detail.render');
 			
 			var json = this.model.toJSON();
-			// console.info('JSON')
-			// console.log(json)
+			console.info('JSON')
+			console.log(json)
 			if(json.error) {
 				$(this.el).html(this.errorTemplate(json));
 				return this;
@@ -704,10 +719,10 @@ TweetView			- individual tweet comment
 			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.type });
 			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.type });
 
-				alert(this.type)
 			switch(this.type){
 				case 'list':
-					this.viewC.title = 'Your channels';
+					var v = this.model.get('val');
+					this.viewC.title = (v === 'home')? 'Your channels' : v + ' channels';
 					this.viewE.title = false;
 					this.viewA.title = false;
 					break;
@@ -816,9 +831,8 @@ TweetView			- individual tweet comment
 		tagName: 'section',
 		className: 'content channelList',
 		title: false, // set when creating view
-		onInit: function(){},
 		itemView: function(item){ 
-			return ( this.type === ('list' || 'home' || 'popular') )? new ChannelDetailHomeView({model:item, app:this.options.app}) : new ChannelDetailView({model:item, app:this.options.app}); 
+			return ( this.type === 'list' )? new ChannelDetailHomeView({model:item, app:this.options.app}) : new ChannelDetailView({model:item, app:this.options.app}); 
 		},
 		helpViewTemplate: function(){
 			var name;
@@ -832,48 +846,22 @@ TweetView			- individual tweet comment
 					view = new _HelpView();
 					name = 'detailDefaultChannel';
 					break;
-				case 'home':
+				case 'list':
 					view = new _HelpView();
 					name = 'detailHomeChannel';
 				default:
 					break;
 			};
 			return name;
-		},
-		// addHelp: function(){
-			// var view = false, name = false;
-			// switch(this.type){
-				// case 'search':
-					// view = new _HelpView();
-					// name = 'detailSearchChannel';
-					// break;
-				// case 'channel':
-				// case 'event':
-					// view = new _HelpView();
-					// name = 'detailDefaultChannel';
-					// break;
-				// case 'home':
-					// view = new _HelpView();
-					// name = 'detailHomeChannel';
-				// default:
-					// break;
-			// };
-			// if(view) $(this.el).append(view.render(name).el);
-			// this.updateView();
-		// },
-		updateView: function(){ }
+		}
 	});
-	var EventListDetailView = EventListView.extend({
+	var EventListDetailView = _ListView.extend({
 		tagName: 'section',
 		className: 'content eventList',
-		msg:{ empty: '<p>This channel has no associated events</p>', low: false },
-		title: { auth: false, unauth: false },
-		addOne: function(event){
-			var view = new EventDetailView({model:event, app:this.options.app})
-			$(this.el).append(view.render().el);
-		},
-		addHelp: function(){
-			var view = false, name = false;
+		title: false,
+		itemView: function(item){ return new EventDetailView({model:item, app:this.options.app}) },
+		helpViewTemplate: function(){
+			var name = false;
 			switch(this.type){
 				case 'search':
 					view = new _HelpView();
@@ -884,35 +872,19 @@ TweetView			- individual tweet comment
 					view = new _HelpView();
 					name = 'detailDefaultEvent';
 					break;
-				case 'home':
+				case 'list':
 				default:
 					break;
 			};
-			if(view) $(this.el).append(view.render(name).el);
+			return name;
 		}
 	});
 
-	var ArticleListView = Backbone.View.extend({
+	var ArticleListView = _ListView.extend({
 		tagName: 'section',
 		className: 'content articleList',
-		initialize: function(){
-			on.helper.log('# View.ArticleList.initialize');
-			_.bindAll(this, 'addAll', 'addOne', 'addHelp');
-			
-			this.type = this.options.type;
-			this.app = this.options.app;
-			this.collection.bind('reset', this.addAll);
-			this.collection.bind('add', this.addOne);
-		},
-		
-		addAll: function(){
-			if(this.collection.length === 0) {
-				this.addHelp()
-			}else{
-				this.collection.each(this.addOne);
-			};
-		},
-		addOne: function(article){
+		onInit: function(){},
+		itemView: function(article){ 
 			var view = false,
 				json = article.toJSON(),
 				type = json.type;
@@ -932,12 +904,10 @@ TweetView			- individual tweet comment
 				default:
 					console.error('View.ArticleList.addOne - type not recognised = ' + type)
 			};
-			if(!view) return;
-			
-			$(this.el).append(view.render().el);
+			return view;
 		},
-		addHelp: function(){
-			var view = false, name = false;
+		helpViewTemplate: function(){
+			var name = false;
 			switch(this.type){
 				case 'search':
 					view = new _HelpView();
@@ -948,11 +918,11 @@ TweetView			- individual tweet comment
 					view = new _HelpView();
 					name = 'detailDefaultArticle';
 					break;
-				case 'home':
+				case 'list':
 				default:
 					break;
 			};
-			if(view) $(this.el).append(view.render(name).el);
+			return name;
 		}
 	});
 
@@ -1022,26 +992,43 @@ TweetView			- individual tweet comment
 			this.app.bind('change:selectedArticle', this.updateView);
 		},
 		updateView: function(app, id){
+			console.log(oldId + ' / ' + id )
 			var oldId = this.app.previous('selectedArticle'),
 				s = this.app.get('selectedItemUID').split('|');
 
 			console.log('id = ' + id + ', oldId = '+oldId);
 
 			if(id === oldId){
+				// no change do nothing
 				return;
-			} else if(id === null) {
+			} else if(oldId && !id){
+				// was article, no more - hide
 				this.hide();
 				// set page route
 				var route = '/' + s[0] + "/" + s[1];
 				this.app.route.navigate(route);
 			} else {
-				var list = this.app.get('selectedArticleList'),
-					model = list.get(id),
-					view = this.selectView(model);
+				// show article
+				var list = this.app.get('selectedArticleList');
+					model = list.get(id);
+					
+				if(model){
+					var view = this.selectView(model);
+					this.view = view.render().el;
+					$(this.el).append(this.view);
+					this.show();
+				}else{
+					model = BB.Article({ id:id });
+					model.fetch({
+						success:function(){
+						alert('success')
+						}, 
+						error:function(){
+						alert('error')
+						}
+					});
+				}
 				
-				this.view = view.render().el;
-				$(this.el).append(this.view);
-				this.show();
 				
 				// set page route
 				var route = '/' + s[0] + "/" + s[1] + '/article-' + model.id;
@@ -1129,6 +1116,9 @@ TweetView			- individual tweet comment
 			this.collection.urlParams = '';
 		    this.collection.create(postParams);
 		    this.$('input[name="comment"]').val('');
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showcomments');
 		}
 	});
 	var TweetPostView = _form.extend({
@@ -1156,6 +1146,9 @@ TweetView			- individual tweet comment
 		},
 		updateContent: function(){
 			this.$('textarea').text('#' + this.collection.hash);
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showcomments');
 		}
 	});
 	
@@ -1164,6 +1157,7 @@ TweetView			- individual tweet comment
 		scroll: null,
 		
 		events: {
+			'click #chatContentWrap' : 'checkView',
 			'click nav > a'	: 'changeTab'
 		},
 		
@@ -1180,7 +1174,7 @@ TweetView			- individual tweet comment
 		
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'changeTab', 'updateScroll');
+			_.bindAll(this, 'checkView', 'changeTab', 'updateScroll');
 			
 				// comment lists views
 			var onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments}),
@@ -1193,6 +1187,9 @@ TweetView			- individual tweet comment
 			
 			ev.bind('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
+		},
+		checkView: function(){
+			ev.trigger('update:view', 'showcomments');
 		},
 		updateScroll: function(){
 			var self = this;

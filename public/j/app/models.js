@@ -21,13 +21,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.searches = new BB.SavedSearchList();
 			this.searches.params = {user:'me'};
 
-			this.detailedList = new BB.DetailList(false,app);
+			this.detailedList = new BB.DetailList();
 			this.comments = new BB.CommentList(false,app);
 			this.tweets = new BB.TweetList(false,app);
 			
 			this.bind('change:selectedItemUID', this.updateService);
 			this.bind('change:selectedArticle', this.updateService);
-			
 		},
 		defaults: {
 			selectedServiceName: null,
@@ -150,29 +149,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	})
 	
 	var Detail = Backbone.Model.extend({
-		initialize: function(){
-			console.info('# Model.Detail.init');
-			_.bindAll(this, 'setImage' );
-			//this.bind('change', this.setImage)
-		},
-		setImage: function(){
-			var a = this.get('author');
-			if(a){
-				if( a.image === 'null' || a.image === null || a.image.length === 0) a.image = '/i/placeholder/listIcon2.png';
-				this.set({image:a.image});
-			}
-		},
 		url: function(){
 			return '/' + this.id.replace(/\|/g,'/');
 		},
 		defaults: {
 			selected 	: true,
 			type		: 'default',
-			image		: '/i/placeholder/listIcon2.png',
-			// channels	: new BB.ChannelList(),
-			// events		: new BB.EventList(),
-			// articles	: new BB.ArticleList(),
-			// saved 		: false,
+			image		: '/i/placeholder/listIcon2.png'
 		},
 		refresh: function(){
 			this.get('channels').reset(this.get('channelJson'));
@@ -190,7 +173,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			selected : false,
 			filtered : true
 		}
-
 	});
 	
 	var Comment = Backbone.Model.extend({

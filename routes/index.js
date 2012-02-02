@@ -317,7 +317,8 @@ exports.getDetailApi = function(req,res){
 								if(!d) {
 									content.error = true;
 								} else {
-									channel.defaultArticle = d[0];
+									console.log(d[0])
+									channel.defaultArticle = d[0] || false;
 									total += 1;
 									console.log(total +' / '+ content.channels.length);
 									if(total === content.channels.length) content.channelArticles = true;
@@ -330,11 +331,18 @@ exports.getDetailApi = function(req,res){
 			content.title = id;
 			break;
 		case 'search':
-			console.log('detail = search')
+			console.log('detail = search');
 			required = ['events', 'channels', 'articles'];
 			content.title = id;
-			getSearch(req,res,content, function(c){
-				content = c;
+			singleList(req, res, false, '/search?'+id, function(c){
+				console.log('search loaded')
+				if(!c) {
+					content.error = true;
+				} else { 
+					content.articles = c.articles;
+					content.channels = c.channels;
+					content.events = c.events;
+				};
 			});
 			break;
 		case 'channel':
@@ -346,14 +354,17 @@ exports.getDetailApi = function(req,res){
 					content.error = true;
 				} else { 
 					content.author = c[0]; 
-					content.title = content.author.name 
+					content.title = content.author.name;
+					console.log('content.author.image - ' + content.author.image)
+					console.log(content.author.image === 'null')
+					if(content.author.image && content.author.image.length !== 0 && content.author.image !== 'null') content.image = content.author.image; 
 				};
 			});
 			singleList(req, res, 'events', '/event?'+action+'='+id, function(c){
 				console.log('events loaded')
 				if(!c) content.error = true; else content.events = c;
 			});
-			singleList(req, res, 'articles', '/article?'+action+'='+id, function(c){
+			singleList(req, res, 'articles', '/article?limit=10&'+action+'='+id, function(c){
 				console.log('articles loaded')
 				if(!c) content.error = true; else content.articles = c;
 			});
@@ -409,24 +420,11 @@ exports.getDetailApi = function(req,res){
 
 };
 
-function getSearch(req,res,content, callback){
-	req.url = '/search?'+id;
-	callApi(req, res, 'get', false, false, function(r){
-		if( (r.success && r.success.count === 0) || !r.success ) {
-			content.error = true;
-		} else {
-			content.articles = r.success.resultset.articles;
-			content.channels = r.success.resultset.channels;
-			content.events = r.success.resultset.events;
-		};
-		callback(content);
-	});
-}
-
+// called by detail
 function singleList(req, res, service, url, callback){
 	req.url = url;
 	callApi(req, res, 'get', false, false, function(r){
-		var content = (r.success)? r.success.resultset[service] : true;
+		var content = (r.success)? ( (!service)? r.success.resultset : r.success.resultset[service] ) : true;
 		callback(content);
 	});
 };

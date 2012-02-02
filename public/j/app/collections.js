@@ -79,135 +79,36 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// sort models.. by the users default order if available?
 		},
 		selected: false,
-		initialize: function(models,app){
+		initialize: function(){
 			on.helper.log('# Collection.DetailList.initialize','info');
-
-			this.app = app;
-			_.bindAll(this, 'createModel', 'checkSetCreate', 'check', 'fetchModel');
-			//this.bind('add', this.manageCollection);
-			//this.app.bind('change:selectedItemUID', this.checkSetCreate)
-			this.app.bind('change:selectedItemUID', this.check)
-		},
-		check: function(app,selectedItemUID){
-			var s = selectedItemUID.split('|');
-			if(s[1] === ('null' || null || 'home' || 'popular')) s[0] = 'list'
-			
-			var detailUID = 'detail|' + selectedItemUID;
-			
-			// if there is a current model hide it
-			if(this.selected !== false) {
-				this.get(this.selected).set({ selected : false});
-			};
-
-			// if model exists show it
-			if( this.get( detailUID ) ) {
-				this.get(detailUID).set({selected:true});
-				this.selected = detailUID;
-			}else{
-				this.fetchModel(selectedItemUID, detailUID);
-			}	
+			_.bindAll(this, 'createModel', 'fetchModel');
 		},
 		fetchModel: function(selectedItemUID, detailUID){
 			var self = this,
 				s = selectedItemUID.split('|'),
 				type = s[0],
 				id = s[1],
-				model = new BB.Detail({id:detailUID}); //new this.model({id:detailUID});
+				model = new BB.Detail({
+					id:detailUID,
+					type:s[0],
+					val:s[1]
+				});
 			
 			model.fetch({
 				success:function(data){
 					console.log('success');
 					self.createModel(model);
 				}, error:function(err){
-					console.error(err)
-				}
-			});
-		},
-		checkSetCreate: function(model,val){
-			var self = this,
-				selectedItemUID = val,
-				detailUID = 'detail|' + selectedItemUID,
-				s = selectedItemUID.split('|'),
-				existingModel = this.get( detailUID ),
-				search = (s[0] === 'search')? true : false,
-				model = new this.model({id:detailUID});
-				
-			model.bind('error', function(model,error){
-				console.error('error - detailed model does not exist');
-			});
-			
-			console.error('checkset')
-			console.log(this.selected)
-			console.log(existingModel)
-			console.log(s[0])
-			console.log(s[1])
-			
-			// if there is a current model hide it
-			if(this.selected !== false) {
-				this.get(this.selected).set({ selected : false});
-			}
-
-			// if model exists show it
-			if(existingModel) {
-				// if exists get model
-				existingModel.set({selected:true});
-				this.selected = detailUID;
-				return;
-			} 
-
-			// else create model
-			if(s[1] === 'null' || s[1] === '' || s[1] === undefined){
-				// load home page
-				console.log('home');
-				model.set({
-					title		: 'Onside home',
-					type		: 'home',
-					originUId	: selectedItemUID,
-					channels	: on.m.app.channels.toJSON()
-				});
-				self.createModel(model);
-
-			} else if(s[0] === 'search'){
-				var author = this.app.get('searchModel');
-				
-				function setSearchModel(){
 					model.set({
-						originUId	: selectedItemUID,
-						type 		: s[0],
-						title 		: author.escape('title'),
-						events 		: author.get('events'),
-						channels 	: author.get('channels'),
-						articles	: author.get('articles')
+						title: '404 error',
+						type: 'error'
 					});
 					self.createModel(model);
-				};
-				
-				if(author === null){
-					author = new BB.Search();
-					author.query = s[1];
-					author.fetch({
-						success:function(){
-							setSearchModel();
-						}
-					});
-				}else{
-					setSearchModel();
 				}
-			} else if(s[0] === 'channel' || s[0] === 'event') {
-				model.set({
-					type : s[0]
-				})
-				model.fetch({
-					success:function(){
-						self.createModel(model);
-					}
-				});
-			} else {
-				console.error('unknown detail item - ' + selectedItemUID)
-			}
+			});
 		},
 		createModel: function(model){
-			console.info('createModel')
+			console.info('Collection.Detail.createModel')
 			this.selected = model.id;
 			
 			model.set({

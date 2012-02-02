@@ -79,41 +79,20 @@ BB.appRoutes = Backbone.Router.extend({
 	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		on.m.app.set({ selectedItemUID : 'list|home' });
-	},
-	
-	// getList: function(id){
-		// console.log('// Routes = "/events/'+id+'"');
-		// if(id === '') id = 'home';
-		// on.m.app.set({ selectedItemUID : 'list|'+id });
-	// },
-// 	
-	// getEvent: function( id ){
-		// console.log('// Routes = "/events/'+id+'"');
-		// if(id === '') id = null;
-		// on.m.app.set({ selectedItemUID : 'event|'+id });
-	// },
-// 	
-	// getChannel: function( id ){
-		// console.log('// Routes = "/channel/'+id+'"');
-		// if(id === '') id = null;
-		// on.m.app.set({ selectedItemUID : 'channel|'+id });
-	// },
-	
+		on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });
+	},	
 	getDetail: function(service, id){
 		console.log('// Routes = "/'+service+'/'+id+'"');
 		if(id === '') {
-			on.m.app.set({ selectedItemUID : 'list|home' });			
+			on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });			
 		} else {
-			on.m.app.set({ selectedItemUID : service + '|' + id });
+			on.m.app.set({ selectedItemUID : service + '|' + id, selectedArticle: false });
 		};
 	},
-
 	getSearch: function( id ){
 		console.log('// Routes = "/search/'+id+'"');
-		on.m.app.set({ selectedItemUID : 'search|'+id });
+		on.m.app.set({ selectedItemUID : 'search|'+id, selectedArticle: false });
 	},
-	
 	getArticle: function( service, id, id2){
 		on.m.app.set({ 
 			selectedItemUID : service +'|'+ id,
