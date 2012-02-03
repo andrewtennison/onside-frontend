@@ -11,7 +11,7 @@ global._ = require("./public/j/lib/underscore-1.2.1.min.js");
 
 var express			= require('express')
 //	, resource		= require('express-resource')
-	, MemcachedStore = require('connect-memcached')			// memchached is used for user session store
+//	, MemcachedStore = require('connect-memcached')			// memchached is used for user session store
 //	, RedisStore	= require('connect-redis')(express)		// redis is used for user session store
 	, routes		= require('./routes')					// paths for all views
 	, util			= require('util')
@@ -46,8 +46,8 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
-	//app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
-	app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
+	app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
+	//app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
 	
 	app.use(express.methodOverride());
 	app.use(everyauth.middleware());

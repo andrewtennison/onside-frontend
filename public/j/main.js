@@ -64,13 +64,13 @@ $LAB
 	'http://connect.facebook.net/en_US/all.js',
 	on.path.js + 'lib/json2.js', 
 	on.path.js + 'lib/jquery-1.7.1.min.js',
-	on.path.js + 'lib/underscore-1.2.1.min.js'
+	on.path.js + 'lib/underscore-1.3.1.min.js'
 )
 .wait(function(){
 	$(document).ready(function(){ on.env.docReady = true; })
 })
 .script(
-	on.path.js + 'lib/backbone-0.5.3.min.js',
+	on.path.js + 'lib/backbone-0.9.1.min.js',
 	on.path.js + 'lib/pretty.js',
 	on.path.js + 'lib/iscroll.js'
 //	on.path.js + 'lib/mbp.helper.js',

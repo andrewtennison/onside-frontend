@@ -91,7 +91,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			}
 		},
 		parse: function(resp){
-			return resp.resultset.channels[0];
+			//return resp.resultset.channels[0];
+			return resp
 		},
 		defaults: {
 			selected	: false,
@@ -139,7 +140,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			on.helper.log('# Model.SavedSearch.initialize','info');
 		},
 		parse: function(resp){
-			return resp.resultset.searches[0];
+			//return resp.resultset.searches[0];
+			return resp
 		},
 		defaults: {
 			selected	: false,
@@ -287,7 +289,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			//on.helper.log('# Model.Comment.initialize','info');
 		},
 		parse: function(resp, xhr){
-			return resp.resultset.comments[0];
+			//return resp.resultset.comments[0];
+			return resp;
 		},
 		defaults: {
 			service	: 'comment',

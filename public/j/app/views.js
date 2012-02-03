@@ -87,7 +87,7 @@ TweetView			- individual tweet comment
 		},
 		submit: function(e){
 		    e.preventDefault();
-			var escVal = (this.escapeValue)? on.helper.esc($(this.el).serialize()) : $(this.el).serialize();
+			var escVal = (this.escapeValue)? on.helper.esc(this.$el.serialize()) : this.$el.serialize();
 			this.search(escVal);
 		},
 		search: function(value){
@@ -116,7 +116,7 @@ TweetView			- individual tweet comment
 			var view = this.itemView(item);
 			if(!view) { console.error('no view to append'); return; };
 			this.activeViews.push(view);
-			$(this.el).append(view.render().el);
+			this.$el.append(view.render().el);
 			if(index === this.collection.length - 1) this.updateView() ;
 		},
 		addHelp: function(){
@@ -124,7 +124,7 @@ TweetView			- individual tweet comment
 			if( !name ) return;
 			
 			var view = new _HelpView();
-			$(this.el).append(view.render(name).el);
+			this.$el.append(view.render(name).el);
 			this.updateView();
 		},
 		updateView: function(){
@@ -134,7 +134,7 @@ TweetView			- individual tweet comment
 			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
 			this.destroyViews();
 
-			if(this.title) $(this.el).prepend('<h2 class="groupTitle">'+this.title+'</h2>');
+			if(this.title) this.$el.prepend('<h2 class="groupTitle">'+this.title+'</h2>');
 
 			if(this.collection.length === 0){
 				this.addHelp();
@@ -149,7 +149,7 @@ TweetView			- individual tweet comment
 				view.close();
 			});
 			this.activeViews = [];
-			$(this.el).empty();
+			this.$el.empty();
 		},
 		
 	});
@@ -165,15 +165,15 @@ TweetView			- individual tweet comment
 			this.app.bind('change:selectedItemUID', this.updateItem)
 		},
 		render: function(){
-			$(this.el).html(this.template( this.model.toJSON() ));
+			this.$el.html(this.template( this.model.toJSON() ));
 		    return this;
 		},
 		updateItem: function(appModel,val){
 			if( (this.model.get('service') + '|' + this.model.id) === val){
-				$(this.el).addClass('active');
+				this.$el.addClass('active');
 				this.model.selected = true;
 			}else if ( this.model.selected ){
-				$(this.el).removeClass('active');
+				this.$el.removeClass('active');
 				this.model.selected = false;
 			}
 		},
@@ -208,16 +208,16 @@ TweetView			- individual tweet comment
 		
 		render: function(){
 			var json = this.model.toJSON();
-			if(!json.filtered) $(this.el).addClass('hidden');
-			$(this.el).html(this.template(json));
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
 		    return this;
 		},
 		
 		setDisplay: function(){
 			if(this.model.get('filtered')) {
-				$(this.el).removeClass('hidden');
+				this.$el.removeClass('hidden');
 			}else{
-				$(this.el).addClass('hidden');
+				this.$el.addClass('hidden');
 			}
 		},
 		preSelect: function(){},
@@ -229,15 +229,15 @@ TweetView			- individual tweet comment
 				selectedItemTitle	: this.model.get('name') || this.model.get('title')
 			});
 		},
-		hoverOver: function(){ $(this.el).addClass('on'); },
+		hoverOver: function(){ this.$el.addClass('on'); },
 		hoverOut: function(){
-			$(this.el).removeClass('on').removeClass('showFilter');
+			this.$el.removeClass('on').removeClass('showFilter');
 			//this.$('.filters').removeClass('on');
 		},
 		toggleFilters: function(e){
 			e.preventDefault();
 			//this.$('.filters').toggleClass('on');
-			$(this.el).toggleClass('showFilter');
+			this.$el.toggleClass('showFilter');
 		},
 		filterCollection: function(e){
 			e.preventDefault();
@@ -307,15 +307,15 @@ TweetView			- individual tweet comment
 			// console.info(this.templates)
 			// console.info(this.templates[name])
 			if(this.templates[name]){
-				$(this.el).html(this.templates[name]());
+				this.$el.html(this.templates[name]());
 			}else{
-				$(this.el).html(this.template());
+				this.$el.html(this.template());
 			}
 		    return this;
 		},
 		hide: function(e){
 			e.preventDefault();
-			$(this.el).slideUp(200);
+			this.$el.slideUp(200);
 		}
 	});
 
@@ -326,7 +326,7 @@ TweetView			- individual tweet comment
 		el: $(window),
 		currentShow: false,
 		
-		$el: {
+		$elem: {
 			app: $('#OnsideApp')
 		},
 		
@@ -364,9 +364,9 @@ TweetView			- individual tweet comment
 		},
 		setAuth: function(obj,val){
 			if(val){
-				$(this.el).addClass('auth').removeClass('unAuth');
+				this.$el.addClass('auth').removeClass('unAuth');
 			} else {
-				$(this.el).addClass('unAuth').removeClass('auth');
+				this.$el.addClass('unAuth').removeClass('auth');
 			}
 		},
 		triggerShow: function(e){
@@ -378,14 +378,14 @@ TweetView			- individual tweet comment
 			var oldShow = this.currentShow;
 				
 			if(oldShow === newShow && !force){
-				this.$el.app.removeClass(oldShow);
+				this.$elem.app.removeClass(oldShow);
 				this.currentShow = false;
 			}else if( !oldShow ){
-				this.$el.app.addClass(newShow);
+				this.$elem.app.addClass(newShow);
 				this.currentShow = newShow;
 			}else{
-				this.$el.app.removeClass(oldShow);
-				this.$el.app.addClass(newShow);
+				this.$elem.app.removeClass(oldShow);
+				this.$elem.app.addClass(newShow);
 				this.currentShow = newShow;
 			}
 		},
@@ -546,7 +546,7 @@ TweetView			- individual tweet comment
 			selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
 		},
 		search: function(value){
-			$(this.el).focus();
+			this.$el.focus();
 			this.app.set({
 				selectedItemUID: 'search|' + value.replace('q=','')
 			});
@@ -639,7 +639,7 @@ TweetView			- individual tweet comment
 			this.app.bind('change:selectedItemUID', this.updateView)
 		},
 		updateView: function(app,selectedItemUID){
-			$(this.el).addClass('loading');
+			this.$el.addClass('loading');
 			
 			var s = selectedItemUID.split('|'),
 				detailUID = 'detail|' + selectedItemUID;
@@ -655,7 +655,7 @@ TweetView			- individual tweet comment
 			if( this.collection.get( detailUID ) ) {
 				this.collection.get(detailUID).set({selected:true});
 				this.selectedModel = detailUID;
-				$(this.el).removeClass('loading');
+				this.$el.removeClass('loading');
 			}else{
 				this.collection.fetchModel(selectedItemUID, detailUID);
 			};
@@ -663,13 +663,13 @@ TweetView			- individual tweet comment
 		addOne: function(model){
 			console.log('# View.DetailList.addOne');
 
-			$(this.el).removeClass('loading');
+			this.$el.removeClass('loading');
 			ev.trigger('update:view', 'showDetail');
 			this.selectedModel = model.id;
 			model.setSaved(this.app);
 			
 			var view = new DetailView({model:model, app:this.options.app});
-			this.el.append(view.render().el);
+			this.$el.append(view.render().el);
 			setTimeout(function () {
 				view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
 			}, 100);
@@ -713,15 +713,15 @@ TweetView			- individual tweet comment
 			
 			var json = this.model.toJSON();
 			if(json.error) {
-				$(this.el).html(this.errorTemplate(json));
+				this.$el.html(this.errorTemplate(json));
 				return this;
 			};
 			console.log(this)
 			console.log(json)
 			
-			$(this.el).html(this.template(json));
+			this.$el.html(this.template(json));
 			this.$('.contentWrapper').attr({id: this.baseID});
-			$(this.el).addClass('type-'+this.type)
+			this.$el.addClass('type-'+this.type)
 
 			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.type });
 			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.type });
@@ -743,7 +743,7 @@ TweetView			- individual tweet comment
 
 			this.app.set({selectedArticleList:this.viewA.collection});
 
-			$(this.el).find('.contentWrapper > .scroller') 
+			this.$el.find('.contentWrapper > .scroller') 
 				.append(this.viewC.el)
 				.append(this.viewE.el)
 				.append(this.viewA.el);
@@ -762,11 +762,11 @@ TweetView			- individual tweet comment
 			var self = this;
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
-				$(this.el).fadeIn(200,function(){
+				this.$el.fadeIn(200,function(){
 					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
 				});
 			}else{
-				$(this.el).fadeOut(200,function(){
+				this.$el.fadeOut(200,function(){
 					if(self.scroll) {
 						self.scroll.destroy();
 						self.scroll = null;
@@ -895,7 +895,7 @@ TweetView			- individual tweet comment
 		className:'channelItem',
 		template: _.template( $('#channelDetailItemTemplate').html() ),
 		render: function(){
-			$(this.el).html(this.template( this.model.toJSON() ));
+			this.$el.html(this.template( this.model.toJSON() ));
 			var hex = this.model.get('branding');
 			if(hex){
 				hex = hex.split(',');
@@ -909,12 +909,12 @@ TweetView			- individual tweet comment
 		className:'channelListItem',
 		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
 		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+			this.$el.html(this.template(this.model.toJSON()));
 			var hex = this.model.get('branding');
 			console.log(hex)
 			if(hex){
 				hex = hex.split(',');
-				$(this.el).css({'background-color':hex[0]});
+				this.$el.css({'background-color':hex[0]});
 				if(hex.length == 2) this.$('header h1').css({'color':hex[1]});
 			}
 		    return this;
@@ -972,8 +972,9 @@ TweetView			- individual tweet comment
 				s = this.app.get('selectedItemUID').split('|');
 
 			console.log('id = ' + id + ', oldId = '+oldId);
+			console.log();
 
-			if(id === oldId){
+			if(id === oldId || ( !id && !oldId )){
 				// no change do nothing
 				return;
 			} else if(oldId && !id){
@@ -990,7 +991,7 @@ TweetView			- individual tweet comment
 				if(model){
 					var view = this.selectView(model);
 					this.view = view.render().el;
-					$(this.el).append(this.view);
+					this.$el.append(this.view);
 					this.show();
 				}else{
 					model = BB.Article({ id:id });
@@ -1031,10 +1032,10 @@ TweetView			- individual tweet comment
 			this.app.setTitle();
 		},
 		show: function(){
-			$(this.el).addClass('on');
+			this.$el.addClass('on');
 		},
 		hide: function(){
-			$(this.el).removeClass('on');
+			this.$el.removeClass('on');
 			$(this.view).remove();
 		}
 	});
@@ -1046,7 +1047,7 @@ TweetView			- individual tweet comment
 		template: _.template( $('#articleDetail').html() ),
 		render: function(){
 			console.log(this.model.toJSON())
-			$(this.el).html(this.template(this.model.toJSON()));
+			this.$el.html(this.template(this.model.toJSON()));
 		    return this;
 		}
 	});
@@ -1262,7 +1263,7 @@ TweetView			- individual tweet comment
 				view = new _HelpView();
 				
 			this.$help = $( view.render(help).el );
-			this.el.prepend(view.render(help).el);
+			this.$el.prepend(view.render(help).el);
 			this.$form.hide();
 			this.$inner.hide();
 			ev.trigger('update:scroll:comments');
@@ -1338,7 +1339,8 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'render');
 		},
 		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+			console.log(this.model.toJSON())
+			this.$el.html(this.template(this.model.toJSON()));
 		    return this;
 		}
 	});
@@ -1348,9 +1350,9 @@ TweetView			- individual tweet comment
 		render: function(){
 			var json = this.model.toJSON();
 			if(typeof json.user === 'object'){
-				$(this.el).html(this.officialTemplate(this.model.toJSON()));			
+				this.$el.html(this.officialTemplate(this.model.toJSON()));			
 			}else{
-				$(this.el).html(this.template(this.model.toJSON()));
+				this.$el.html(this.template(this.model.toJSON()));
 			}
 		    return this;
 		}

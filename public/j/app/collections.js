@@ -25,7 +25,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var ChannelList = _Lists.extend({
 		a: 'channelList',
 		urlPath: 'channel',
-		model : BB.Channel
+		model : BB.Channel,
+		comparator : function(channel) {
+			return channel.get("name");
+		}
     });
 
 	var EventList = _Lists.extend({
