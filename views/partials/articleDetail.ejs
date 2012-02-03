@@ -57,24 +57,24 @@
 </script>
 
 <script id="articleDetail_twitter" class="tmpl overlay" type="text/template" >
-	<header>
-		<h1>Twitter @ (need name)</h1>
+	<@ var time = prettyDate( publish ); @>
+	<header class="detailHead">
+		<h1>Twitter @ [[name]]</h1>
+		<nav>
+			<a class="icon share" href="#">share</a>
+			<a class="icon save" href="#">save</a>
+			<a class="icon close" href="#">close</a>
+		</nav>
 	</header>
-	<nav>
-		<a class="close button" href="#">close</a>
-		<span class="buttonGroup">
-			<a class="share" href="#">share</a>
-			<a class="save" href="#">save</a>
-		</span>
-	</nav>
 
-	<div class="pad">
+	<div class="contentWrapper twitter">
 		<div class="original">
 			<img src="<@= images @>" />
-			<p><@= content @></p>
+			<p class="quotes"><@= content @></p>
 			<cite><@= author @></cite>
+			<@= time @>
+			<a class="reply" href="#">@reply</a><!-- :: check if user is twit auth, if not login and return to here-->
 		</div>
-		<a class="reply" href="#">@reply</a><!-- :: check if user is twit auth, if not login and return to here-->
 		
 		<ul class="older"></ul>
 	</div>

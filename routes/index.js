@@ -334,7 +334,7 @@ exports.getDetailApi = function(req,res){
 			console.log('detail = search');
 			required = ['events', 'channels', 'articles'];
 			content.title = id;
-			singleList(req, res, false, '/search?'+id, function(c){
+			singleList(req, res, false, '/search?q='+id, function(c){
 				console.log('search loaded')
 				if(!c) {
 					content.error = true;

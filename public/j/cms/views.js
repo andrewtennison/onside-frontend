@@ -72,15 +72,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		setupTable: function(model){
 			var json = model.toJSON(),
-				html = $('<tr></tr>'),
+				html = '<tr><th></th>',
 				arr = sortObject(json);
 				
 			_.each(arr,function(key,i){
-				var th = $('<th class="header key_'+key+'"><span>'+key+'</span></th>')
-				html.append(th);
+				html += '<th class="header key_'+key+'"><span>'+key+'</span></th>';
 			});
+			
+			html += '</tr>'
 
-			this.$thead.prepend(html);
+			this.$thead.prepend( $(html) );
 			this.headBuilt = true;
 		}
 	});

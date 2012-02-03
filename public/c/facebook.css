@@ -1,3 +1,5 @@
 
 /* comments */
 .fbFeedbackContent.fbDarkWidget .composer {background:none}
+
+.fbFeedbackContent.fbDarkWidget .fbFeedbackMentions .mentionsTextarea, .fbFeedbackContent .fbFeedbackMentions .mentionsTextarea {background:#fff; color:#333}

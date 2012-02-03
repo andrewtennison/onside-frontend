@@ -3,33 +3,23 @@
 
 <script id="articleTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( publish ); @>
-	<div class="inner">
-		<nav> 
-			<a class="icon settings filter" href="#">filter news</a>
-		</nav>
-		
+	<@ var imageClass = (images)? 'hasImage' : ''; @>
+	<div class="inner <@= imageClass @>">		
 		<h1><@= title @></h1>
 		<@ if(images) { @>
 			<img src='<@= images @>' />
 		<@ } @>
 		<div class="content"><@= content @></div>
-		
-		<@ if(extended) { @>
-		<a class="open button" href='<@= link @>'>read full article</a>
-		<@ } else { @>
-		<a class="open button" href='<@= link @>'>see website</a>
-		<@ } @>
-		
 		<footer>
-			<@ if(source) { @>
-				<cite>by: <@= source @></cite>
-			<@ } else { @>
-				<cite>by: [[ rss source ]]</cite>
-			<@ } @>			
-
-			<@ if(publish) { @>
-				<time><@= time @></time>
-			<@ } @>
+			<cite>from: <@ if(author) { @><@= author @> at <@ } @><@= source@></cite><@ if(publish) { @>  / <time><@= time @></time><@ } @>
+			<nav> 
+				<a class="filter" href="#">filter results</a> 
+				<@ if(extended) { @>
+					<a class="open" href='<@= link @>'>read full article</a>
+				<@ } else { @>
+					<a class="open" href='<@= link @>'>see website</a>
+				<@ } @>
+			</nav>
 		</footer>
 	</div>
 	<section class="filters">
@@ -44,10 +34,10 @@
 </script>
 
 <script id="articleTemplate-twitter" class="tmpl" type="text/template">
-	<div class="pad">
-		<p><@= content @></p>
-		<cite><@= author @></cite>
-		<a class="open button" href='<@= link @>'>see more tweets</a>
+	<div class="inner">
+		<p class="quotes"><@= content @></p>
+		<cite>@<@= author @> on twitter</cite>
+		<nav><a class="filter" href="#">filter results</a><a class="open" href='<@= link @>'>see more tweets</a></nav>
 	</div>
 </script>
 

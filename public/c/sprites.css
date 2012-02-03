@@ -27,6 +27,7 @@ span.icon {vertical-align:middle;}
 .filter		{background-position:-840px 0}
 .bookmark	{background-position:-880px 0}
 .think		{background-position:-920px 0}
+.home		{background-position:-960px 0}
 
 .onside.active, .onside:hover, a.active .onside, a:hover .onside			{background-position: 0px -40px}
 .facebook.active, .facebook:hover, a.active .facebook, a:hover .facebook	{background-position:-40px -40px}
@@ -51,6 +52,7 @@ span.icon {vertical-align:middle;}
 .play.active, .play:hover, a.active .play, a:hover .play					{background-position:-800px -40px}
 .filter.active, .filter:hover, a.active .filter, a:hover .filter			{background-position:-840px -40px}
 .bookmark.active, .bookmark:hover, a.active .bookmark, a:hover .bookmark	{background-position:-880px -40px}
+.home.active, .home:hover, a.active .home, a:hover .home					{background-position:-960px -40px}
 
 .toggleBlock:after {content:""; position:absolute; right:10px; background-position:-600px 0;}
 .toggleBlock.active:after {background-position:-640px 0}

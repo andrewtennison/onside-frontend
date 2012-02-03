@@ -65,9 +65,30 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		service: 'channel',
 		initialize: function(){
-			on.helper.log('# Model.Channel.initialize','info');
-			var i = this.get('image');
-			if( i === 'null' || i === null || i.length === 0) this.set({image:'/i/placeholder/listIcon2.png'});
+			console.info('# Model.Channel.initialize');
+			this.setImage();
+			// var i = this.get('image');
+			// if( i === 'null' || i === null || i.length === 0) this.set({image:'/i/placeholder/listIcon2.png'});
+		},
+		setImage: function(){
+			var attr = this.attributes;
+			console.log(attr.sport +' / '+attr.image);
+
+			if(attr.sport && ( attr.image === 'null' || attr.image === '' )){
+				var imagePath;
+				switch(attr.sport){
+					case 'golf':
+						imagePath = '/i/content/channel/_golf.png';
+						break;
+					case 'football':
+						imagePath = '/i/content/channel/_football.png'
+						break;
+					default:
+						imagePath = this.defaults.image;
+						break;
+				};
+				this.set({image:imagePath});
+			}
 		},
 		parse: function(resp){
 			return resp.resultset.channels[0];
@@ -75,7 +96,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selected	: false,
 			service		: 'channel',
-			image		: '/i/placeholder/listIcon2.png'
+			image		: '/i/placeholder/listIcon2.png',
+			branding	: '#ffffff'
 			
 		// DB model structure
 			// id 				: undefined,
@@ -154,16 +176,101 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaults: {
 			selected 	: true,
+			title		: '',
 			type		: 'default',
-			image		: '/i/placeholder/listIcon2.png'
+			image		: '/i/placeholder/listIcon2.png',
+			saved		: false
 		},
 		refresh: function(){
 			this.get('channels').reset(this.get('channelJson'));
 			this.get('events').reset(this.get('eventJson'));
 			this.get('articles').reset(this.get('articleJson'));
 		},
-		validate: function(attrs) {}
+		setSaved: function(app){},
+		follow : function(){
+			var t = this.get('type');
+			switch(t){
+				case 'channel':
+					var id = this.get('author').id,
+						val = (app.channels.get(id))? true : false;
+					this.set({saved: val });
+					break;
+				case 'event':
+					break;
+				case 'search':
+					break;
+				case 'list':
+				default:
+					break;
+			}
+		}
 	});
+	var DetailChannel = Detail.extend({
+		parse: function(attr){
+			if(attr.image === undefined && (attr.author.image === 'null' || attr.author.image === '')){
+				switch(attr.author.sport){
+					case 'golf':
+						attr.image = '/i/content/channel/_golf.png';
+						break;
+					case 'football':
+						attr.image = '/i/content/channel/_football.png'
+						break;
+					default:
+						attr.image === this.defaults.image
+						break;
+				};
+			};
+			return attr;
+		},
+		setSaved: function(app){
+			var id = this.get('author').id,
+				val = (app.channels.get(id))? true : false;
+			this.set({saved: val });
+		},
+		follow : function(app){
+			var self = this,
+				saved = this.get('saved'),
+				id = this.get('author').id,
+				url = on.path.api + '/channel/';
+			
+			url += (saved)?	'unfollow' : 'follow';
+
+			console.log(saved +' || '+url);
+			$.post(url, {channel: id})
+			.success(function(){
+				self.set({saved: (!saved) });
+				app.channels.fetch();
+			}).error(function(res){
+				console.error(res)
+			});
+		}
+	});
+	var DetailSearch = Detail.extend({
+		initialize: function(){
+			this.defaults.image = '/i/content/channel/_search.png';
+		},
+		follow: function(app){
+			console.dir(this.attributes);
+			var self = this,
+				saved = this.get('saved'),
+				url = on.path.api + '/search/',
+				title = this.get('title');
+			
+			url += (saved)? 'save' : 'unsave';
+			$.post(url, {query:title, name:title})
+			.success(function(){
+				self.set({saved:true});
+				app.searches.fetch();
+			})
+			.error(function(res){
+				console.error(res)
+			});
+			
+		}
+		
+	});
+
+
 
 	var Article = Backbone.Model.extend({
 		initialize: function(){
@@ -232,6 +339,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.SavedSearch = SavedSearch;
 	BB.Search = Search;
 	BB.Detail = Detail;
+	BB.DetailChannel = DetailChannel;
+	BB.DetailSearch = DetailSearch;
 	BB.Article = Article;
 	BB.Comment = Comment;
 	BB.Chat = Chat;

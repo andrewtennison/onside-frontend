@@ -85,7 +85,7 @@ input[type=text]:focus, input[type=search]:focus {background-color:#fff}
 .button, .buttonGroup, .toggleButton {position:relative; display:inline-block; border:1px solid #acafb4; border-radius:2px; margin:10px 0 0 0}
 
 .button, .buttonGroup a, .toggleButton span {
-	position:relative; display:inline-block; float:left; height:23px; line-height: 23px; padding:0 8px; text-decoration:none; color:#494c4f; font-size:1.1em;
+	position:relative; display:inline-block; height:23px; line-height: 23px; padding:0 8px; text-decoration:none; color:#494c4f; font-size:1.1em;
 	background: #fcfcfc; /* Old browsers */background: -moz-linear-gradient(top, #fcfcfc 0%, #ebebeb 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfcfc), color-stop(100%,#ebebeb)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* Opera11.10+ */background: -ms-linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* IE10+ */background: linear-gradient(top, #fcfcfc 0%,#ebebeb 100%); /* W3C */
 	}
 .button:hover, .buttonGroup a:hover {background:#ebebeb}

@@ -88,11 +88,30 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				s = selectedItemUID.split('|'),
 				type = s[0],
 				id = s[1],
-				model = new BB.Detail({
+				hash = {
 					id:detailUID,
 					type:s[0],
 					val:s[1]
-				});
+				},
+				model;
+				
+			switch(type){
+				case 'search':
+					model = new BB.DetailSearch(hash);
+					break;
+				case 'channel':
+					model = new BB.DetailChannel(hash);
+					break;
+				case 'event':
+					// model = new BB.DetailEvent(hash);
+					// break;
+				case 'list':
+					// model = new BB.DetailList(hash);
+					// break;
+				default:
+					model = new BB.Detail(hash);
+					break;
+			}
 			
 			model.fetch({
 				success:function(data){
