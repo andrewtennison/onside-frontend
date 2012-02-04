@@ -9,7 +9,7 @@ on.c = {};
 on.v = {};
 
 on.env = {
-	v					: 0.18,
+	v					: 0.19,
 	internetConnection	: true,
 	server				: 'development',
 	articleMax			: 20,
@@ -63,7 +63,8 @@ $LAB
 	//'http://platform.twitter.com/anywhere.js?id=' + on.env.twitterKey + '&v=1',
 	'http://connect.facebook.net/en_US/all.js',
 	on.path.js + 'lib/json2.js', 
-	on.path.js + 'lib/jquery-1.7.1.min.js',
+	//on.path.js + 'lib/jquery-1.7.1.min.js',
+	'http://code.jquery.com/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.3.1.min.js'
 )
 .wait(function(){
