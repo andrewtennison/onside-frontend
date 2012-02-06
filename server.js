@@ -35,6 +35,7 @@ everyauth.debug = true;
 
 process.on('uncaughtException', function (err) {
   console.error(err);
+  console.error(err.getStackTrace());
   console.log("Node NOT Exiting...");
 });
 
@@ -43,6 +44,7 @@ var app = module.exports = express.createServer();
 
 // Configuration
 app.configure(function(){
+  app.use(express.static(__dirname + '/public'));
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
@@ -50,22 +52,20 @@ app.configure(function(){
 	//app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
 
 	app.use(express.methodOverride());
-  app.use(login)
+  app.use(express.logger());
+  app.use(login);
   app.use(everyauth.middleware());
 	app.use(app.router);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'ejs');
-	app.use(express.static(__dirname + '/public'));
 	everyauth.helpExpress(app);
 });
 
 app.configure('development', function(){
-	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 app.configure('production', function(){
-	app.use(express.logger());
 	app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
 	//app.use(express.errorHandler());
 });
