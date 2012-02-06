@@ -46,12 +46,12 @@ var app = module.exports = express.createServer();
 app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
+  app.use(express.static(__dirname + '/public'));
 	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
 	app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
 	//app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
-
 	app.use(express.methodOverride());
-	app.use(express.static(__dirname + '/public'));
+  app.use(login);
 	app.use(everyauth.middleware());
 	app.use(app.router);
 	app.set('views', __dirname + '/views');
