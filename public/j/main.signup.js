@@ -11,13 +11,18 @@ on.path = {
 
 $LAB
 .script( 
-	on.path.js + 'lib/jquery-1.6.4.min.js'
+	'http://code.jquery.com/jquery-1.7.1.min.js'
 )
 .wait(function(){
 	$(document).ready(function(){
-		$(window).bind('resize', function(){
-			$('#bgImg').width($(window).width());
+
+		// for ios homeScreen app - should prevent safari opening
+		$('a').live('click', function (e) {      
+		    var href = $(this).attr("href");
+		    if (href.indexOf(location.hostname) > -1) {
+		        e.preventDefault();
+		        window.location = href;
+		    }
 		});
-		$(window).resize();
 	});
 })

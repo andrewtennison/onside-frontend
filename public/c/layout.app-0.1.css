@@ -84,6 +84,11 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 	*/
 }
 
+#pullUp, #pullDown { color: #ccc; font-size: 14px; font-weight: bold; height: 40px; line-height: 40px; padding: 5px 10px; margin:5px; background:rgba(0,0,0,0.1)}
+#pullUp .icon, #pullDown .icon {opacity:0.4}
+
+
+
 .loading:after {content:'loading'; background:url(/i/sprites/loader.gif) no-repeat center center; width:100px; height:100px; margin:-50px 0 0 -50px; left:50%; top:40%; position:absolute; font-size:1.2em; color:#fff; text-align: center}
 .flash {background-color:#FFFF00 !important}
 
@@ -115,6 +120,8 @@ body,
 #listDetail,
 #listArticle
 {z-index:1; position:absolute; display:block; top:0; left:0; right:0; bottom:0;}
+
+/*body {top:60px; bottom:-60px;}*/
 
 /* main blocks */
 #OnsideApp 		{overflow:hidden;}
@@ -385,7 +392,7 @@ body,
 }
 
 @media only screen and (min-width: 780px) {
-	.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:10px}
+	.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:2px}
 	.detailItem .articleList {padding:2px 5px 0 280px}
 }
 

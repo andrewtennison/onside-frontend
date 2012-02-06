@@ -28,6 +28,8 @@ span.icon {vertical-align:middle;}
 .bookmark	{background-position:-880px 0}
 .think		{background-position:-920px 0}
 .home		{background-position:-960px 0}
+.pullDown	{background-position:-1000px 0}
+.pullUp		{background-position:-1000px -40px}
 
 .onside.active, .onside:hover, a.active .onside, a:hover .onside			{background-position: 0px -40px}
 .facebook.active, .facebook:hover, a.active .facebook, a:hover .facebook	{background-position:-40px -40px}
@@ -56,3 +58,9 @@ span.icon {vertical-align:middle;}
 
 .toggleBlock:after {content:""; position:absolute; right:10px; background-position:-600px 0;}
 .toggleBlock.active:after {background-position:-640px 0}
+
+.flip > .pullDown	{background-position:-1000px -40px}
+.flip > .pullUp		{background-position:-1000px 0px}
+
+.loadingSmall > .pullDown,
+.loadingSmall > .pullUp	{background:url(/i/sprites/loaderSmall.gif) center center no-repeat;}

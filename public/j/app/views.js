@@ -355,6 +355,7 @@ TweetView			- individual tweet comment
 
 			this.setAuth(false,this.app.get('userAuth'));
 			this.onResize();
+
 		},
 				
 		login: function(){
@@ -670,15 +671,11 @@ TweetView			- individual tweet comment
 			
 			var view = new DetailView({model:model, app:this.options.app});
 			this.$el.append(view.render().el);
-			setTimeout(function () {
-				view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
-			}, 100);
+			// setTimeout(function () {
+				// view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
+			// }, 100);
+			view.toggleDisplay();
 
-			// set page route
-			var s = model.get('originUId').split('|'),
-				route = '/' + s[0] + "/" + s[1];
-				
-			if(s[1] !== 'null') this.app.route.navigate(route);
 		},
 		addAll: function(models){
 			console.error('View.DetailList.addAll');
@@ -707,6 +704,10 @@ TweetView			- individual tweet comment
 			this.model.bind('change:selected', this.toggleDisplay);
 			this.model.bind('change:saved', this.toggleButton);
 			this.toggleButton();
+
+			this.scrollDir = false;
+			this.scrollState = false;
+
 		},
 		render: function(){
 			console.log('# View.Detail.render');
@@ -716,12 +717,17 @@ TweetView			- individual tweet comment
 				this.$el.html(this.errorTemplate(json));
 				return this;
 			};
-			console.log(this)
-			console.log(json)
-			
+
 			this.$el.html(this.template(json));
 			this.$('.contentWrapper').attr({id: this.baseID});
 			this.$el.addClass('type-'+this.type)
+
+			// scroll
+			this.pullDownEl = this.$('#pullDown')[0];
+			this.pullUpEl = this.$('#pullUp')[0];
+			this.pullLoading = false;
+			this.pullDownOffset = 55;
+			this.pullUpOffset = 55;
 
 			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.type });
 			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.type });
@@ -743,10 +749,10 @@ TweetView			- individual tweet comment
 
 			this.app.set({selectedArticleList:this.viewA.collection});
 
-			this.$el.find('.contentWrapper > .scroller') 
-				.append(this.viewC.el)
-				.append(this.viewE.el)
-				.append(this.viewA.el);
+			this.$el.find('.contentWrapper > .scroller > #pullDown') 
+				.after(this.viewA.el)
+				.after(this.viewE.el)
+				.after(this.viewC.el);
 
 			var hex = this.model.get('author').branding;
 			if(hex){
@@ -758,12 +764,87 @@ TweetView			- individual tweet comment
 		    return this;
 		},
 		
+		toggleButton: function(){
+			if(this.model.get('saved')) {
+				this.$('a.save').addClass('active');
+			}else{
+				this.$('a.save').removeClass('active');
+			}
+		},
+		saveAction: function(e){
+			e.preventDefault();
+			this.model.follow(this.app);
+		},
+		pullDownAction: function(self){
+			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
+				self.scroll.refresh(); // Remember to refresh when contents are loaded (ie: on ajax completion)
+			}, 1000); 
+		},
+		pullUpAction: function(self){
+			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
+				self.scroll.refresh(); // Remember to refresh when contents are loaded (ie: on ajax completion)
+			}, 1000); 
+		},
 		toggleDisplay: function(){
 			var self = this;
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
 				this.$el.fadeIn(200,function(){
-					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
+					var pageLength = self.$('.contentWrapper').height(),
+						contentLength = self.$('.scroller').height();
+					
+					if(contentLength < pageLength) {
+						self.$('.scrollLoad').css('display','none');
+						return;
+					};
+					
+					self.scroll = new iScroll(self.baseID, {
+						useTransition	: true,
+						useTransition	: true,
+						hScroll 		: false,
+						zoom			: false,
+						scrollbarClass	: 'detailScrollbar',
+						topOffset		: self.pullDownOffset,
+						onRefresh		: function(){
+							if (self.pullDownEl.className.match('loadingSmall')) {
+								self.pullDownEl.className = '';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+							} else if (self.pullUpEl.className.match('loadingSmall')) {
+								self.pullUpEl.className = '';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+							}
+						},
+						onScrollMove	: function(){
+							if (this.y > 5 && !self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = 'flip';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Release to refresh...';
+								this.minScrollY = 0;
+							} else if (this.y < 5 && self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = '';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+								this.minScrollY = -self.pullDownOffset;
+							} else if (this.y < (this.maxScrollY - 5) && !self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = 'flip';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Release to refresh...';
+								this.maxScrollY = this.maxScrollY;
+							} else if (this.y > (this.maxScrollY + 5) && self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = '';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+								this.maxScrollY = self.pullUpOffset;
+							}
+						},
+						onScrollEnd		: function(){ 
+							if (self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = 'loadingSmall';
+								self.pullDownEl.querySelector('.label').inner = 'Loading...';	
+								self.pullDownAction(self);
+							} else if (self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = 'loadingSmall';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Loading...';				
+								self.pullUpAction(self);
+							}
+						}
+					})
 				});
 			}else{
 				this.$el.fadeOut(200,function(){
@@ -773,17 +854,6 @@ TweetView			- individual tweet comment
 					}
 				});
 			}
-		},
-		toggleButton: function(){
-			if(this.model.get('saved')) {
-				this.$('a.save').addClass('active');	//.text('remove').attr('data-action','remove');
-			}else{
-				this.$('a.save').removeClass('active');	//.text('save').attr('data-action','save');
-			}
-		},
-		saveAction: function(e){
-			e.preventDefault();
-			this.model.follow(this.app);
 		}
 	});
 
@@ -911,7 +981,6 @@ TweetView			- individual tweet comment
 		render: function(){
 			this.$el.html(this.template(this.model.toJSON()));
 			var hex = this.model.get('branding');
-			console.log(hex)
 			if(hex){
 				hex = hex.split(',');
 				this.$el.css({'background-color':hex[0]});
@@ -971,18 +1040,12 @@ TweetView			- individual tweet comment
 			var oldId = this.app.previous('selectedArticle'),
 				s = this.app.get('selectedItemUID').split('|');
 
-			console.log('id = ' + id + ', oldId = '+oldId);
-			console.log();
-
 			if(id === oldId || ( !id && !oldId )){
 				// no change do nothing
 				return;
 			} else if(oldId && !id){
 				// was article, no more - hide
 				this.hide();
-				// set page route
-				var route = '/' + s[0] + "/" + s[1];
-				this.app.route.navigate(route);
 			} else {
 				// show article
 				var list = this.app.get('selectedArticleList');
@@ -1004,11 +1067,6 @@ TweetView			- individual tweet comment
 						}
 					});
 				}
-				
-				
-				// set page route
-				var route = '/' + s[0] + "/" + s[1] + '/article-' + model.id;
-				this.app.route.navigate(route);
 			}
 		},
 		selectView: function(model){
@@ -1026,9 +1084,7 @@ TweetView			- individual tweet comment
 		},
 		close: function(e){
 			e.preventDefault();
-			this.app.set({
-				selectedArticle		: null,
-			});
+			this.app.set({ selectedArticle : null });
 			this.app.setTitle();
 		},
 		show: function(){

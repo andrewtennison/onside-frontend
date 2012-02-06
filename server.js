@@ -44,7 +44,6 @@ var app = module.exports = express.createServer();
 
 // Configuration
 app.configure(function(){
-  app.use(express.static(__dirname + '/public'));
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
 	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
@@ -52,9 +51,8 @@ app.configure(function(){
 	//app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
 
 	app.use(express.methodOverride());
-  app.use(express.logger());
-  app.use(login);
-  app.use(everyauth.middleware());
+	app.use(express.static(__dirname + '/public'));
+	app.use(everyauth.middleware());
 	app.use(app.router);
 	app.set('views', __dirname + '/views');
 	app.set('view engine', 'ejs');
