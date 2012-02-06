@@ -4,10 +4,10 @@
 		<a href="">Support</a>
 		<a href="">Contact Us</a>
 		<a href="">FAQ</a-->
-		<% if(loggedIn) { %>
+		<% if(everyauth.loggedIn) { %>
 			<a href="/logout">Sign out</a>
 		<% } else { %>
-			<a href="/">Not got an invite yet - register to join onside</a>
+			<a href="/signup">Not got an invite yet - register to join onside</a>
 		<% } %>
 	</div>
 </nav>
@@ -20,22 +20,23 @@
 				<h2>Delivering Fans Personalised Sport Content</h2>
 				<p>Available to all early 2012</p>
 			</hgroup>
-			
-			<% if(loggedIn) { %>
 			<article>
-				<h1><%= everyauth.user.name %> - Thanks for signing up</h1>
-				<p>We will send you an email with your invitation once we release to more people.</p>
-			</article>
-			<% } else { %>
-			<article>
-				<h1>Thanks for using onside.. we hope to see you back soon.</h1>
-				
+				<h1>Login to Onside</h1>
+
 				<div class="notForIE6">
-					<!--form action="/register" method="post">
-						<input type="email" class="txt" name="email" value="" placeholder="enter your email" />
+					<form action="/enter" method="post">
+					    <% if('undefined' !== typeof errors && errors.length) { %>
+					        <ul id="errors">
+					            <% errors.forEach(function(error) { %>
+					                <li class="error"><%= error %></li>
+					            <% }); %>
+					        </ul>
+					    <% } %>
+						<input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="" placeholder="enter your email" />
+						<input type="password" class="txt" name="<%=everyauth.password.passwordFormFieldName%>" value="" placeholder="enter your password" />
 						<input type="submit" class="submit" value="sign up" />
 					</form>
-					<p>or</p-->
+					<p>or</p>
 					<a class="joinF" href="/auth/facebook">Sign up with facebook</a>
 					<a class="joinT" href="/auth/twitter">Signup with twitter</a>
 				</div>
@@ -44,7 +45,6 @@
 					<p>You appear to be using IE6. This now 11 years old and is not supporoted by Onside, please signup using a more recent browser such as <a href="https://www.google.com/chrome">Chrome</a> or <a href="http://www.mozilla.org/en-US/firefox/new/">firefox</a>.</p>
 				</div>
 			</article>
-			<% } %>
 
 		</article>
 		<article id="devices">
@@ -52,8 +52,8 @@
 			<div class="d_ipad">available on tablet devices</div>
 			<div class="d_desktop">available on desktop</div>
 		</article>
-		
-	</div>	
+
+	</div>
 </header>
 <section id="reasons">
 	<div class="inner">

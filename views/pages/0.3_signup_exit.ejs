@@ -4,10 +4,10 @@
 		<a href="">Support</a>
 		<a href="">Contact Us</a>
 		<a href="">FAQ</a-->
-		<% if(loggedIn) { %>
+		<% if(everyauth.loggedIn) { %>
 			<a href="/logout">Sign out</a>
 		<% } else { %>
-			<a href="/enter">Sign in</a>
+			<a href="/enter">Got an invite? - sign in</a>
 		<% } %>
 	</div>
 </nav>
@@ -20,8 +20,8 @@
 				<h2>Delivering Fans Personalised Sport Content</h2>
 				<p>Available to all early 2012</p>
 			</hgroup>
-			
-			<% if(loggedIn) { %>
+
+			<% if(everyauth.loggedIn) { %>
 			<article>
 				<h1><%= everyauth.user.name %> - Thanks for signing up</h1>
 				<p>We will send you an email with your invitation once we release to more people.</p>
@@ -42,8 +42,8 @@
 			<div class="d_ipad">available on tablet devices</div>
 			<div class="d_desktop">available on desktop</div>
 		</article>
-		
-	</div>	
+
+	</div>
 </header>
 <section id="reasons">
 	<div class="inner">

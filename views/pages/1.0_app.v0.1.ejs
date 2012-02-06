@@ -1,7 +1,7 @@
 <div id="fb-root"></div>
 
 <section id="OnsideApp">
-	
+
 	<section class="page" id="listGroups">
 		<header class="bb">
 			<h1>Onside</h1>
@@ -13,9 +13,9 @@
 						<input class="formEl" id="groupSearch" type="search" placeholder="search" name="q" value="" />
 					</form>
 				</div>
-				
+
 				<div id="navGlobal">
-					<% if (everyauth.loggedIn) { %>	
+					<% if (everyauth.loggedIn) { %>
 					<a class="toggleBlock bb" href="#navUser"><span class="icon user"></span><%= user.name %></a>
 					<div id="navUser" class="block">
 						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
@@ -28,12 +28,12 @@
 					<a class="bb" href="#/list/popular"><span class="icon save"></span>Popular channels</a>
 					<!--a class="bb" href="/"><span class="icon events"></span>All Events</a>
 					<a class="bb" href="/"><span class="icon save"></span>Saved Items</a-->
-					
+
 					<% } else { %>
 					<a class="toggleBlock bb" href="#navUser"><span class="icon login"></span>Sign In</a>
 					<div id="navUser" class="block">
 						<a class="bb" href='/register'><span class="icon login"></span>Register</a>
-						<!--a href='/login'>Login with Password</a-->					
+						<!--a href='/login'>Login with Password</a-->
 						<a class="bb" class="fb_button_medium" href='/auth/facebook'><!--span id="fb_login_text" class="fb_button_text"--><span class="icon facebook"></span>Sign in with Facebook</a>
 						<a class="bb" href='/auth/twitter'><!--img src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png' /--><span class="icon twitter"></span>Sign in with twitter</a>
 						<a class="bb" href='/auth/google'><span class="icon google"></span>Sign in with google</a>
@@ -41,9 +41,9 @@
 					<h2>Help <!--a class="hide" href="#">hide</a--></h2>
 					<div class="help bb"><p>Please login to view your content</p></div>
 					<% } %>
-							
+
 				</div>
-				
+
 				<section class="content"></section>
 			</div><!-- /.scroller -->
 		</div><!-- /.contentWrapper -->
@@ -54,7 +54,7 @@
 			</nav>
 		</footer>
 	</section><!-- /#listGroups -->
-	
+
 	<div id="main" role='main'>
 		<section id="appNav">
 			<nav>
@@ -117,7 +117,7 @@
 <%- partial('partials/articleDetail') %>
 <%- partial('partials/helpers') %>
 
-<% 
+<%
 var cleanUser = false, facebookUser = false, twitterUser = false;
 if(user) {
 	cleanUser = user;
@@ -125,9 +125,9 @@ if(user) {
 	// delete cleanUser.email;
 	// delete cleanUser.admin;
 	// delete cleanUser.enabled;
-	
-	if(cleanUser.twitter && cleanUser.twitter.length >= 2 && everyauth.twitter.user) twitterUser = JSON.stringify(everyauth.twitter.user);
-	if(cleanUser.facebook && cleanUser.facebook.length >= 2 && everyauth.facebook.user) facebookUser = JSON.stringify(everyauth.facebook.user);
+
+	if(cleanUser.twitter && cleanUser.twitter.length >= 2 && everyauth.twitter && everyauth.twitter.user) twitterUser = JSON.stringify(everyauth.twitter.user);
+	if(cleanUser.facebook && cleanUser.facebook.length >= 2 && everyauth.facebook && everyauth.facebook.user) facebookUser = JSON.stringify(everyauth.facebook.user);
 }
 %>
 
@@ -135,9 +135,9 @@ if(user) {
 var on = window.on || {};
 on.preload = {};
 on.preload.user		= <%- JSON.stringify(cleanUser) %>;
-on.preload.twitter	= <%- twitterUser %>;			
-on.preload.facebook	= <%- facebookUser %>;			
-on.preload.auth		= <%- loggedIn %>;
+on.preload.twitter	= <%- twitterUser %>;
+on.preload.facebook	= <%- facebookUser %>;
+on.preload.auth		= <%- everyauth.loggedIn %>;
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
 on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;
 on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;
