@@ -4,16 +4,9 @@ on.preload = window.on.preload || {};
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
-		'/:service/:id/article-:id2'	: 'getArticle',
-		'/:service/:id'					: 'getDetail',
-		'/search?q=:id'					: 'getSearch',
-		
-		// '/list/:id'						: 'getList',
-		// '/event/:id'					: 'getEvent',
-		// '/channel/:id'					: 'getChannel',
-		// '/search/:id'					: 'getSearch',
-		// '/search?q=:id'					: 'getSearch',
-		// '/:service/:id/article-:id2'	: 'getArticle',
+		':service/:id/article-:id2'	: 'getArticle',
+		':service/:id'					: 'getDetail',
+		'search?q=:id'					: 'getSearch',
 		'*path'							: 'home'
 	},
 	

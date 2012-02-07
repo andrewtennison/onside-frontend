@@ -55,7 +55,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		updateService: function(model,val){
 			var article = this.get('selectedArticle'),
 				url = '/' + this.get('selectedItemUID').replace('|','/') + ((article)? '/article-' + article : '');
-
 			this.route.navigate(url);
 			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
 		}
