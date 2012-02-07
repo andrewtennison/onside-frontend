@@ -28,6 +28,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.Channel,
 		comparator : function(channel) {
 			return channel.get("name");
+		},
+		initialize: function(){
+			console.error('this')
+			console.log(this)
 		}
     });
 
@@ -44,7 +48,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.SavedSearch
     });
 
-	var ArticleList = Backbone.Collection.extend({
+	var ArticleList = _Lists.extend({
 		a: 'articleList',
 		urlPath: 'article',
 		model : BB.Article,

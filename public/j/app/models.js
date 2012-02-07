@@ -54,7 +54,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		updateService: function(model,val){
 			var article = this.get('selectedArticle'),
-				url = this.get('selectedItemUID').replace('|','/') + ((article)? '/article-' + article : '');
+				url = '/' + this.get('selectedItemUID').replace('|','/') + ((article)? '/article-' + article : '');
 
 			this.route.navigate(url);
 			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
@@ -74,7 +74,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		setImage: function(){
 			var attr = this.attributes;
-			console.log(attr.sport +' / '+attr.image);
+			
+			var sport = this.get('sport'),
+				image = this.get('image');
+			
+			console.log(this);
+			console.log(sport +' / '+image);
+			console.log(image === 'null');
+			console.log(this.defaults.image);
 
 			if(attr.sport && ( attr.image === 'null' || attr.image === '' )){
 				var imagePath;

@@ -776,9 +776,15 @@ TweetView			- individual tweet comment
 			this.model.follow(this.app);
 		},
 		pullDownAction: function(self){
-			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
-				self.scroll.refresh(); // Remember to refresh when contents are loaded (ie: on ajax completion)
-			}, 1000); 
+			//self.channel.fetch({add: true});
+			console.log(this);
+			var id = self.model.id.split('|'),
+				params = id[1] +'='+id[2];
+				
+			self.viewA.collection.params = params;
+			self.viewA.collection.fetch({add: true, success:function(){
+				self.scroll.refresh();
+			}}); // channel?channel=1
 		},
 		pullUpAction: function(self){
 			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
