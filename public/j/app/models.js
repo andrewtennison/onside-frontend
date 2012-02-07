@@ -191,23 +191,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.get('articles').reset(this.get('articleJson'));
 		},
 		setSaved: function(app){},
-		follow : function(){
-			var t = this.get('type');
-			switch(t){
-				case 'channel':
-					var id = this.get('author').id,
-						val = (app.channels.get(id))? true : false;
-					this.set({saved: val });
-					break;
-				case 'event':
-					break;
-				case 'search':
-					break;
-				case 'list':
-				default:
-					break;
-			}
-		}
+		follow : function(){}
 	});
 	var DetailChannel = Detail.extend({
 		parse: function(attr){
@@ -252,6 +236,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var DetailSearch = Detail.extend({
 		initialize: function(){
 			this.defaults.image = '/i/content/channel/_search.png';
+		},
+		setSaved: function(app){
+			console.info('////// set saved')
+			console.log(this)
+			var id = this.get('author').id,
+				val = (app.channels.get(id))? true : false;
+			this.set({saved: val });
 		},
 		follow: function(app){
 			console.dir(this.attributes);

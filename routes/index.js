@@ -326,6 +326,7 @@ exports.getDetailApi = function(req,res){
 			content.title = id;
 			singleList(req, res, false, '/search?q='+id, function(c){
 				console.log('search loaded')
+				console.log(c)
 				if(!c) {
 					content.error = true;
 				} else {

@@ -62,9 +62,18 @@ td.key_twitter span {width:30px; height:30px; position:relative; display:block; 
 span.expand {background:url(/i/cms/add.png) center center no-repeat; cursor: pointer}
 td.edit span {background:url(/i/cms/edit.png) center center no-repeat; cursor: pointer}
 
-.filter {padding:0; position:relative}
-.filter header {padding:10px 20px; border-bottom:1px solid #ccc}
-.filter header .btn {position:absolute; top:10px; right:10px}
-.filter .row {padding:10px 20px}
-.filter form {margin:0; padding:0}
-.filter .foot {padding:20px 0 0 0}
+.well {padding:0; position:relative}
+.well header {padding:10px 20px; border-bottom:1px solid #ccc}
+.well header .btn {position:absolute; top:10px; right:10px}
+.well .row {padding:10px 20px}
+.well form {margin:0; padding:0}
+.well .foot {padding:20px 0 0 0}
+
+.lookup {margin:0 0 0 10px; font-weight:bold}
+.hiddenLookup {display:none; margin:10px 0 0 0; padding:0; background:#eee; width:270px; list-style:none; border:1px solid #ddd; border-radius:5px}
+.hiddenLookup.show {display:block}
+.hiddenLookup li {}
+.hiddenLookup li a {padding:5px 10px; color:#000; display:block; border-bottom:1px solid #ddd}
+
+
+

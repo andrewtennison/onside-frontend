@@ -17,7 +17,7 @@ on.env = {
 	docReady : false
 };
 on.settings = {
-	sports 		: ['', 'football', 'cricket', 'tennis', 'golf', 'badminton', 'cycling'],
+	sports 		: ['', 'football', 'rugby union', 'rugby league', 'cricket', 'tennis', 'golf', 'badminton', 'cycling'],
 	channelType	: ['', 'team', 'player', 'competition', 'sponsor', 'organisation'],
 	eventType	: ['', 'match', 'league', 'tournament'],
 	articleTypes: ['', 'rss', 'youtube', 'twitter']

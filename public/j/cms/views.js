@@ -14,12 +14,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var _pageView = Backbone.View.extend({
 		events: {
 			'click .create'			: 'createModel',
-			'click .filterToggle'	: 'toggleFilters',
-			'submit .filter form'	: 'submitFilters'
+			'submit .filter form'	: 'submitFilters',
+			'submit .refine form'	: 'submitRefine',
+			'reset .refine form'	: 'resetRefine'
 		},
 		title: 'Unknown',
 		initialize: function(){
-			_.bindAll(this, 'createModel', 'toggleFilters', 'submitFilters', 'addOne', 'addAll', 'setupTable' );
+			_.bindAll(this, 'createModel', 'submitFilters', 'submitRefine', 'addOne', 'addAll', 'setupTable' );
 			this.cms = this.options.cms;
 			this.overlay = this.options.overlay;
 
@@ -32,7 +33,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('error', function(xhr){
-				console.error('error on collection')
+				console.error('error on collection');
 				console.log(xhr);
 			});
 		},
@@ -47,14 +48,27 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				self.overlay.show();
 			});
 		},
-		toggleFilters: function(e){
-			e.preventDefault();
-			this.$('.filter form').toggle();
-		},
 		submitFilters: function(e){
 			e.preventDefault();
 			this.collection.params = this.$('.filter form').serialize();
 			this.collection.fetch();
+		},
+		resetRefine: function(e){
+			this.submitRefine(e,true);
+		},
+		submitRefine: function(e, clear){
+			e.preventDefault();
+			var key = this.$('#tableSelect').val(),
+				val = this.$('#tableValues').val(),
+				search = this.$('#tableSearch').val();
+
+			this.collection.each(function(model){
+				if(clear || model.get(key) === val || model.get(key).match(search) ){
+					model.set({show:true})
+				}else{
+					model.set({show:false})
+				}
+			})
 		},
 		addOne: function(model, index){
 			if(!this.headBuilt && index === 0) this.setupTable(model);
@@ -119,7 +133,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				if(v === 'null' || v ===  null) v = '';
 				var existsString = (v && v.length >= 1 && v !== '0' )? 'hasValue' : 'noValue';				
 				
-				if(opts && opts.expand){
+				if(key === 'show'){
+					//
+				} else if(opts && opts.expand){
 					html += '<td class="key_'+key+'"><span class="expand" data-key="'+key+'">expand '+key+'</span></td>';
 				}else{
 					html += '<td class="key_'+key+'"><span class="'+existsString+'">'+v+'</span></td>';
@@ -128,7 +144,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			return html;
 		},
 		updateRow: function(){
-			var html = this.buildRow( this.model.toJSON() );
+			var html = this.buildRow( this.model.toJSON() ),
+				show = this.model.get('show');
+				
+			if(show){
+				$(this.el).css({display:'table-row'});				
+			}else{
+				$(this.el).css({display:'none'});
+			}
 			$(this.el).html(html);
 		},
 		showItem: function(){
@@ -161,12 +184,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		events: {
 			'click .cancel' : 'closeItem',
 			'click .delete' : 'deleteItem',
-			'click .save' 	: 'updateItem'
+			'click .save' 	: 'updateItem',
+			'click .lookup'	: 'lookup',
+			'click .hiddenLookup a' : 'addLookupItem'
 		},
 		initialize: function(){
-			_.bindAll(this, 'error', 'success', 'render', 'closeItem', 'deleteItem', 'updateItem');
+			_.bindAll(this, 'error', 'success', 'render', 'closeItem', 'deleteItem', 'updateItem', 'lookup', 'addLookupItem');
 			this.overlay = this.options.overlay;
-			
+			this.cms = this.options.cms;
 		},
 		render: function(title, content){
 			var json = (this.model)? this.model.toJSON() : false;
@@ -201,6 +226,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
                 		inner += '</select>'; 
 						break;
 				};
+				if(opts.lookup){
+					inner += '<a class="lookup btn btn-primary" href="#">+</a><ul class="hiddenLookup">';
+					this.cms[opts.lookup].each(function(model, i){
+						inner += '<li><a href="#" data-id="'+model.get('id')+'" >'+model.get('name')+'</a></li>';
+					});	
+					inner += '</ul>';
+				}
+				
 				if(opts.help) inner += '<span class="help-block">'+ opts.help +'</span>';
 				inner += '</div></div>';
 			}
@@ -236,6 +269,21 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		success: function(){
 			this.$('a.save').button('reset');
 			this.overlay.hide();
+		},
+		lookup: function(e){
+			e.preventDefault();
+			var el = $(e.target);
+			el.siblings('.hiddenLookup').toggle();
+		},
+		addLookupItem: function(e){
+			e.preventDefault();
+
+			var el = $(e.target),
+				input = el.parent().parent().parent().find('input'),
+				v = input.val(),
+				id = el.attr('data-id');
+
+			input.val(v + ',' + id);
 		}
 	});
 	var _createView = _editView.extend({
@@ -299,6 +347,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				$li = $el.parent('li'),
 				$id = $( $el.attr('href') );
 			
+			this.activeID = $el.attr('href').replace('#','');
 			$li.addClass('active');
 			$id.addClass('active');
 			
@@ -306,11 +355,31 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.activeTab = $id;
 		},
 		buildSelect: function(e){
-			var $el = $(e.target),
+			var self = this,
+				$el = $(e.target),
 				d = $el.attr('data-content'),
 				html ='';
 				
-			if(this.cms[d] && this.cms[d].models.length) {
+			if(d === 'table'){
+				var id = this.activeID,
+					collection = this.cms[id],
+					json = collection.models[0].toJSON();
+					
+				for(var key in json){ html += '<option value="'+key+'">'+key+'</option>' }
+				$el.html(html);
+				$el.change(function(){
+					var html = '<option></option>',
+						v = this.value,
+						list = collection.pluck(v);
+					
+					list = _.uniq(list);
+					$.each(list,function(i){
+						html += '<option value="'+list[i]+'">'+list[i]+'</option>';
+					})
+					self.$('#tableValues').html(html);
+				})
+				
+			} else if (this.cms[d] && this.cms[d].models.length) {
 				html += '<option value="">all</option>';
 				$.each(this.cms[d].models, function(){
 					html += '<option value="'+this.id+'">'+this.get('name')+'</option>';
