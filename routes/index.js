@@ -10,17 +10,17 @@ var rest 		= require('restler'),
 // Base object for checkAuth function
 baseAuthObject = {
 	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events	: content.events,  searches: content.searches, popular: content.popularChannels } })},
-	fail	: function(res){ res.redirect('/signup') },
+	notAuthorized	: function(res){ res.statusCode = 401; res.end('Not authorized'); },
+  notAuthenticated: function(req, res) { req.session.redirectTo = req.url; res.redirect('/signup') },
 	reject	: function(res){  res.render('pages/0.1_signup_suspended.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup'}); },
 	preload	: true,
-	authReq	: true
+	authReq	: true,
+  admin   : false
 	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
 };
 
 exports.index = function(req, res){
-	req.session.redirectTo = req.url;
-
-	var obj = { req : req, res : res, preload:false };
+	var obj = { req : req, res : res, notAuthorized	: function(res){ res.redirect('/signup'); } };
 	_.defaults(obj, baseAuthObject);
 	checkAuth( obj );
 };
@@ -31,11 +31,16 @@ exports.exit = function(req, res){
 };
 
 exports.cms = function(req,res){
-	if(req.loggedIn && req.user.admin === 0){
-		res.redirect('/', 401);
-	}else{
-		res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms', jsPath:'.cms' });
-	}
+  var obj = {
+    req : req,
+    res : res,
+    pass	: function(res, content){ res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms', jsPath:'.cms' })},
+    notAuthenticated	: function(req, res){ req.session.redirectTo = req.url; res.redirect('/enter') },
+    preload:false,
+    admin:true
+  };
+  _.defaults(obj, baseAuthObject);
+  checkAuth( obj );
 };
 
 
@@ -128,10 +133,12 @@ var checkAuth = function(opts){
 		userStatus = false;
 
 	// if auth needed - check for login + user.enabled property
-	if(opts.authReq && (!loggedIn || user.enabled === '0') ) {
-		opts.fail(res);
-		return;
-	};
+	if(opts.authReq) {
+    if (!loggedIn) return opts.notAuthenticated(opts.req, res);
+    if (user.enabled == 0 || (opts.admin && user.admin != 1) ) {
+      return opts.notAuthorized(res);
+    }
+  }
 
 	// user status - hack if auth not required
 	userStatus = (!opts.authReq && user.status === 0)? '1' : user.status;
@@ -142,7 +149,7 @@ var checkAuth = function(opts){
 	// We can extend this property for different scenarios later
 	switch(userStatus){
 		case '0':						// default - user new, not yet invited
-			//opts.fail(res);
+			//opts.notAuthorized(res);
 			//return;
 		case '1':						// user has been sent invite - more info/action required
 		case '2':						// user has visited site and completed required signup tasks
@@ -160,14 +167,13 @@ var checkAuth = function(opts){
 
 		default:
 			console.log('routes.checkAuth - user.enabled unknow =' + userStatus)
-			opts.fail(res);
+			opts.notAuthenticated(opts.req, res);
 			return;
 	};
 
 	// wont reach here on fail
 	if(opts.preload){
 		preload(opts.req, function(json){
-			console.log(json)
 			var content = {channels: json.channels, events: json.events, searches: json.searches, popularChannels: json.popularChannels};
 			( opts[stage] )? opts[stage](res,content) : opts.pass(res,content);
 		});

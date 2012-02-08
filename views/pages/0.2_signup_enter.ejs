@@ -32,7 +32,7 @@
 					            <% }); %>
 					        </ul>
 					    <% } %>
-						<input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="" placeholder="enter your email" />
+					    <input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="<%=locals[everyauth.password.loginFormFieldName] || ''%>" placeholder="enter your email" />
 						<input type="password" class="txt" name="<%=everyauth.password.passwordFormFieldName%>" value="" placeholder="enter your password" />
 						<input type="submit" class="submit" value="sign up" />
 					</form>

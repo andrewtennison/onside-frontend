@@ -47,6 +47,7 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
   app.use(express.static(__dirname + '/public'));
+  app.use(express.logger());
 	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
 	app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
 	//app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
@@ -71,15 +72,16 @@ app.configure('production', function(){
 //setup the errors
 
 app.error(function(err, req, res, next){
+  console.log(err);
 	if (err instanceof NotFound) {
-	    res.render('404.ejs', { locals: {
+	    res.render('pages/404.ejs', { locals: {
 		  title : '404 - Not Found'
 		 ,description: ''
 		 ,author: ''
 		 ,analyticssiteid: 'XXXXXXX'
 		},status: 404 });
 	} else {
-	    res.render('500.ejs', { locals: {
+	    res.render('pages/500.ejs', { locals: {
 		  title : 'The Server Encountered an Error'
 		 ,description: ''
 		 ,author: ''
@@ -106,7 +108,7 @@ app.get('/fb_channel', function(req,res){
 	res.header('Pragma' , 'public' );
 	res.header('Cache-Control' , 'max-age=' + $cache_expire );
 	res.header('Expires' , d );
-	res.render('facebook_channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false, loggedIn: false});
+	res.render('facebook_channel.ejs', {title:'facebook channel cache', cssPath: false, jsPath: false});
 });
 
 app.get('*', function(req, res, next){
