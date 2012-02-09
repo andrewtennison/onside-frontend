@@ -267,7 +267,7 @@ body,
 .articleItem.rss:hover {background:#ddd; cursor:pointer}
 .articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
 .articleItem.rss .inner {padding:20px;}
-.articleItem.rss .content {color:#333; font-size:1.2em; padding:10px 0 }
+.articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:4.2em; overflow: hidden; }
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}
 
@@ -417,4 +417,8 @@ body,
 	#listChat {width:265px}
 	#listChat .content form input, #listChat .content form textarea {width:230px; left:0}
 	.show.comments {display:none}
+}
+
+@media only screen and (min-width: 1300px) {
+	.articleItem {width:49.5%; vertical-align: top; min-height:200px;}
 }
