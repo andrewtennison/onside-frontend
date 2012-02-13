@@ -408,7 +408,8 @@ exports.getDetailApi = function(req,res){
 		} else if(i === 9000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
-			res.send('load detailed failed, request timed out')
+			//res.send('load detailed failed, request timed out')
+			res.json({ error: 'api timed out'});
 		} else{
 			i += 100;
 			console.log('load detail content from API, timer = ' + i)
@@ -522,7 +523,7 @@ var preload = function(req, callback){
 			console.log('Preloading complete')
 			clearInterval( timer );
 			callback(content);
-		} else if(i === 3000){
+		} else if(i === 9000){
 			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
 			callback(content);

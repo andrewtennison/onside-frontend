@@ -8,6 +8,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		for(key in obj){
 			if(key !== 'id') a.push(key);
 		}
+		a = _.union(['id'], a); 
 		return a;
 	}
 
@@ -203,8 +204,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		    return this;
 		},
 		buildForm: function(json){
+			console.info('build form')
 			var inner = '';
 			for(var key in this.model.defaultOptions){
+				console.info('key - ' + key)
+				console.info(this.model.defaultOptions[key])
+				
 				var opts = this.model.defaultOptions[key] || {type:false},
 					disabledString = (opts.editable === undefined || opts.editable !== false)? '' : 'disabled="true"',
 					setValue = json[key] || '';
@@ -226,8 +231,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
                 		inner += '</select>'; 
 						break;
 				};
+				console.info('opts lookup')
 				if(opts.lookup){
 					inner += '<a class="lookup btn btn-primary" href="#">+</a><ul class="hiddenLookup">';
+					console.info(opts.lookup)
+					console.info(this.cms[opts.lookup])
 					this.cms[opts.lookup].each(function(model, i){
 						inner += '<li><a href="#" data-id="'+model.get('id')+'" >'+model.get('name')+'</a></li>';
 					});	
@@ -305,6 +313,21 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			};
 		}
 	});
+	var _contentItemView = Backbone.View.extend({
+		template: _.template( $('#detailTemplate').html() ),
+		initialize: function(){
+			_.bindAll(this, 'render');
+			this.title = this.options.title || 'undefined';
+		},
+		render: function(){
+			var json = {}; 
+			json.item = (this.model)? this.model.toJSON() : false;
+			json.title = this.title;
+
+			$(this.el).html(this.template(json));
+		    return this;
+		}
+	});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -328,6 +351,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.events 	= new eventPageView(	{cms: this.options.cms, collection: this.options.cms.events, overlay:overlay});
 			this.sources 	= new sourcePageView(	{cms: this.options.cms, collection: this.options.cms.sources, overlay:overlay});
 			this.articles 	= new articlePageView(	{cms: this.options.cms, collection: this.options.cms.articles, overlay:overlay});
+			this.relations	= new relationsPageView({cms: this.options.cms, overlay:overlay});
 			this.$('#primaryNav a:first').click();
 			
 			this.users.collection.fetch();
@@ -449,6 +473,94 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		el : $('#articles'),
 		title: 'Article'
 	});
+	
+	var relationsPageView = Backbone.View.extend({
+		el: $('#relations'),
+		form: false,
+		events: {
+			'click a.btn' : 'setupOverlay',
+			'submit form#relate' : 'submitForm'
+		},
+		initialize: function(){
+			_.bindAll(this, 'setupOverlay', 'submitForm', 'buildFormItem', 'openOverlay');
+			this.cms = this.options.cms;
+			this.overlay = this.options.overlay;
+		},
+		setupOverlay: function(e){
+			e.preventDefault();
+			
+			if(this.form) this.form.remove();
+			
+			var self = this,
+				el = $(e.target),
+				rel = el.attr('data-rel'),
+				s = rel.split(':'),
+				string = '<form id="relate"><div class="row"><div class="span4"><label>Relationship</label><select><option value="relate">Relate</option><option value="unrelate">Unrelate</option></select></div>';
+			
+			$.each(s, function(i,val){
+				string += self.buildFormItem(val);				
+			});
+			string += '</div></form>';
+			
+			this.form = $(string);
+			this.el.append(this.form);
+			
+			switch(rel){
+				case 'channel:channel':
+					break;
+				case 'event:event':
+					break;
+				case 'channel:event':
+				case 'event:channel':
+					break;
+				default:
+					break;
+			}
+			
+			
+		},
+		buildFormItem: function(val){
+			console.log(val)
+			var string = '';
+			if(val === 'channel'){
+				string += '<div class="span4"><label for="channel">Select a channel</label><select name="channel">';
+				this.cms.channels.each(function(model){
+					string += '<option value="'+ model.id +'">'+ model.get('name') +'</option>';
+				})
+			} else if(val === 'event'){
+				string += '<label for="event">Select an event</label><select name="event">';
+				this.cms.events.each(function(model){
+					string += '<option value="'+ model.id +'">'+ model.get('name') +'</option>';
+				});
+			}
+			string += '</select></div>';
+			return string;
+		},
+		openOverlay: function(){
+		},
+		submitForm: function(){
+			
+		}
+	})
+
+	// var channelContentView = _contentView.extend({
+		// el : $('#channelDetail'),
+		// events: {},
+		// initialize: function(){
+// 			
+			// // select channel from list
+			// // populate / build page
+		// }
+	// });
+	// var eventContentView = _contentView.extend({
+		// el : $('#eventDetail'),
+		// events: {},
+		// initialize: function(){
+// 			
+			// // select channel from list
+			// // populate / build page
+		// }
+	// });
 
 
 	BB.cmsView = cmsView;

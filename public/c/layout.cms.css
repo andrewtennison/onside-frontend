@@ -28,6 +28,8 @@ table td span {position:relative; display:block; text-overflow: ellipsis; white-
 
 h1 button {float:right}
 
+.navbar .pull-right {color:#fff; margin:10px 0;}
+
 .key_geolat,
 .key_geolng,
 .key_language,

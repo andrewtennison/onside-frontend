@@ -1,6 +1,6 @@
 <section id="OnsideCMS">
-	<div class="topbar">
-		<div class="topbar-inner">
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
 			<div class="container-fluid">
 				<a class="brand" href="#">Onside CMS</a>
 
@@ -12,6 +12,7 @@
 					<li><a href="#events">Events</a></li>
 					<li><a href="#sources">Sources</a></li>
 					<li><a href="#articles">Articles</a></li>
+					<li><a href="#relations">Relations</a></li>
 				</ul>
 				<p class="pull-right">Logged in as <a href="#"><%= everyauth.user.name %></a></p>
 				<% }else{ %>
@@ -67,7 +68,7 @@
 							
 							<div class="span4 foot">
 								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Update table" class="btn danger">
+								<input type="reset" value="Reset" class="btn danger">
 							</div>
 						</div>
 					</form>
@@ -102,7 +103,7 @@
 							
 							<div class="span4 foot">
 								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Update table" class="btn danger">
+								<input type="reset" value="Reset" class="btn danger">
 							</div>
 						</div>
 					</form>
@@ -137,7 +138,7 @@
 							
 							<div class="span4 foot">
 								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Update table" class="btn danger">
+								<input type="reset" value="Reset" class="btn danger">
 							</div>
 						</div>
 					</form>
@@ -172,7 +173,7 @@
 							
 							<div class="span4 foot">
 								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Update table" class="btn danger">
+								<input type="reset" value="Reset" class="btn danger">
 							</div>
 						</div>
 					</form>
@@ -228,6 +229,28 @@
 					<tbody></tbody>
 				</table>
 			</section>
+			
+			<section id="relations" class="page">
+				<div class="page-header">
+					<h1>Relate Items</h1>
+				</div>
+				
+				<div class="row">
+					<div class="span4">
+						<h2>Channel > Event</h2>
+						<a data-rel="channel:event" class="btn" href="#">open</a>
+					</div>
+					<div class="span4">
+						<h2>Channel > Channel</h2>
+						<a data-rel="channel:channel" class="btn" href="#">open</a>
+					</div>
+				</div>
+				
+				
+			</section>
+
+
+<!-- Non Auth ///////////////////////////////////  -->
 			<% } else { %>
 				<section id="login">
 					<div class="page-header">
@@ -235,12 +258,15 @@
 					</div>
 				</section>
 			<% } %>
+<!-- Non Auth ///////////////////////////////////  -->
+
 			<footer>
 				<p>&copy; Company 2011</p>
 
 			</footer>
 		</div>
 	</div>
+
 
 	<div class="modal hide fade in" id="overlay">
 		<div class="modal-header">
@@ -272,4 +298,22 @@
 		<a class="btn secondary danger delete" href="#" data-loading-text="Deleting data...">Delete</a>
 	</div>
 </script>
+
+<script id="detailTemplate" class="tmpl" type="text/template">
+	<h3>Related channels <button class="btn success edit">add</button></h3>
+	<div class="row rel-channels">				
+	</div>
+
+	<h3>Related events <button class="btn success edit">add</button></h3>
+	<div class="row rel-events">				
+	</div>
+
+	<h3>Related articles</h3>
+	<div class="row rel-articles">
+	</div>
+</script>
+
+
+
+
 

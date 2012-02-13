@@ -60,7 +60,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			geolng		: {type:'text'},
 		},
 		validate: function(attrs){
-			if(attrs.name.length <= 1) return 'name required';
+			//if(attrs.name.length <= 1) return 'name required';
 		}
 	});
 	var Event = Backbone.Model.extend({
@@ -77,7 +77,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			hash		: {type:'text'},
 			keywords	: {type:'text', help:'comma separated list'},
 			location	: {type:'text'},
-			parent		: {type:'select', values:[], help:'lookup from collection'},
+			parent		: {type:'text', help:'lookup from collection', lookup: 'events'},
 			participants: {type:'text', help:'comma separated list // could be lookup + add from channels'},
 			sport		: {type:'select', values: on.settings.sports},
 			stime		: {type:'text', help:'format: 2012-01-27 11:32:36'},
