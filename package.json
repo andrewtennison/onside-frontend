@@ -13,6 +13,7 @@
     , "everyauth" : "https://github.com/symposion/everyauth/tarball/master"
     , "fbgraph" : ">= 0.2.1"
     , "ntwitter" : ""
+    , "connect-redis" : "1.2.0"
   }
   , "devDependencies": {
      "should" : ">= 0.3.2"
