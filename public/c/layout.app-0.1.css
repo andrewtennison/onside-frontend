@@ -249,12 +249,16 @@ body,
 
 /* Events */
 .eventItem {position:relative; margin:0 15px; padding-left:5px;}
-.eventItem header {border-bottom:1px dotted #737373; padding:0 0 5px 0}
+.eventItem header {border-bottom:1px dotted #737373; padding:10px 0 5px}
 	.eventItem h1 {text-transform:uppercase; display:inline; font-size:1.1em; color:#fff}
 	.eventItem header time {color:#b3b3b3; font-size:1.1em; float:right}
 .eventItem section {padding:8px 0}
 	.eventItem section h1 {color:#b3b3b3; text-transform:capitalize; padding-bottom:2px; display:block}
-	.eventItem section p {font-size:1.2em; color:#fff}
+	.eventItem section p {font-size:1.4em; color:#fff}
+	.eventItem section p a {text-transform:capitalize }
+	.eventItem section p.location {font-size:1.2em}
+	.eventItem section p .score {font-size:1.2em}
+	.eventItem .location {color:#B3B3B3}
 	
 	
 /* Articles */

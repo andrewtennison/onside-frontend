@@ -48,140 +48,28 @@
 				<div class="page-header">
 					<h1>Users <small>create &amp; edit</small></h1>
 				</div>
-				<article class="well refine">
-					<form class="form-stacked">
-						<div class="row">
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSelect">Select Row</label>
-									<div class="input"><select id="tableSelect" name="tableSelect" class="dynamicSelect" data-content="table"></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableValues">Select Value</label>
-									<div class="input"><select id="tableValues" name="tableValues"><option>please select row first</option></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSearch">Search for value</label>
-									<div class="input"><input type="text" id="tableSearch" name="tableSearch" /></div>
-							</div></div>
-							
-							<div class="span4 foot">
-								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Reset" class="btn danger">
-							</div>
-						</div>
-					</form>
-				</article>
-				<table class="zebra-striped">
-					<thead></thead>
-					<tbody></tbody>
-				</table>
+				<%- partial('partials/cms.filterForm.ejs') %>
 			</section>
 
 			<section id="channels" class="page">
 				<div class="page-header">
 					<h1>Channels <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
 				</div>
-				<article class="well refine">
-					<form class="form-stacked">
-						<div class="row">
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSelect">Select Row</label>
-									<div class="input"><select id="tableSelect" name="tableSelect" class="dynamicSelect" data-content="table"></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableValues">Select Value</label>
-									<div class="input"><select id="tableValues" name="tableValues"><option>please select row first</option></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSearch">Search for value</label>
-									<div class="input"><input type="text" id="tableSearch" name="tableSearch" /></div>
-							</div></div>
-							
-							<div class="span4 foot">
-								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Reset" class="btn danger">
-							</div>
-						</div>
-					</form>
-				</article>
-				<table class="zebra-striped">
-					<thead></thead>
-					<tbody></tbody>
-				</table>
+				<%- partial('partials/cms.filterForm.ejs') %>
 			</section>
 
 			<section id="events" class="page">
 				<div class="page-header">
 					<h1>Events <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
 				</div>
-				<article class="well refine">
-					<form class="form-stacked">
-						<div class="row">
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSelect">Select Row</label>
-									<div class="input"><select id="tableSelect" name="tableSelect" class="dynamicSelect" data-content="table"></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableValues">Select Value</label>
-									<div class="input"><select id="tableValues" name="tableValues"><option>please select row first</option></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSearch">Search for value</label>
-									<div class="input"><input type="text" id="tableSearch" name="tableSearch" /></div>
-							</div></div>
-							
-							<div class="span4 foot">
-								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Reset" class="btn danger">
-							</div>
-						</div>
-					</form>
-				</article>
-				<table class="zebra-striped">
-					<thead></thead>
-					<tbody></tbody>
-				</table>
+				<%- partial('partials/cms.filterForm.ejs') %>
 			</section>
 
 			<section id="sources" class="page">
 				<div class="page-header">
 					<h1>Sources <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
 				</div>
-				<article class="well refine">
-					<form class="form-stacked">
-						<div class="row">
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSelect">Select Row</label>
-									<div class="input"><select id="tableSelect" name="tableSelect" class="dynamicSelect" data-content="table"></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableValues">Select Value</label>
-									<div class="input"><select id="tableValues" name="tableValues"><option>please select row first</option></select></div>
-							</div></div>
-
-							<div class="span4"><div class="clearfix">
-		            				<label for="tableSearch">Search for value</label>
-									<div class="input"><input type="text" id="tableSearch" name="tableSearch" /></div>
-							</div></div>
-							
-							<div class="span4 foot">
-								<input type="submit" value="Update table" class="btn primary">
-								<input type="reset" value="Reset" class="btn danger">
-							</div>
-						</div>
-					</form>
-				</article>
-				<table class="zebra-striped">
-					<thead></thead>
-					<tbody></tbody>
-				</table>
+				<%- partial('partials/cms.filterForm.ejs') %>
 			</section>
 
 			<section id="articles" class="page">
@@ -191,7 +79,7 @@
 				<article class="well filter">
 					<form class="form-stacked">
 						<div class="row">
-							<div class="span4">
+							<div class="span3">
 								<div class="clearfix">
 		            				<label for="channel">Select channel</label>
 									<div class="input">
@@ -202,7 +90,7 @@
 								</div>
 							</div>
 
-							<div class="span4">
+							<div class="span3">
 								<div class="clearfix">
 		            				<label for="limit">Select limit</label>
 									<div class="input">
@@ -217,13 +105,12 @@
 								</div>
 							</div>
 							
-							<div class="span4 foot">
+							<div class="span3 foot">
 								<input type="submit" value="Get articles" class="btn primary">
 							</div>
 						</div>
 					</form>
 				</article>
-
 				<table class="zebra-striped">
 					<thead></thead>
 					<tbody></tbody>
@@ -235,13 +122,13 @@
 					<h1>Relate Items</h1>
 				</div>
 				
-				<div class="row">
+				<div class="row blocks">
 					<div class="span4">
-						<h2>Channel > Event</h2>
+						<h3>Channel > Event</h3>
 						<a data-rel="channel:event" class="btn" href="#">open</a>
 					</div>
 					<div class="span4">
-						<h2>Channel > Channel</h2>
+						<h3>Channel > Channel</h3>
 						<a data-rel="channel:channel" class="btn" href="#">open</a>
 					</div>
 				</div>
@@ -293,9 +180,9 @@
 	<div class="modal-body">
 	</div>
 	<div class="modal-footer">
-		<a class="btn primary save" href="#"  data-loading-text="Saving data...">Save</a>
-		<a class="btn secondary cancel" href="#">Cancel</a>
-		<a class="btn secondary danger delete" href="#" data-loading-text="Deleting data...">Delete</a>
+		<a class="btn btn-primary save" href="#"  data-loading-text="Saving data...">Save</a>
+		<a class="btn btn-secondary cancel" href="#">Cancel</a>
+		<a class="btn btn-danger delete" href="#" data-loading-text="Deleting data...">Delete</a>
 	</div>
 </script>
 

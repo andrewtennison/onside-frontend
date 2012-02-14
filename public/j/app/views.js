@@ -144,7 +144,6 @@ TweetView			- individual tweet comment
 		},
 		activeViews : [],
 		destroyViews : function(){
-			console.log(this.activeViews)
 			$.each(this.activeViews, function(index,view){
 				view.close();
 			});
@@ -198,21 +197,18 @@ TweetView			- individual tweet comment
 			'click .filter'			: 'toggleFilters',
 			'click .filters a'		: 'filterCollection'
 		},
-		
 		initialize: function(){
 			_.bindAll(this, 'render', 'select', 'preSelect', 'hoverOver', 'hoverOut', 'filterCollection', 'setDisplay');
 			this.app = this.options.app;
 			this.model.bind('change:filtered', this.setDisplay);
 			this.model.collection.bind('change:filter', this.updateFilters);
 		},
-		
 		render: function(){
 			var json = this.model.toJSON();
 			if(!json.filtered) this.$el.addClass('hidden');
 			this.$el.html(this.template(json));
 		    return this;
 		},
-		
 		setDisplay: function(){
 			if(this.model.get('filtered')) {
 				this.$el.removeClass('hidden');
@@ -997,9 +993,34 @@ TweetView			- individual tweet comment
 	});
 	var EventDetailView = EventView.extend({
 		className:'eventItem bb',
-		template: _.template( $('#eventDetailItemTemplate').html() )
+		template: _.template( $('#eventDetailItemTemplate').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			json.participantsObj = makeObject(json.participants);
+			this.$el.html(this.template( json ));
+		    return this;
+		},
 	});
 	
+	var makeObject = function(val){
+		var t = val.split(/\}\,\s?{/g),
+			i = 0, 
+			l = t.length, 
+			arr = [];
+			
+		for(i; i<l; i++){ 
+		    var tmp = t[i].replace(/\{|\}/g,'').split(','),
+		    	j = 0, ll = tmp.length,
+		    	obj = {};
+
+		    for(j; j<ll; j++){
+		        var tmp2 = tmp[j].replace(' ','').split(':');
+		        obj[ tmp2[0] ] = tmp2[1];
+		    }
+		    arr.push(obj)
+		};
+		return arr;
+	}
 	
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1019,12 +1040,20 @@ TweetView			- individual tweet comment
 		template: _.template( $('#articleTemplate').html() ),
 		preSelect: function(e){
 			var json = this.model.toJSON();
+			console.log(json)
 			console.log(json.extended + ' / ' + json.link)
 			if(json.extended === null && (/http:\/\//gi).test(json.link)){
 				this.model.set({ iframe : true});
 			} else if (this.model.get('expand')){
 				// if we need to have other types of rss articles we can modify the data on the api and pick it up here
 			}
+		},
+		render: function(){
+			var json = this.model.toJSON();
+			console.log(json)
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
+		    return this;
 		}
 	});
 

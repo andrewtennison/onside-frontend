@@ -11,7 +11,8 @@
 		<@ } @>
 		<div class="content"><@= content @></div>
 		<footer>
-			<cite>from: <@ if(author) { @><@= author @> at <@ } @><@= source@></cite><@ if(publish) { @>  / <time><@= time @></time><@ } @>
+			<cite>from: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
+			<@ if(publish) { @>  / <time><@= time @></time><@ } @>
 			<nav> 
 				<a class="filter" href="#">filter results</a> 
 				<@ if(extended) { @>

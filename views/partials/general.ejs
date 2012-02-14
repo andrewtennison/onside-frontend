@@ -96,13 +96,58 @@
 
 <script id="eventDetailItemTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( stime ); @>
+	<@ var typeName = type; if(type === 'match'){ typeName = (participantsObj[0].score)? 'RESULT' : 'FIXTURE'; } @>
 	<header>
-		<h1><@= sport @> - <@= type @></h1>
-		<time><@= time @> | <@= duration @></time>
+		<h1><@= typeName @></h1>
+		<time><@= time @></time>
+	</header>
+	<section>
+		<@ if(participantsObj.length == 2) { @>
+		<p>
+			<a href="/channel/<@= participantsObj[0].channel @>"><@= participantsObj[0].name @></a>
+			<@ if(participantsObj[0].score) { @><span class="score"><@= participantsObj[0].score @></span><@ } @>
+			<span>v</span>
+			<@ if(participantsObj[1].score) { @><span class="score"><@= participantsObj[1].score @></span><@ } @>
+			<a href="/channel/<@= participantsObj[1].channel @>"><@= participantsObj[1].name @></a>
+		</p>
+		<@ } else { @>
+			<p><@= name @></p>
+		<@ } @>
+		<p class="location"><@ if(location) { @>@ <@= location @><@ } @></p>
+		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
+	</section>
+</script>
+
+<script id="!!eventDetailItemTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( stime ); @>
+	<header>
+		<h1><@= type @></h1>
+		<time><@= time @></time>
 	</header>
 	<section>
 		<h1><@= name @></h1>
-		<p><@= participants @>
+		<p><@= participants.length @></p>
+		<@ if(participants.length == 2) { @>
+			<@= participants[0] @>
+			
+			<a href="/channel/<@= participantsObj[0].channel @>">
+				<@= participantsObj[0].name @>
+				<@ if(participantsObj[0].score) { @><span><@= participantsObj[0].score @></span><@ } @>
+			</a>
+			<span>v</span>
+			<a href="/channel/<@= participantsObj[1].channel @>">
+				<@ if(participantsObj[1].score) { @><span><@= participantsObj[1].score @></span><@ } @>
+				<@= participantsObj[1].name @>
+			</a>
+		<@ } else { @>
+			<@ for(var i=0; i<participants.length; i++) { @>
+				<a href="/channe/<@= participants[i].channel @>">
+					<@= participants[i].name @>
+					<@ if(participants[i].score) { @><span><@= participants[i].score @></span><@ } @>
+				</a>
+			<@ } @>
+		<@ } @>		
+		<p><@= location @></p>
 		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
 	</section>
 </script>

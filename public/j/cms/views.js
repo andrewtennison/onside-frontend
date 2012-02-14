@@ -214,7 +214,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					disabledString = (opts.editable === undefined || opts.editable !== false)? '' : 'disabled="true"',
 					setValue = json[key] || '';
 				
-				inner += '<div class="clearfix"><label for="'+key+'">'+key+'</label><div class="input">';
+				inner += '<div class="control-group"><label class="control-label" for="'+key+'">'+key+'</label><div class="controls">';
 				switch(opts.type){
 					case 'text':
 						inner 	+= '<input '+disabledString+' type="text" size="30" name="'+key+'" id="'+key+'" class="xlarge" value="'+setValue+'">';
@@ -231,21 +231,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
                 		inner += '</select>'; 
 						break;
 				};
-				console.info('opts lookup')
 				if(opts.lookup){
 					inner += '<a class="lookup btn btn-primary" href="#">+</a><ul class="hiddenLookup">';
 					console.info(opts.lookup)
 					console.info(this.cms[opts.lookup])
 					this.cms[opts.lookup].each(function(model, i){
-						inner += '<li><a href="#" data-id="'+model.get('id')+'" >'+model.get('name')+'</a></li>';
+						inner += '<li><a href="#" data-json="{id:'+model.id+', name:'+model.get('name')+'}">'+model.get('name')+'</a></li>';
 					});	
 					inner += '</ul>';
 				}
 				
-				if(opts.help) inner += '<span class="help-block">'+ opts.help +'</span>';
+				if(opts.help) inner += '<p class="help-block">'+ opts.help +'</p>';
 				inner += '</div></div>';
 			}
-			this.$form = $('<form><fieldset>'+inner+'</fieldset></form>');
+			this.$form = $('<form class="form-horizontal"><fieldset>'+inner+'</fieldset></form>');
 			return this.$form;
 		},
 		closeItem: function(){
@@ -289,9 +288,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var el = $(e.target),
 				input = el.parent().parent().parent().find('input'),
 				v = input.val(),
-				id = el.attr('data-id');
+				json = el.attr('data-json');
 
-			input.val(v + ',' + id);
+			input.val(v + ',' + json);
 		}
 	});
 	var _createView = _editView.extend({
@@ -477,12 +476,13 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var relationsPageView = Backbone.View.extend({
 		el: $('#relations'),
 		form: false,
+		type: false,
 		events: {
 			'click a.btn' : 'setupOverlay',
 			'submit form#relate' : 'submitForm'
 		},
 		initialize: function(){
-			_.bindAll(this, 'setupOverlay', 'submitForm', 'buildFormItem', 'openOverlay');
+			_.bindAll(this, 'setupOverlay', 'submitForm', 'buildFormItem');
 			this.cms = this.options.cms;
 			this.overlay = this.options.overlay;
 		},
@@ -495,51 +495,65 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				el = $(e.target),
 				rel = el.attr('data-rel'),
 				s = rel.split(':'),
-				string = '<form id="relate"><div class="row"><div class="span4"><label>Relationship</label><select><option value="relate">Relate</option><option value="unrelate">Unrelate</option></select></div>';
+				string = '<form id="relate" class="form-horizontal"><div class="row"><div class="control-group"><label>Relationship</label><div class="controls"><select name="relate"><option value="relate">Relate</option><option value="unrelate">Unrelate</option></select></div></div>';
 			
 			$.each(s, function(i,val){
 				string += self.buildFormItem(val);				
 			});
-			string += '</div></form>';
+			string += '</div><div class="form-actions"><button type="submit" class="btn btn-primary" data-loading-text="saving...">save</button></div></form>';
 			
+			this.type = rel;			
 			this.form = $(string);
 			this.el.append(this.form);
 			
-			switch(rel){
-				case 'channel:channel':
-					break;
-				case 'event:event':
-					break;
-				case 'channel:event':
-				case 'event:channel':
-					break;
-				default:
-					break;
-			}
-			
+			$('#relate').button()
 			
 		},
 		buildFormItem: function(val){
 			console.log(val)
 			var string = '';
 			if(val === 'channel'){
-				string += '<div class="span4"><label for="channel">Select a channel</label><select name="channel">';
+				string += '<div class="control-group"><label for="channel">Select a channel</label><div class="controls"><select name="channel">';
 				this.cms.channels.each(function(model){
 					string += '<option value="'+ model.id +'">'+ model.get('name') +'</option>';
 				})
 			} else if(val === 'event'){
-				string += '<label for="event">Select an event</label><select name="event">';
+				string += '<div class="control-group"><label for="event">Select an event</label><div class="controls"><select name="event">';
 				this.cms.events.each(function(model){
 					string += '<option value="'+ model.id +'">'+ model.get('name') +'</option>';
 				});
 			}
-			string += '</select></div>';
+			string += '</select></div></div>';
 			return string;
 		},
-		openOverlay: function(){
-		},
-		submitForm: function(){
+		
+		submitForm: function(e){
+			e.preventDefault();
+			var params = $(e.target).serialize(),
+				dir = (params.indexOf('relate=relate' !== -1))? true : false,
+				url = '/api';
+				
+			$().button('loading');
+			console.log(params);
 			
+			switch(this.type){
+				case 'channel:channel':
+					url += (dir)? '/channel/channel' : '/channel/nochannel';
+					break;
+				case 'channel:event':
+				case 'event:channel':
+					url += (dir)? '/event/channel' : '/event/nochannel';
+					break;
+				default:
+				case 'event:event':
+					alert('no url setup for: ' + this.type);
+					break;
+			};
+			
+			$.post(url, params, function(res){
+				console.log(res);
+				$().button('loading');
+			});
 		}
 	})
 

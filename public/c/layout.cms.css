@@ -18,11 +18,12 @@ body { padding-top: 60px; }
 .container-fluid > .content { margin-left: 20px; }
 .container-fluid > .sidebar { left: 20px; position: absolute; top: 0; width: 0px;}
 #overlay .modal-body {overflow:auto; max-height:400px}
+#overlay .modal-body form {margin:0}
 table{border-bottom:2px solid #ddd}
 table th {vertical-align:baseline}
 table td span {position:relative; display:block; text-overflow: ellipsis; white-space:nowrap; max-width:200px; overflow:hidden}
 .modal .alert-message .close {margin-top:1px}
-
+.modal {max-height:2000px}
 .page {display:none}
 .page.active {display:block}
 
@@ -77,5 +78,20 @@ td.edit span {background:url(/i/cms/edit.png) center center no-repeat; cursor: p
 .hiddenLookup li {}
 .hiddenLookup li a {padding:5px 10px; color:#000; display:block; border-bottom:1px solid #ddd}
 
+#relate .span4 {padding:10px 0}
+
+.blocks [class*="span"] {background:#eee; border-radius:5px; padding:10px; border:1px solid #ccc}
+.blocks [class*="span"] h3 {border-bottom:1px solid #ccc; margin-bottom:10px; padding-bottom:5px}
+
+#relate {margin:20px 0; border:1px solid #ccc; padding-top:20px}
+#relate .form-actions {margin:0}
+
+table .header span {position:relative; display:block; padding-right:15px}
+table .header span:after {position:absolute; right:0; border-color: #000000 transparent; border-style: solid; border-width: 0 4px 4px; content: ""; float: right; margin-top: 7px; visibility: hidden; opacity: 0.6;}
+table .headerSortDown span:after {border-width: 4px 4px 0 4px;}
+table .headerSortUp span:after, table .headerSortDown span:after {visibility: visible;}
+
+table .headerSortUp, table .headerSortDown { background-color: #ADE6FE; color:#049CDB}
+table .header { cursor: pointer; }
 
 

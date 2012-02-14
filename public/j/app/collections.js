@@ -18,7 +18,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			if(this.parsePath) return resp.resultset[ this.parsePath() ];
 		},
 		initialize:function(){
-			console.info('# Collection._Lists.initialize: ' + this.urlPath);
+			//console.info('# Collection._Lists.initialize: ' + this.urlPath);
 		}
 	});
 	
@@ -28,17 +28,21 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.Channel,
 		comparator : function(channel) {
 			return channel.get("name");
-		},
-		initialize: function(){
-			console.error('this')
-			console.log(this)
 		}
     });
 
 	var EventList = _Lists.extend({
 		a: 'eventList',
 		urlPath: 'event',
-		model : BB.Event
+		model : BB.Event,
+		comparator : function(model) {
+			var P = model.get("stime"),
+				D = new Date(P.replace(' ', 'T')).getTime(),
+				C = new Date().getTime(),
+				diff = (C-D < 0)? C - D : (C - D)*-1;
+
+			return -diff;
+		}
 	});
 		
 	var SavedSearchList = _Lists.extend({

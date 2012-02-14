@@ -77,11 +77,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			var sport = this.get('sport'),
 				image = this.get('image');
 			
-			console.log(this);
-			console.log(sport +' / '+image);
-			console.log(image === 'null');
-			console.log(this.defaults.image);
-
 			if(attr.sport && ( attr.image === 'null' || attr.image === '' )){
 				var imagePath;
 				switch(attr.sport){
@@ -122,9 +117,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Event = Backbone.Model.extend({
 		service: 'events',
-		initialize: function(){
-			on.helper.log('# Model.Event.initialize','info');
-		},
 		defaults: {
 			selected	: false,
 			service		: 'event',
@@ -136,6 +128,29 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// type 			: undefined,
 			// geolat			: null,
 			// geolng			: null			
+		},
+		parse: function(resp){
+			//resp.participants = this.makeObject(resp.participants);
+			return resp;
+		},
+		makeObject: function(val){
+			var t = val.split(/\}\,\s?{/g),
+				i = 0, 
+				l = t.length, 
+				arr = [];
+				
+			for(i; i<l; i++){ 
+			    var tmp = t[i].replace(/\{|\}/g,'').split(','),
+			    	j = 0, ll = tmp.length,
+			    	obj = {};
+
+			    for(j; j<ll; j++){
+			        var tmp2 = tmp[j].split(':');
+			        obj[ tmp2[0] ] = tmp2[1];
+			    }
+			    arr.push(obj)
+			};
+			return arr;
 		}
 	});
 
