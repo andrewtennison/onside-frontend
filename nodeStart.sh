@@ -5,4 +5,4 @@
 # usage:	./start.sh
 # author:	richard shaw
 
-NODE_ENV=production nodemon server.js >> /var/log/node/beta.onside.me.log 2>&1
+NODE_ENV=production nodemon --debug server.js >> /var/log/node/onside-frontend.log 2>&1
