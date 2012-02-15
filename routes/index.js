@@ -11,15 +11,16 @@ var rest 		= require('restler'),
 baseAuthObject = {
 	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events	: content.events,  searches: content.searches, popular: content.popularChannels } })},
 	notAuthorized	: function(res){ res.statusCode = 401; res.end('Not authorized'); },
-  notAuthenticated: function(req, res) { req.session.redirectTo = req.url; res.redirect('/signup') },
+	notAuthenticated: function(req, res) { req.session.redirectTo = req.url; res.redirect('/signup') },
 	reject	: function(res){  res.render('pages/0.1_signup_suspended.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup'}); },
-	preload	: true,
+	preload	: false,
 	authReq	: true,
   admin   : false
 	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
 };
 
 exports.index = function(req, res){
+	req.log.push('######### route.index');
 	var obj = { req : req, res : res, notAuthorized	: function(res){ res.redirect('/signup'); } };
 	_.defaults(obj, baseAuthObject);
 	checkAuth( obj );
@@ -49,10 +50,8 @@ exports.cms = function(req,res){
 /* API Proxy routes */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 exports.getApi = function(req,res){
-	// if( ((/user/gi).test(req.url)) ) {
-		// req.send(req.user);
-		// return;
-	// };
+	req.log.push('######### route.getAPI');
+	req.log.startTimer('ApiGet');
 
 	var userReq = false;
 	if( ((/myChannel/gi).test(req.url)) ) {
@@ -60,19 +59,25 @@ exports.getApi = function(req,res){
 		req.url = req.url.replace('mychannel','channel');
 	};
 	callApi(req, res, 'get', false, userReq, function(r){
+		req.log.endApiGet('API.get Complete, url='+req.url);
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
 
 exports.postApi = function(req,res){
+	req.log.push('######### route.postAPI');
+	req.log.startTimer('ApiPost');
 	var authReq = ((/(\/follow|\/unfollow|\/search\/save|\/search\/list)/gi).test(req.url));
 	callApi(req, res, 'post', authReq, true, function(r){
+		req.log.endApiPost('API.post Complete, url='+req.url);
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
 
 exports.delApi = function(req,res){
+	req.log.startTimer('ApiDel');
 	callApi(req, res, 'del', true, false, function(){
+		req.log.endApiDel('API.del Complete, url='+req.url);
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
 };
@@ -82,7 +87,7 @@ exports.delApi = function(req,res){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 exports.postTweet = function(req,res){
-	console.log('post tweet');
+	req.log.startTimer('TweetPost');
 	if(!req.xhr || !req.session.auth.twitter) return;
 	var twit = new twitter({
 		consumer_key: conf.twit.consumerKey,
@@ -90,20 +95,17 @@ exports.postTweet = function(req,res){
 		access_token_key: req.session.auth.twitter.accessToken,
 		access_token_secret: req.session.auth.twitter.accessTokenSecret
 	});
-	console.log(req.session.auth.twitter.accessToken +' / '+ req.session.auth.twitter.accessTokenSecret);
-	console.log(req.body.message);
 	twit.updateStatus(req.body.message, function (err, data) {
+		req.log.endTweetPost('Teet.post Complete, url='+req.body.message);
 		if(err){
-			console.log(console.dir(err));
 			res.json(err)
 		}else{
-			console.log(console.dir(data));
 			res.json(data)
 		}
 	});
 };
 exports.getTweet = function(req,res){
-	console.log('Get tweets');
+	req.log.startTimer('TweetGet');
 	if(!req.xhr) return;
 	var twit = new twitter({
 		consumer_key: conf.twit.consumerKey,
@@ -113,7 +115,7 @@ exports.getTweet = function(req,res){
 	});
 	var hash = '#' + req.url.replace('/tweet/','');
 	twit.search(hash, function(err, data) {
-		console.log(console.dir(data));
+		req.log.endTweetGet('Teet.get Complete, url='+hash);
 		res.json(data);
     });
 };
@@ -188,7 +190,6 @@ var checkAuth = function(opts){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 function callApi(req, res, action, authReq, userReq, callback){
-	console.log('callAPI')
 	var response = {};
 
 	if(authReq && !req.loggedIn){
@@ -241,16 +242,13 @@ function callApi(req, res, action, authReq, userReq, callback){
 		}
 		url += path;
 
-		console.log(action + ' // ' + url)
+		console.log('# call api: action='+action + ' & url=' + url.replace(token,'token123'))
 
 		rest[action](url,obj).on('complete', function(data) {
-			console.log('completet')
 			data.auth = req.loggedIn;
 			response.success = data;
 			callback(response);
 		}).on('error', function(err){
-			console.log('error')
-			console.log(err);
 			response.error = 'error calling API';
 			callback(response);
 		});
@@ -262,7 +260,7 @@ function callApi(req, res, action, authReq, userReq, callback){
 };
 
 exports.getDetailApi = function(req,res){
-	console.log('getDetailedAPI')
+	req.log.startTimer('DetailGet');
 
 	var action = req.params.action,
 		id = req.params.id,
@@ -313,10 +311,8 @@ exports.getDetailApi = function(req,res){
 								if(!d) {
 									content.error = true;
 								} else {
-									console.log(d[0])
 									channel.defaultArticle = d[0] || false;
 									total += 1;
-									console.log(total +' / '+ content.channels.length);
 									if(total === content.channels.length) content.channelArticles = true;
 								}
 							});
@@ -331,8 +327,6 @@ exports.getDetailApi = function(req,res){
 			required = ['events', 'channels', 'articles'];
 			content.title = id;
 			singleList(req, res, false, '/search?q='+id, function(c){
-				console.log('search loaded')
-				console.log(c)
 				if(!c) {
 					content.error = true;
 				} else {
@@ -346,23 +340,18 @@ exports.getDetailApi = function(req,res){
 			console.log('detail = channel')
 			required = ['events', 'articles', 'author'];
 			singleList(req, res, 'channels', '/channel/'+id, function(c){
-				console.log('channel / author loaded')
 				if(!c) {
 					content.error = true;
 				} else {
 					content.author = c[0];
 					content.title = content.author.name;
-					console.log('content.author.image - ' + content.author.image)
-					console.log(content.author.image === 'null')
 					if(content.author.image && content.author.image.length !== 0 && content.author.image !== 'null') content.image = content.author.image;
 				};
 			});
 			singleList(req, res, 'events', '/event?'+action+'='+id, function(c){
-				console.log('events loaded')
 				if(!c) content.error = true; else content.events = c;
 			});
 			singleList(req, res, 'articles', '/article?limit=10&'+action+'='+id, function(c){
-				console.log('articles loaded')
 				if(!c) content.error = true; else content.articles = c;
 			});
 			break;
@@ -370,7 +359,6 @@ exports.getDetailApi = function(req,res){
 			console.log('detail = event')
 			required = [content.channels, content.articles, content.author];
 			singleList(req, res, 'channels', '/event/'+id, function(c){
-				console.log('channel / author loaded')
 				if(!c) {
 					content.error = true;
 				} else {
@@ -379,11 +367,9 @@ exports.getDetailApi = function(req,res){
 				};
 			});
 			singleList(req, res, 'channels', '/channel?'+action+'='+id, function(c){
-				console.log('events loaded')
 				if(!c) content.error = true; else content.events = c;
 			});
 			singleList(req, res, 'articles', '/article?'+action+'='+id, function(c){
-				console.log('articles loaded')
 				if(!c) content.error = true; else content.articles = c;
 			});
 			break;
@@ -404,15 +390,15 @@ exports.getDetailApi = function(req,res){
 	function onComplete(){
 		if( content && (content.error || checkRequired() ) ){
 			clearInterval( timer );
+			req.log.endDetailGet('Detail.get Complete, id='+content.id);
 			res.json(content)
 		} else if(i === 9000){
-			console.log('API timed out, timer = ' + i)
 			clearInterval( timer );
-			//res.send('load detailed failed, request timed out')
+			req.log.endDetailGet('Detail.get Failed, id='+content.id);
 			res.json({ error: 'api timed out'});
 		} else{
 			i += 100;
-			console.log('load detail content from API, timer = ' + i)
+			//console.log('load detail content from API, timer = ' + i)
 		}
 	}
 
@@ -430,6 +416,7 @@ function singleList(req, res, service, url, callback){
 
 // may not be used anymore...
 var preload = function(req, callback){
+	console.log('# PRELOAD');
 	var content = {},
 		i = 0,
 		timer = setInterval ( onComplete, 100 ),
@@ -442,7 +429,7 @@ var preload = function(req, callback){
 		var p = conf.apiPath + path;
 		if(token) p += '?token=' + token;
 		if(userParam) p += '&' + userParam;
-		console.log(p.replace(token,'token123'));
+		console.log('# /routes/index > preload.buildUrl: url='+ p.replace(token,'token123'));
 		return p;
 	}
 
@@ -479,7 +466,7 @@ var preload = function(req, callback){
 						list[req.index].defaultArticle = req.defaultArticle;
 						j += 1;
 						if( j === l ){
-							console.log('Preload of article for each channel complete')
+							//console.log('Preload of article for each channel complete');
 							content[serviceLoad] = true;
 							content[ ((serviceName)? serviceName : service) ] = JSON.stringify(list);
 						}else{
@@ -520,16 +507,16 @@ var preload = function(req, callback){
 
 	function onComplete(){
 		if(content.channelsLoaded && content.eventsLoaded && content.searchesLoaded && content.popularChannelsLoaded){
-			console.log('Preloading complete')
+			console.log('/routes/index > Preloading complete, i = ' + i);
 			clearInterval( timer );
 			callback(content);
 		} else if(i === 9000){
-			console.log('API timed out, timer = ' + i)
+			console.log('/routes/index > API timed out, timer = ' + i);
 			clearInterval( timer );
 			callback(content);
 		} else{
 			i += 100;
-			console.log('proloading content from API, timer = ' + i + '// channel-'+ content.channelsLoaded +' // event-'+ content.eventsLoaded +' // search-'+ content.searchesLoaded +' // popular-'+ content.popularChannelsLoaded)
+			//console.log('proloading content from API, timer = ' + i + '// channel-'+ content.channelsLoaded +' // event-'+ content.eventsLoaded +' // search-'+ content.searchesLoaded +' // popular-'+ content.popularChannelsLoaded)
 		}
 	}
 };

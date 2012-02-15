@@ -10,11 +10,11 @@
 global._ = require("./public/j/lib/underscore-1.2.1.min.js");
 
 var express			= require('express')
-//	, resource		= require('express-resource')
 	, MemcachedStore = require('connect-memcached')			// memchached is used for user session store
-	, routes		= require('./routes')					// paths for all views
 	, util			= require('util')
 	, rest			= require('restler')					// restler - used for proxy API request
+
+	, routes		= require('./routes')					// paths for all views
 
 	// returns config for correct environment based on process.env.NODE_ENV
 	, Config 		= require('./lib/conf')
@@ -27,12 +27,21 @@ var express			= require('express')
 
 	// Email
 	, email 		= require('./lib/email')
-	;
 
+	// Logging
+ 	, logging 		= require('node-logging')
+ 	;
+
+logging.setLevel('debug');
+// logging.inf('test info');
+// logging.dbg('test debug');
+// logging.err('test err');
+// logging.bad('test bad');
 
 everyauth.debug = true;
 
 process.on('uncaughtException', function (err) {
+  console.error('// on uncaughtException: ');
   console.error(err);
   console.error(err.getStackTrace());
   console.log("Node NOT Exiting...");
@@ -47,8 +56,7 @@ app.configure(function(){
 	app.use(express.cookieParser());
 	app.use(express.static(__dirname + '/public'));
 	app.use(express.logger());
-	//app.use(express.session({ secret	: "testsecret", store	: new RedisStore({host:'127.0.0.1', port:'6379'}) }));
-	//app.use(express.session({cookie: { path: '/', httpOnly: true, maxAge: null}, secret:'testsecret'}));
+	app.use(logging.requestLogger);
 	app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
 	app.use(express.methodOverride());
 	app.use(login);
@@ -71,7 +79,8 @@ app.configure('production', function(){
 //setup the errors
 
 app.error(function(err, req, res, next){
-  console.log(err);
+	console.log('# server.js : app.error');
+	console.log(err);
 	if (err instanceof NotFound) {
 	    res.render('pages/404.ejs', { locals: {
 		  title : '404 - Not Found'
@@ -87,7 +96,7 @@ app.error(function(err, req, res, next){
 		 ,analyticssiteid: 'XXXXXXX'
 		 ,error: err
 		},status: 500 });
-    }
+	}
 });
 
 app.listen(3000);
