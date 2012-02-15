@@ -19,7 +19,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		initialize:function(){
 			//console.info('# Collection._Lists.initialize: ' + this.urlPath);
-		}
+		},
+		fetchNextPage: false
 	});
 	
 	var ChannelList = _Lists.extend({
@@ -54,6 +55,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var ArticleList = _Lists.extend({
 		a: 'articleList',
+		itemsPerPage: 10,
 		urlPath: 'article',
 		model : BB.Article,
 		filters:{},
@@ -75,6 +77,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			});
 			console.info(groupByAttr)
 			return groupByAttr;
+		},
+		paginationParams: function(refresh){
+			return (refresh)? 'limit=' + this.itemsPerPage : 'limit[0]=' + this.itemsPerPage + '&limit[1]='+ this.length;
 		}
 	});
 

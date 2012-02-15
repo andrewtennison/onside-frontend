@@ -193,7 +193,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		initialize: function(){
 			on.helper.log('# Model.Search.initialize','info');
 		}
-	})
+	});
 	
 	var Detail = Backbone.Model.extend({
 		url: function(){
@@ -216,7 +216,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var DetailChannel = Detail.extend({
 		parse: function(attr){
-			if(attr.image === undefined && (attr.author.image === 'null' || attr.author.image === '')){
+			if(attr.author && attr.image === undefined && (attr.author.image === 'null' || attr.author.image === '')){
 				switch(attr.author.sport){
 					case 'golf':
 						attr.image = '/i/content/channel/_golf.png';
@@ -261,8 +261,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		setSaved: function(app){
 			console.info('////// set saved')
 			console.log(this)
-			var id = this.get('author').id,
-				val = (app.channels.get(id))? true : false;
+			
+			
+			var id = this.get('title'),
+				val = (app.searches.get(id))? true : false;
 			this.set({saved: val });
 		},
 		follow: function(app){
@@ -271,8 +273,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				saved = this.get('saved'),
 				url = on.path.api + '/search/',
 				title = this.get('title');
-			
-			url += (saved)? 'save' : 'unsave';
+			console.log(this)
+			url += (saved)? 'unsave' : 'save';
 			$.post(url, {query:title, name:title})
 			.success(function(){
 				self.set({saved:true});

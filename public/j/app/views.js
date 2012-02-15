@@ -389,7 +389,9 @@ TweetView			- individual tweet comment
 		},
 		
 		onResize : function(e){
-			on.helper.log('App.onResize')
+			ev.trigger('update:scroll:comments');
+			ev.trigger('update:scroll:nav');
+			ev.trigger('update:scroll:detail');
 		},
 		triggerSearch: function(e){
 			e.preventDefault();
@@ -439,8 +441,8 @@ TweetView			- individual tweet comment
 			myEvents.collection.fetch();
 			mySearches.collection.fetch();
 			
-			ev.bind('update:nav:scroll', this.updateScroll, this);
-			ev.trigger('update:nav:scroll');
+			ev.bind('update:scroll:nav', this.updateScroll, this);
+			ev.trigger('update:scroll:nav');
 
 			// BIND: if model.app.selectedServiceName changes this view will get updated
 			//this.app.bind('change:selectedServiceName', this.updateView);
@@ -546,6 +548,7 @@ TweetView			- individual tweet comment
 		},
 		search: function(value){
 			this.$el.focus();
+			this.$('#groupSearch').val('');
 			this.app.set({
 				selectedItemUID: 'search|' + value.replace('q=','')
 			});
@@ -567,21 +570,21 @@ TweetView			- individual tweet comment
 		title: 'Your channels',
 		helpViewTemplate: 'navChannel',
 		itemView: function(item){ return new ChannelView({model:item, app:this.options.app});  },
-		updateView: function(){ ev.trigger('update:nav:scroll'); }
+		updateView: function(){ ev.trigger('update:scroll:nav'); }
 	});
 	var EventListView 	= _ListView.extend({
 		className: 'eventList',
 		title: 'Your events',
 		helpViewTemplate: 'navEvent',
 		itemView: function(item){ return new EventView({model:item, app:this.options.app});  },
-		updateView: function(){ ev.trigger('update:nav:scroll'); }
+		updateView: function(){ ev.trigger('update:scroll:nav'); }
 	});
 	var SavedSearchListView = _ListView.extend({
 		className: 'searchList',
 		title: 'Your saved searches',
 		helpViewTemplate: 'navSearch',
 		itemView: function(item){ return new SaveSearchView({model:item, app:this.options.app});  },
-		updateView: function(){ ev.trigger('update:nav:scroll'); }
+		updateView: function(){ ev.trigger('update:scroll:nav'); }
 	});
 	
 	// Item views for left nav
@@ -694,7 +697,7 @@ TweetView			- individual tweet comment
 		},
 		initialize: function(){
 			console.info('# View.Detail.initialize');
-			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton');
+			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton', 'updateScroll', 'createScroll');
 			this.app = this.options.app;
 			this.type = this.model.get('type');
 
@@ -706,6 +709,7 @@ TweetView			- individual tweet comment
 			this.scrollDir = false;
 			this.scrollState = false;
 
+			ev.bind('update:scroll:detail', this.updateScroll, this);
 		},
 		render: function(){
 			console.log('# View.Detail.render');
@@ -751,7 +755,7 @@ TweetView			- individual tweet comment
 				.after(this.viewA.el)
 				.after(this.viewE.el)
 				.after(this.viewC.el);
-
+			
 			var hex = this.model.get('author').branding;
 			if(hex){
 				hex = hex.split(',');
@@ -760,8 +764,7 @@ TweetView			- individual tweet comment
 			}
 			this.model.refresh();
 		    return this;
-		},
-		
+		},		
 		toggleButton: function(){
 			if(this.model.get('saved')) {
 				this.$('a.save').addClass('active');
@@ -773,82 +776,126 @@ TweetView			- individual tweet comment
 			e.preventDefault();
 			this.model.follow(this.app);
 		},
-		pullDownAction: function(self){
+		pullDownAction: function(){
 			//self.channel.fetch({add: true});
 			console.log(this);
-			var id = self.model.id.split('|'),
-				params = id[1] +'='+id[2];
-				
-			self.viewA.collection.params = params;
-			self.viewA.collection.fetch({add: true, success:function(){
-				self.scroll.refresh();
-			}}); // channel?channel=1
+			var self = this,
+				id = this.model.id.split('|'),
+				params = id[1] +'='+id[2] + '&' + this.viewA.collection.paginationParams(true);
+
+			this.viewA.collection.params = params;
+			this.viewA.collection.fetch({add: false, success:function(){
+				self.updateScroll();
+			}});
 		},
 		pullUpAction: function(self){
-			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
-				self.scroll.refresh(); // Remember to refresh when contents are loaded (ie: on ajax completion)
-			}, 1000); 
+			var self = this,
+				id = this.model.id.split('|'),
+				pagination = this.viewA.collection.paginationParams(),
+				params = id[1] +'='+id[2] + '&' + pagination;
+
+			this.viewA.collection.params = params;
+			this.viewA.collection.fetch({add: true, success:function(){
+				var index = pagination.substring( pagination.lastIndexOf('=')+1, pagination.length );
+				self.updateScroll(index);
+			}});
+		},
+		updateScroll: function(elementIndex){
+			var self = this,
+				pageLength = this.$('.contentWrapper').height(),
+				contentLength = this.$('.scroller').height();
+			
+			if(contentLength < pageLength) {
+				this.$('.scrollLoad').css('display','none');
+				return;
+			};
+
+			if( this.$('.scroller').height() < this.$('.contentWrapper').height() ) {
+				this.$('.scrollLoad').css('display','none');
+				if(this.scroll) {
+					console.log('destroy')
+					this.scroll.destroy();
+					this.scroll = null;
+					//this.$('#pullUp').hide();
+					//this.$('#pullDown').hide();
+				}
+			} else {
+				if(this.scroll) {
+					console.log('refresh')
+					setTimeout(function () {
+						self.scroll.refresh();
+						if(elementIndex) self.scroll.scrollToElement('.articleItem:nth-child('+elementIndex+')', 500);
+					}, 500);
+				} else {
+					console.log('create')
+					//this.$('#pullUp').show();
+					//this.$('#pullDown').show();
+					setTimeout(function () {
+						self.createScroll();
+					}, 500);
+				}
+			};
+		},
+		createScroll: function(){
+			var self = this;
+			this.scroll = new iScroll(self.baseID, {
+				useTransition	: true,
+				useTransition	: true,
+				hScroll 		: false,
+				zoom			: false,
+				scrollbarClass	: 'detailScrollbar',
+				topOffset		: this.pullDownOffset,
+				onRefresh		: function(){
+					if (self.pullDownEl.className.match('loadingSmall')) {
+						self.pullDownEl.className = '';
+						self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+					} else if (self.pullUpEl.className.match('loadingSmall')) {
+						self.pullUpEl.className = '';
+						self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+					}
+				},
+				onScrollMove	: function(){
+					if (this.y > 5 && !self.pullDownEl.className.match('flip')) {
+						self.pullDownEl.className = 'flip';
+						self.pullDownEl.querySelector('.label').innerHTML = 'Release to refresh...';
+						this.minScrollY = 0;
+					} else if (this.y < 5 && self.pullDownEl.className.match('flip')) {
+						self.pullDownEl.className = '';
+						self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+						this.minScrollY = -self.pullDownOffset;
+					} else if (this.y < (this.maxScrollY - 5) && !self.pullUpEl.className.match('flip')) {
+						self.pullUpEl.className = 'flip';
+						self.pullUpEl.querySelector('.label').innerHTML = 'Release to refresh...';
+						this.maxScrollY = this.maxScrollY;
+					} else if (this.y > (this.maxScrollY + 5) && self.pullUpEl.className.match('flip')) {
+						self.pullUpEl.className = '';
+						self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+						this.maxScrollY = self.pullUpOffset;
+					}
+				},
+				onScrollEnd		: function(){ 
+					if (self.pullDownEl.className.match('flip')) {
+						self.pullDownEl.className = 'loadingSmall';
+						self.pullDownEl.querySelector('.label').inner = 'Loading...';	
+						self.pullDownAction(self);
+					} else if (self.pullUpEl.className.match('flip')) {
+						self.pullUpEl.className = 'loadingSmall';
+						self.pullUpEl.querySelector('.label').innerHTML = 'Loading...';				
+						self.pullUpAction(self);
+					}
+				}
+			})
 		},
 		toggleDisplay: function(){
 			var self = this;
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
 				this.$el.fadeIn(200,function(){
-					var pageLength = self.$('.contentWrapper').height(),
-						contentLength = self.$('.scroller').height();
+					var eh = self.$('.eventList').height(),
+						$a = self.$('.articleList');					
+					if(eh > $a.height()) $a.height( eh );
 					
-					if(contentLength < pageLength) {
-						self.$('.scrollLoad').css('display','none');
-						return;
-					};
-					
-					self.scroll = new iScroll(self.baseID, {
-						useTransition	: true,
-						useTransition	: true,
-						hScroll 		: false,
-						zoom			: false,
-						scrollbarClass	: 'detailScrollbar',
-						topOffset		: self.pullDownOffset,
-						onRefresh		: function(){
-							if (self.pullDownEl.className.match('loadingSmall')) {
-								self.pullDownEl.className = '';
-								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
-							} else if (self.pullUpEl.className.match('loadingSmall')) {
-								self.pullUpEl.className = '';
-								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
-							}
-						},
-						onScrollMove	: function(){
-							if (this.y > 5 && !self.pullDownEl.className.match('flip')) {
-								self.pullDownEl.className = 'flip';
-								self.pullDownEl.querySelector('.label').innerHTML = 'Release to refresh...';
-								this.minScrollY = 0;
-							} else if (this.y < 5 && self.pullDownEl.className.match('flip')) {
-								self.pullDownEl.className = '';
-								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
-								this.minScrollY = -self.pullDownOffset;
-							} else if (this.y < (this.maxScrollY - 5) && !self.pullUpEl.className.match('flip')) {
-								self.pullUpEl.className = 'flip';
-								self.pullUpEl.querySelector('.label').innerHTML = 'Release to refresh...';
-								this.maxScrollY = this.maxScrollY;
-							} else if (this.y > (this.maxScrollY + 5) && self.pullUpEl.className.match('flip')) {
-								self.pullUpEl.className = '';
-								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
-								this.maxScrollY = self.pullUpOffset;
-							}
-						},
-						onScrollEnd		: function(){ 
-							if (self.pullDownEl.className.match('flip')) {
-								self.pullDownEl.className = 'loadingSmall';
-								self.pullDownEl.querySelector('.label').inner = 'Loading...';	
-								self.pullDownAction(self);
-							} else if (self.pullUpEl.className.match('flip')) {
-								self.pullUpEl.className = 'loadingSmall';
-								self.pullUpEl.querySelector('.label').innerHTML = 'Loading...';				
-								self.pullUpAction(self);
-							}
-						}
-					})
+					self.updateScroll();
 				});
 			}else{
 				this.$el.fadeOut(200,function(){
@@ -1274,7 +1321,7 @@ TweetView			- individual tweet comment
 				// Post Comment view
 				onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
 			
-			this.$('a.onside').click();
+			this.changeTab(false, this.$('nav a.onside') );
 			
 			ev.bind('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
@@ -1298,11 +1345,15 @@ TweetView			- individual tweet comment
 				}
 			}, 100);
 		},
-		changeTab: function(e){
-			alert('change tab')
-			e.preventDefault();
-			var newTab = $(e.target),
-				newBlock = newTab.attr('href');
+		changeTab: function(e, el){
+			if(e){
+				e.preventDefault();
+				var newTab = $(e.target);
+			}else if(el){
+				newTab = el;
+			}
+			
+			var newBlock = newTab.attr('href');
 			
 			$(this.activeTab).removeClass('active');			
 			$(this.activeBlock).removeClass('active');			

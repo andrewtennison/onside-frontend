@@ -77,15 +77,19 @@
 		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
 		<p class="stats">[[ 120 followers / 20 articles since last visit ]]</p>
+		<@ if(time) { @><p class="detail">Latest news from: <time><@= time @></time></p><@ } @>
 	</header>
 	<div class="inner">
 		<div class="wrapArticle <@= defaultArticle.type @>">
-			<@ if( defaultArticle.title ) { @>
-			<h2><@= defaultArticle.title @></h2>
-			<p class="detail">Latest news from: <time><@= time @></time></p>
-			<div class="content"><@= defaultArticle.content @></div>
-			<@} else {@>
-			<h2>no new articles to display</h2>
+			<@ if( defaultArticle.type === 'rss' ) { @>
+				<h2><@= defaultArticle.title @></h2>
+				<!--div class="content"><@= defaultArticle.content @></div-->
+			<@ } else if(defaultArticle.type === 'twitter') { @>
+				<p class="quotes"><@= defaultArticle.content @></p>
+				<cite>@<@= defaultArticle.author @> on twitter</cite>
+			<@ } else if(defaultArticle.type === 'youtube') { @>
+			<@ } else { @>
+				<h2>no new articles to display</h2>
 			<@ } @>
 		</div>
 		<!--div class="wrapEvent">
@@ -113,45 +117,19 @@
 		<@ } else { @>
 			<p><@= name @></p>
 		<@ } @>
-		<p class="location"><@ if(location) { @>@ <@= location @><@ } @></p>
-		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
-	</section>
-</script>
-
-<script id="!!eventDetailItemTemplate" class="tmpl" type="text/template">
-	<@ var time = prettyDate( stime ); @>
-	<header>
-		<h1><@= type @></h1>
-		<time><@= time @></time>
-	</header>
-	<section>
-		<h1><@= name @></h1>
-		<p><@= participants.length @></p>
-		<@ if(participants.length == 2) { @>
-			<@= participants[0] @>
-			
-			<a href="/channel/<@= participantsObj[0].channel @>">
-				<@= participantsObj[0].name @>
-				<@ if(participantsObj[0].score) { @><span><@= participantsObj[0].score @></span><@ } @>
-			</a>
-			<span>v</span>
-			<a href="/channel/<@= participantsObj[1].channel @>">
-				<@ if(participantsObj[1].score) { @><span><@= participantsObj[1].score @></span><@ } @>
-				<@= participantsObj[1].name @>
-			</a>
-		<@ } else { @>
+		<!--@ } else { @>
 			<@ for(var i=0; i<participants.length; i++) { @>
 				<a href="/channe/<@= participants[i].channel @>">
 					<@= participants[i].name @>
 					<@ if(participants[i].score) { @><span><@= participants[i].score @></span><@ } @>
 				</a>
 			<@ } @>
-		<@ } @>		
-		<p><@= location @></p>
+		<@ } @-->		
+
+		<p class="location"><@ if(location) { @>@ <@= location @><@ } @></p>
 		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
 	</section>
 </script>
-
 
 <!-- // COMMENT TEMPLATES // -->
 <script id="commentTemplate" class="tmpl" type="text/template">
