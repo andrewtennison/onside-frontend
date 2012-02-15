@@ -130,10 +130,11 @@ body,
 
 #main 			{right:0; width:auto; z-index:3;}
 	#appNav 		{top:auto; z-index:3; left:5px; right:5px;}
-	#listDetail 	{box-shadow:0 0 4px 0px #000; }
-	#listArticle 	{z-index:2; display:none}
+	#listDetail 	{box-shadow:0 0 4px 0px #000; left:5px; right:5px; }
+	#listArticle 	{z-index:3; display:none; left:0px; right:0px; background:rgba(0,0,0,0.75)}
+	#listArticle > article {position:absolute; top:0px; left:50px; right:50px; bottom:0px; border-top:5px solid #000}
 	
-	#listDetail, #listArticle {background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; left:5px; right:5px; /*top:5px; border-radius:6px 6px 0 0;*/}
+	#listDetail, #listArticle > article .detailHead	{background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; }
 
 /* inner elements used for scrolling */
 #listGroups > header,
@@ -145,6 +146,8 @@ body,
 #listChat .contentWrapper,
 #listDetail .detailItem .contentWrapper,
 #listArticle > article .contentWrapper {position:absolute; display:block; top:60px; left:0; right:0; bottom:50px; overflow:auto}
+
+#listArticle > article .contentWrapper {bottom:5px; background:rgba(0,0,0,0.5)}
 
 #appNav,
 #listGroups > footer,
@@ -160,7 +163,7 @@ body,
 /* ==|== listGroups styles ===================================================== */
 #listGroups  header h1 {position:relative; display:block; background:url(/i/sprites/d3_logo.png) 10px center no-repeat; width:200px; height:60px; text-indent:-999px; overflow:hidden }
 
-#navSearch {position: relative; display: block; padding: 10px 20px 10px 10px; border-top:0px none}
+#navSearch {position: relative; display: block; padding: 10px 40px 10px 10px; border-top:0px none}
 #navSearch input {width:100%; display:inline}
 #navUser {display:none; border:5px solid #111}
 
@@ -204,7 +207,7 @@ body,
 
 /* Header */
 .detailHead {border-bottom:1px solid #2a2a2a}
-.detailHead h1 {position:relative; display:block; margin:0 90px 0 10px; color:#fff; line-height:60px; z-index:2; text-transform: uppercase; font-size:2em; font-weight:600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);}
+.detailHead h1 {position:relative; display:block; margin:0 90px 0 10px; color:#fff; line-height:60px; z-index:2; text-transform: uppercase; font-size:2em; font-weight:600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); height:60px; overflow:hidden}
 .detailHead h1 img {margin:-4px 10px 0 0;}
 .detailHead nav {position:absolute; right:10px; top:8px; z-index:3}
 .detailHead nav a {position:relative; display:inline-block}
@@ -290,6 +293,11 @@ body,
 	.articleItem.twitter nav a {}
 
 .articleItem.youtube {}
+.articleItem.youtube .inner {position:absolute; top:0; left:0; right:0; background:rgba(0,0,0,0.5); color:#fff; padding:10px 20px;}
+.articleItem.youtube .inner p {font-size: 1.2em; line-height: 20px; padding-bottom: 15px;}
+.articleItem.youtube .inner p time {float:right}
+.articleItem.youtube .inner h2 {}
+.articleItem.youtube a.open span {position:absolute; top:50%; left:50%; margin:-20px 0 0 -20px}
 
 
 /* ==|== listArticle styles ===================================================== */
@@ -364,14 +372,15 @@ body,
 .csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
 
 .showchannels .show.channels,
-.showcomments .show.comments {background-color:#444; box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset;}
-.showchannels .show.channels {background-position:-160px -40px;}
-.showcomments .show.comments {background-position:-360px -40px;}
+.showcomments .show.comments {/*background-color:#444; box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset;*/}
+.showchannels .show.channels {background-position:-680px -40px;}
+.showcomments .show.comments {background-position:-720px -40px;}
 
 
 @media only screen and (max-width: 480px) {
-.showchannels #listChat {}
-.showcomments #listGroups {left:-260px}
+	.showchannels #listChat {}
+	.showcomments #listGroups {left:-260px}
+	#listArticle > article {left:5px; right:5px; top:0px; bottom:5px; }
 }
 @media only screen and (min-width: 480px) {
 	#main {left:45px}
@@ -379,8 +388,9 @@ body,
 	.csstransforms .showchannels #main {-moz-transform: translate(215px, 0px); -webkit-transform: translate(215px, 0px); -o-transform: translate(215px, 0px); -ms-transform: translate(215px, 0px); transform: translate(215px, 0px);}
 	.csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
 
-	#navSearch input {width: 22px;}
+	#navSearch input {width: 0px;}
 	.showchannels #navSearch input {width: 100%;}
+	#listArticle > article {left:50px;}
 }
 @media only screen and (min-width: 620px) {
 	#main {right:45px}
@@ -393,6 +403,7 @@ body,
 	#listChat .content form textarea {width:25px; left:215px}
 	.showcomments #listChat .content form input {width:238px; left:0}
 	.showcomments #listChat .content form textarea {width:240px; left:0}
+	#listArticle > article {left:50px; right:50px}
 }
 
 @media only screen and (min-width: 780px) {

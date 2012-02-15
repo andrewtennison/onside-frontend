@@ -4,7 +4,7 @@ on.preload = window.on.preload || {};
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
-		':service/:id/article-:id2'	: 'getArticle',
+		':service/:id/:id2'				: 'getArticle',
 		':service/:id'					: 'getDetail',
 		'search?q=:id'					: 'getSearch',
 		'*path'							: 'home'
@@ -89,7 +89,7 @@ BB.appRoutes = Backbone.Router.extend({
 	getArticle: function( service, id, id2){
 		on.m.app.set({ 
 			selectedItemUID : service +'|'+ id,
-			selectedArticle :  'article-' + id2
+			selectedArticle : id2
 		});
 	}
 });

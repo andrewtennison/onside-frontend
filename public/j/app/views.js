@@ -182,7 +182,8 @@ TweetView			- individual tweet comment
 			$('#main').attr('class', false);
 			this.app.set({
 				selectedItemUID		: this.model.get('service') + '|' + this.model.id,
-				selectedItemTitle	: this.model.get('name') || this.model.get('title')
+				selectedItemTitle	: this.model.get('name') || this.model.get('title'),
+				selectedArticle		: false
 			});
 		}
 	});
@@ -541,6 +542,7 @@ TweetView			- individual tweet comment
 			// hack to fix iScroll focus issue
 			var selectField = document.getElementById('groupSearch');
 			selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+			selectField.addEventListener('touchstart', function(e) { e.stopPropagation() }, false);			
 		},
 		search: function(value){
 			this.$el.focus();
@@ -1030,10 +1032,26 @@ TweetView			- individual tweet comment
 	var ArticleView_twitter = _ArticleView.extend({
 		className: 'twitter articleItem',
 		template: _.template( $('#articleTemplate-twitter').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			console.log(json)
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
+		    return this;
+		}
 	});
 	var ArticleView_youtube = _ArticleView.extend({
 		className: 'youtube articleItem',
 		template: _.template( $('#articleTemplate-youtube').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			json.vid = json.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
+			this.model.set({vid:json.vid});
+			console.log(json)
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
+		    return this;
+		}
 	});
 	var ArticleView_rss = _ArticleView.extend({
 		className: 'rss articleItem',
@@ -1047,13 +1065,6 @@ TweetView			- individual tweet comment
 			} else if (this.model.get('expand')){
 				// if we need to have other types of rss articles we can modify the data on the api and pick it up here
 			}
-		},
-		render: function(){
-			var json = this.model.toJSON();
-			console.log(json)
-			if(!json.filtered) this.$el.addClass('hidden');
-			this.$el.html(this.template(json));
-		    return this;
 		}
 	});
 
@@ -1075,6 +1086,7 @@ TweetView			- individual tweet comment
 			var oldId = this.app.previous('selectedArticle'),
 				s = this.app.get('selectedItemUID').split('|');
 
+			console.log(oldId +' / '+id)
 			if(id === oldId || ( !id && !oldId )){
 				// no change do nothing
 				return;
@@ -1084,13 +1096,24 @@ TweetView			- individual tweet comment
 			} else {
 				// show article
 				var list = this.app.get('selectedArticleList');
-					model = list.get(id);
-					
-				if(model){
-					var view = this.selectView(model);
-					this.view = view.render().el;
-					this.$el.append(this.view);
-					this.show();
+				if(list){
+					var model = list.get(id);
+					if(model){
+						var view = this.selectView(model);
+						this.view = view.render().el;
+						this.$el.append(this.view);
+						this.show();
+					}else{
+						model = BB.Article({ id:id });
+						model.fetch({
+							success:function(){
+							alert('success')
+							}, 
+							error:function(){
+							alert('error')
+							}
+						});
+					}
 				}else{
 					model = BB.Article({ id:id });
 					model.fetch({
@@ -1102,6 +1125,7 @@ TweetView			- individual tweet comment
 						}
 					});
 				}
+				
 			}
 		},
 		selectView: function(model){
@@ -1119,7 +1143,7 @@ TweetView			- individual tweet comment
 		},
 		close: function(e){
 			e.preventDefault();
-			this.app.set({ selectedArticle : null });
+			this.app.set({ selectedArticle : false });
 			this.app.setTitle();
 		},
 		show: function(){
@@ -1250,7 +1274,7 @@ TweetView			- individual tweet comment
 				// Post Comment view
 				onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
 			
-			this.$('nav a.onside').click();
+			this.$('a.onside').click();
 			
 			ev.bind('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
@@ -1275,6 +1299,7 @@ TweetView			- individual tweet comment
 			}, 100);
 		},
 		changeTab: function(e){
+			alert('change tab')
 			e.preventDefault();
 			var newTab = $(e.target),
 				newBlock = newTab.attr('href');

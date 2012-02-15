@@ -295,16 +295,18 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selected : false,
 			filtered : true
+		},
+		parse: function(resp, xhr){
+			if(resp.type === 'youtube'){
+				resp.vid = resp.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
+			}
+			return resp;
 		}
 	});
 	
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
 			//on.helper.log('# Model.Comment.initialize','info');
-		},
-		parse: function(resp, xhr){
-			//return resp.resultset.comments[0];
-			return resp;
 		},
 		defaults: {
 			service	: 'comment',
