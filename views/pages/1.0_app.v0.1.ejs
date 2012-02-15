@@ -1,7 +1,7 @@
 <div id="fb-root"></div>
 
 <section id="OnsideApp">
-	
+
 	<section class="page" id="listGroups">
 		<header class="bb">
 			<h1>Onside</h1>
@@ -13,26 +13,27 @@
 						<input class="formEl" id="groupSearch" type="search" placeholder="search" name="q" value="" />
 					</form>
 				</div>
-				
+
 				<div id="navGlobal">
-					<% if (everyauth.loggedIn) { %>	
+					<% if (everyauth.loggedIn) { %>
 					<a class="toggleBlock bb" href="#navUser"><span class="icon user"></span><%= user.name %></a>
 					<div id="navUser" class="block">
 						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
-						<% if (everyauth.user.admin === '1') { %>
+						<% if (user.admin === '1') { %>
 						<a class="cms bb" href="/cms"><span class="icon cms"></span>CMS</a>
 						<% } %>
 						<a class="logout bb" href="/logout"><span class="icon login"></span>Sign out</a>
 					</div>
-					<a class="bb" href="#"><span class="icon home"></span>Home</a>
+					<a class="bb" href="#/"><span class="icon home"></span>Home</a>
+					<a class="bb" href="#/list/popular"><span class="icon save"></span>Popular channels</a>
 					<!--a class="bb" href="/"><span class="icon events"></span>All Events</a>
 					<a class="bb" href="/"><span class="icon save"></span>Saved Items</a-->
-					
+
 					<% } else { %>
 					<a class="toggleBlock bb" href="#navUser"><span class="icon login"></span>Sign In</a>
 					<div id="navUser" class="block">
 						<a class="bb" href='/register'><span class="icon login"></span>Register</a>
-						<!--a href='/login'>Login with Password</a-->					
+						<!--a href='/login'>Login with Password</a-->
 						<a class="bb" class="fb_button_medium" href='/auth/facebook'><!--span id="fb_login_text" class="fb_button_text"--><span class="icon facebook"></span>Sign in with Facebook</a>
 						<a class="bb" href='/auth/twitter'><!--img src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png' /--><span class="icon twitter"></span>Sign in with twitter</a>
 						<a class="bb" href='/auth/google'><span class="icon google"></span>Sign in with google</a>
@@ -40,9 +41,9 @@
 					<h2>Help <!--a class="hide" href="#">hide</a--></h2>
 					<div class="help bb"><p>Please login to view your content</p></div>
 					<% } %>
-							
+
 				</div>
-				
+
 				<section class="content"></section>
 			</div><!-- /.scroller -->
 		</div><!-- /.contentWrapper -->
@@ -53,32 +54,27 @@
 			</nav>
 		</footer>
 	</section><!-- /#listGroups -->
-	
+
 	<div id="main" role='main'>
 		<section id="appNav">
 			<nav>
 				<a class="show channels icon" href="#channels">show channels</a>
 				<a class="show comments icon" href="#comments">show comments</a>
 				<!--a class="show events icon" href="#events">show events</a-->
-				<a class="show search icon" href="#search">show search</a>
+				<a class="show search icon triggerSearch" href="#search">show search</a>
 			</nav>
 		</section>
 
 		<section class="page" id="listDetail"></section>
-		<section class="page" id="listArticle"></section>
+		
 	</div>
-
+	<section class="page" id="listArticle"></section>
+	
 	<section class="page" id="listChat">
 		<header class="bb">
 			<h1>Comment @ <em></em><span class="icon comment"></span></h1>
 		</header>
 		<div class="contentWrapper" id="chatContentWrap">
-			<div class="help">
-				<span class="icon think"></span>
-				<h2>Please choose a channel or article to comment on</h2>
-				<p>You can comment using any of your favourite social networks, facebook, twitter or right here on Onside</p>
-			</div>
-			
 			<div class="scroller">
 		 		<section class="content" id="onsideComments">
 					<form action="/">
@@ -90,13 +86,11 @@
 					</form>
 					<div class="inner"></div>
 		 		</section>
-		 		<section class="content" id="facebookComments"></section><!-- /#facebookComments -->
+		 		<section class="content" id="facebookComments"><div class="inner"></div></section><!-- /#facebookComments -->
 		 		<section class="content" id="twitterComments">
 					<form action="/">
 						<% if(!everyauth.loggedIn) { %>
 							<p class="forUnAuth">You need to be logged in and have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
-						<% } else if (everyauth.loggedIn && everyauth.user.twitter === null) { %>	
-							<p class="forAuth">You need to have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
 						<% } else if(everyauth.loggedIn && everyauth.user.twitter) { %>
 							<textarea class="forAuth formEl comment" id="tweetAdd" type="text" placeholder="tweet your comment" name="tweet"></textarea>
 							<button type="submit">tweet now</button>
@@ -104,7 +98,7 @@
 					</form>
 					<div class="inner"></div>
 		 		</section>
-		 		<section class="content" id="googleComments"></section>
+		 		<!--section class="content" id="googleComments"><div class="inner"></div></section-->
 		 	</div><!-- /.scroller -->
 		</div><!-- /.contentWrapper -->
 
@@ -112,7 +106,7 @@
 			<nav>
 				<a class="icon facebook" href="#facebookComments">facebook</a>
 				<a class="icon twitter" href="#twitterComments">twitter</a>
-				<a class="icon google" href="#googleComments">G+</a>
+				<!--a class="icon google" href="#googleComments">G+</a-->
 				<a class="icon onside" href="#onsideComments">onside</a>
 			</nav>
 		</footer>
@@ -122,13 +116,31 @@
 <%- partial('partials/general') %>
 <%- partial('partials/articles') %>
 <%- partial('partials/articleDetail') %>
+<%- partial('partials/helpers') %>
+
+<%
+var cleanUser = false, facebookUser = false, twitterUser = false;
+if(user) {
+	cleanUser = user;
+	// delete cleanUser.password;
+	// delete cleanUser.email;
+	// delete cleanUser.admin;
+	// delete cleanUser.enabled;
+
+	if(cleanUser.twitter && cleanUser.twitter.length >= 2 && everyauth.twitter && everyauth.twitter.user) twitterUser = JSON.stringify(everyauth.twitter.user);
+	if(cleanUser.facebook && cleanUser.facebook.length >= 2 && everyauth.facebook && everyauth.facebook.user) facebookUser = JSON.stringify(everyauth.facebook.user);
+}
+%>
 
 <script type="text/javascript">
 var on = window.on || {};
 on.preload = {};
-on.preload.auth		= <%- loggedIn %>;			
+on.preload.user		= <%- JSON.stringify(cleanUser) %>;
+on.preload.twitter	= <%- twitterUser %>;
+on.preload.facebook	= <%- facebookUser %>;
+on.preload.auth		= <%- everyauth.loggedIn %>;
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
-on.preload.popular	= <% if(data.popularChannels) { %> <%- data.popularChannels %> <% } else { %>false<% } %>;
+on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;
 on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;
 on.preload.searches	= <% if(data.searches) { %><%- data.searches %><% } else { %>false<% } %>;
 on.preload.path		= <% if(data.sessionPath) { %> <%- data.sessionPath %> <% } else { %>false<% } %>;

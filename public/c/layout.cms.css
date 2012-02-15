@@ -1,5 +1,5 @@
 /*
-   layout.css
+   layout.cms.css
    site
    
    Created by andrew tennison on 2011-09-08.
@@ -7,50 +7,91 @@
 */
 
 
-/* ==|== normalise ====================================================== */
-@import "/c/style.css";
-/* ==|== typography ====================================================== */
-@import "/c/type.css";
-a, a:hover, a:active, a:focus, a:visited {color:#fff}
-::-webkit-input-placeholder {color: red;}
-:-moz-placeholder {color: red;}
+/* ==|== twitter bootstrap ====================================================== */
+@import "/c/bootstrap.min.css";
+
+/* ==|== sprites ====================================================== */
+@import "/c/sprites.css";
+
+body { padding-top: 60px; }
+
+.container-fluid > .content { margin-left: 20px; }
+.container-fluid > .sidebar { left: 20px; position: absolute; top: 0; width: 0px;}
+#overlay .modal-body {overflow:auto; max-height:400px}
+#overlay .modal-body form {margin:0}
+table{border-bottom:2px solid #ddd}
+table th {vertical-align:baseline}
+table td span {position:relative; display:block; text-overflow: ellipsis; white-space:nowrap; max-width:200px; overflow:hidden}
+.modal .alert-message .close {margin-top:1px}
+.modal {max-height:2000px}
+.page {display:none}
+.page.active {display:block}
+
+h1 button {float:right}
+
+.navbar .pull-right {color:#fff; margin:10px 0;}
+
+.key_geolat,
+.key_geolng,
+.key_language,
+td[class*='key_map'],
+th[class*='key_map'] {display:none}
+th.key_map_type, td.key_map_type {display:table-cell}
+
+span.expand,
+td.edit span,
+td.key_admin span,
+td.key_enabled span,
+td.key_google span,
+td.key_facebook span,
+td.key_password span,
+td.key_twitter span {width:30px; height:30px; position:relative; display:block; text-indent:-999px; overflow:hidden;}
 
 
-header {position:absolute; display:block; top:0; bottom:0; left:0; width:200px; background:#555; box-shadow:inset -4px 0 4px rgba(0,0,0,0.5);}
-section.list {position:absolute; display:block; top:0; bottom:0; left:200px; width:200px; border-right:1px solid #bbb}
-section.form {position:absolute; display:block; top:0; bottom:0; left:400px; right:0; overflow-y:auto}
-section.hiddenForms {display:none}
+.key_password .hasValue,
+.key_admin .hasValue,
+.key_enabled .hasValue,
+.key_google .hasValue,
+.key_facebook .hasValue,
+.key_twitter .hasValue {background:url(/i/cms/yes.png) center center no-repeat;}
 
-header h1 {padding:15px 20px;  margin:0; border-bottom:1px solid #333; color:#fff; font-weight:normal}
-header nav {border-top:1px solid #777}
-header nav a {position:relative; display:block; padding:7px 10px; text-decoration: none; border-bottom:1px dotted #777; font-size:1.2em}
-header nav a:hover {background:#444}
-header nav a.on {background:#fff; color:#555}
+.key_password .noValue,
+.key_admin .noValue,
+.key_enabled .noValue,
+.key_google .noValue,
+.key_facebook .noValue,
+.key_twitter .noValue {background:url(/i/cms/no.png) center center no-repeat;}
 
-section.list ul {list-style: none; margin:0; padding:20px 0}
-section.list li {position:relative; display:block; padding:7px 20px; margin:0; border-bottom:1px dotted #999; font-size:1.2em; cursor: pointer}
-section.list li:hover {background:#eee;} 
+span.expand {background:url(/i/cms/add.png) center center no-repeat; cursor: pointer}
+td.edit span {background:url(/i/cms/edit.png) center center no-repeat; cursor: pointer}
 
-section.form form {position:relative;}
-section.form form h2 {position:relative; display:block; padding:20px; font-size:2em; border-bottom:1px solid #eee; margin:0 0 20px 0}
-section.form form input[type=text] {position:relative; display:inline-block; border:1px solid #999; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3); border-radius:3px; margin:0 0 10px 20px; width:300px; padding:7px 10px 5px 10px}
-section.form form select {border:1px solid #999;border-radius:3px; margin:0 0 10px 20px; width:322px; padding:0; font-size:1.4em; padding:5px 5px 5px 10px; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3);}
-section.form form footer {position:relative; display:block; margin:20px}
-section.form form button {border-radius:4px; color:#fff; padding:8px 15px; font-size: 1.6em; border:0px none; background:#a10227}
-section.form form a.delete {border-radius:4px; color:#fff; padding:8px 15px; font-size: 1.6em; border:0px none; background:#ccc; margin:0 0 0 20px; text-decoration: none}
+.well {padding:0; position:relative}
+.well header {padding:10px 20px; border-bottom:1px solid #ccc}
+.well header .btn {position:absolute; top:10px; right:10px}
+.well .row {padding:10px 20px}
+.well form {margin:0; padding:0}
+.well .foot {padding:20px 0 0 0}
 
+.lookup {margin:0 0 0 10px; font-weight:bold}
+.hiddenLookup {display:none; margin:10px 0 0 0; padding:0; background:#eee; width:270px; list-style:none; border:1px solid #ddd; border-radius:5px}
+.hiddenLookup.show {display:block}
+.hiddenLookup li {}
+.hiddenLookup li a {padding:5px 10px; color:#000; display:block; border-bottom:1px solid #ddd}
 
-fieldset {position:relative; display: block;}
-fieldset label {position:relative; display:block; padding:7px 20px; font-size:1.4em; margin:20px 0 10px 1px; border-bottom:1px solid #eee}
-section.form form input[type=time] {position:relative; display:inline-block; border:1px solid #999; box-shadow:inset 1px 1px 3px rgba(0,0,0,0.3); margin:0 0 10px 0; width:100px; padding:7px 10px 5px 10px; font-size:1.4em}
-section.form form fieldset > input[type="time"]:first-of-type {margin-left:20px; border-bottom-left-radius: 3px; border-top-left-radius: 3px}
-section.form form fieldset > input[type="time"]:last-of-type {border-bottom-right-radius: 3px; border-top-right-radius: 3px}
+#relate .span4 {padding:10px 0}
 
-section.form form input.filled,
-section.form form select.filled {border-color:#000}
+.blocks [class*="span"] {background:#eee; border-radius:5px; padding:10px; border:1px solid #ccc}
+.blocks [class*="span"] h3 {border-bottom:1px solid #ccc; margin-bottom:10px; padding-bottom:5px}
 
-section.form form .participants span {display:block}
-section.form form .participants {padding:20px}
-section.form form .participants .add {background:#666; padding:4px 8px; border-radius:3px; margin:0 0 0 10px; text-decoration:none}
-section.form form .participants input[type=text] {width:20%; margin:0 10px 10px 0}
+#relate {margin:20px 0; border:1px solid #ccc; padding-top:20px}
+#relate .form-actions {margin:0}
+
+table .header span {position:relative; display:block; padding-right:15px}
+table .header span:after {position:absolute; right:0; border-color: #000000 transparent; border-style: solid; border-width: 0 4px 4px; content: ""; float: right; margin-top: 7px; visibility: hidden; opacity: 0.6;}
+table .headerSortDown span:after {border-width: 4px 4px 0 4px;}
+table .headerSortUp span:after, table .headerSortDown span:after {visibility: visible;}
+
+table .headerSortUp, table .headerSortDown { background-color: #ADE6FE; color:#049CDB}
+table .header { cursor: pointer; }
+
 

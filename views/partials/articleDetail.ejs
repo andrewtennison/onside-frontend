@@ -21,7 +21,7 @@
 </script>
 
 <script id="articleDetail_youtube" class="tmpl" type="text/template">
-	<@ var width = $('#listArticle').width(); if(width > 500) width = 500; @>
+	<@ var width = $('#listArticle').width(); @><!-- if(width > 500) width = 500; -->
 	<@ var ratio = (2/3); @>
 	<@ var height = width * ratio; @>
 	
@@ -34,10 +34,16 @@
 		</nav>
 	</header>
 
-	<div class="contentWrapper iframeWrap">
-		<object style="height: <@= height @>; width: <@= width @>">
-		<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
-		<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="<@= width @>" height="<@= height @>"></object>
+	<div class="contentWrapper">
+		<object type="application/x-shockwave-flash" data="http://www.youtube.com/v/<@= vid @>" width="<@= width @>" height="<@= height @>">
+			<param name="movie" value="http://www.youtube.com/v/<@= vid @>" />
+			<param name="quality" value="high" />
+			<param name="allowFullScreen" value="true" />
+			<!-- Fallback content -->
+			<a href="http://www.youtube.com/watch?v=<@= vid @>">
+				<img src="http://img.youtube.com/vi/<@= vid @>/0.jpg" width="<@= width @>" height="<@= height @>" alt="[Video title]" />
+			</a>
+		</object>
 	</div>
 </script>
 
@@ -57,24 +63,24 @@
 </script>
 
 <script id="articleDetail_twitter" class="tmpl overlay" type="text/template" >
-	<header>
-		<h1>Twitter @ (need name)</h1>
+	<@ var time = prettyDate( publish ); @>
+	<header class="detailHead">
+		<h1>Twitter @ [[name]]</h1>
+		<nav>
+			<a class="icon share" href="#">share</a>
+			<a class="icon save" href="#">save</a>
+			<a class="icon close" href="#">close</a>
+		</nav>
 	</header>
-	<nav>
-		<a class="close button" href="#">close</a>
-		<span class="buttonGroup">
-			<a class="share" href="#">share</a>
-			<a class="save" href="#">save</a>
-		</span>
-	</nav>
 
-	<div class="pad">
+	<div class="contentWrapper twitter">
 		<div class="original">
 			<img src="<@= images @>" />
-			<p><@= content @></p>
+			<p class="quotes"><@= content @></p>
 			<cite><@= author @></cite>
+			<@= time @>
+			<a class="reply" href="#">@reply</a><!-- :: check if user is twit auth, if not login and return to here-->
 		</div>
-		<a class="reply" href="#">@reply</a><!-- :: check if user is twit auth, if not login and return to here-->
 		
 		<ul class="older"></ul>
 	</div>

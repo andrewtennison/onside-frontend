@@ -13,8 +13,14 @@
 /* ==|== typography ====================================================== */
 @import "/c/type.css";
 
+/* ==|== sprites ====================================================== */
+@import "/c/sprites.css";
+
 /* ==|== templating overide ====================================================== */ 
 .tmpl {display:none !important}
+
+a.filter {display:none !important}
+
 
 /* ==|== reused styles - move to own ====================================================== */
 .auth .forUnAuth, 
@@ -22,63 +28,18 @@
 
 .bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset; -webkit-box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset; padding-bottom:2px}
 header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset, 0 18px 15px -12px #282a2c; -webkit-box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset, 0 18px 15px -12px #282a2c;}
+#listDetail .bb {box-shadow: 0 -1px 0 0 #555555 inset, 0 -2px 0 0 #222222 inset}
 
-.icon,
-.toggleBlock:after 		{position:relative; display:inline-block; width:40px; height:40px; text-indent:-999px; overflow:hidden; background:url(/i/sprites/icons.png) 0 0 no-repeat;}
+.shadows {position:relative}
+	.shadows:before, .shadows:after {content:''; position:absolute; z-index:1; top:0; height:100%}
+	.shadows:before {left:0; width:137px; background:url(/i/sprites/mask_headLeft.png) 0 0px no-repeat;}
+	.shadows:after {right:0; width:533px; background:url(/i/sprites/mask_headRight.png) 0 0px no-repeat;}
 
-span.icon {vertical-align:middle;}
+.quotes {position:relative; margin:28px 0}
+	.quotes:before, .quotes:after {content:''; position:absolute; display:block; width:28px; height:22px; clear:both; background:url(/i/sprites/quotes.png) 0 0 no-repeat}
+	.quotes:before {top:-25px; left:0}
+	.quotes:after {background-position:-28px 0; right:0; bottom:-28px}
 
-.onside		{background-position: 0px 0}
-.facebook	{background-position:-40px 0}
-.twitter	{background-position:-80px 0}
-.google		{background-position:-120px 0}
-.channels	{background-position:-160px 0}
-.share		{background-position:-200px 0}
-.save 		{background-position:-240px 0}
-.search 	{background-position:-280px 0}
-.refresh 	{background-position:-320px 0}
-.comments	{background-position:-360px 0}
-.comment	{background-position:-400px 0}
-.settings	{background-position:-440px 0}
-.events		{background-position:-480px 0}
-.user		{background-position:-520px 0}
-.login		{background-position:-560px 0}
-.arrow-s	{background-position:-600px 0}
-.arrow-n	{background-position:-640px 0}
-.arrow-w	{background-position:-680px 0}
-.arrow-s	{background-position:-720px 0}
-.close		{background-position:-760px 0}
-.play		{background-position:-800px 0}
-.filter		{background-position:-840px 0}
-.bookmark	{background-position:-880px 0}
-.think		{background-position:-920px 0}
-
-.onside.active, .onside:hover, a.active .onside, a:hover .onside			{background-position: 0px -40px}
-.facebook.active, .facebook:hover, a.active .facebook, a:hover .facebook	{background-position:-40px -40px}
-.twitter.active, .twitter:hover, a.active .twitter, a:hover .twitter		{background-position:-80px -40px}
-.google.active, .google:hover, a.active .google, a:hover .google			{background-position:-120px -40px}
-.channels.active, .channels:hover, a.active .channels, a:hover .channels	{background-position:-160px -40px}
-.share.active, .share:hover, a.active .share, a:hover .share				{background-position:-200px -40px}
-.save.active, .save:hover, a.active .save, a:hover .save 					{background-position:-240px -40px}
-.search.active, .search:hover, a.active .search, a:hover .search			{background-position:-280px -40px}
-.refresh.active, .refresh:hover, a.active .refresh, a:hover .refresh		{background-position:-320px -40px}
-.comments.active, .comments:hover, a.active .comments, a:hover .comments	{background-position:-360px -40px}
-.comment.active, .comment:hover, a.active .comment, a:hover .comment		{background-position:-400px -40px}
-.settings.active, .settings:hover, a.active .settings, a:hover .settings	{background-position:-440px -40px}
-.events.active, .events:hover, a.active .events, a:hover .events			{background-position:-480px -40px}
-.user.active, .user:hover, a.active .user, a:hover .user					{background-position:-520px -40px}
-.login.active, .login:hover, a.active .login, a:hover .login				{background-position:-560px -40px}
-.arrow-s.active, .arrow-s:hover, a.active .arrow-s, a:hover .arrow-s		{background-position:-600px -40px}
-.arrow-n.active, .arrow-n:hover, a.active .arrow-n, a:hover .arrow-n		{background-position:-640px -40px}
-.arrow-w.active, .arrow-w:hover, a.active .arrow-w, a:hover .arrow-w		{background-position:-680px -40px}
-.arrow-s.active, .arrow-s:hover, a.active .arrow-s, a:hover .arrow-s		{background-position:-720px -40px}
-.close.active, .close:hover, a.active .close, a:hover .close				{background-position:-760px -40px}
-.play.active, .play:hover, a.active .play, a:hover .play					{background-position:-800px -40px}
-.filter.active, .filter:hover, a.active .filter, a:hover .filter			{background-position:-840px -40px}
-.bookmark.active, .bookmark:hover, a.active .bookmark, a:hover .bookmark	{background-position:-880px -40px}
-
-.toggleBlock:after {content:""; position:absolute; right:10px; background-position:-600px 0;}
-.toggleBlock.active:after {background-position:-640px 0}
 
 /**
  *
@@ -123,12 +84,27 @@ span.icon {vertical-align:middle;}
 	*/
 }
 
+#pullUp, #pullDown { color: #ccc; font-size: 14px; font-weight: bold; height: 40px; line-height: 40px; padding: 5px 10px; margin:5px; background:rgba(0,0,0,0.1)}
+#pullUp .icon, #pullDown .icon {opacity:0.4}
+
+
+
+.loading:after {content:'loading'; background:url(/i/sprites/loader.gif) no-repeat center center; width:100px; height:100px; margin:-50px 0 0 -50px; left:50%; top:40%; position:absolute; font-size:1.2em; color:#fff; text-align: center}
+.flash {background-color:#FFFF00 !important}
 
 .help {position:relative; border:4px solid #ceb823; background:#fff668; border-radius: 5px; margin:10px;}
-.help h2 {padding:7px 10px 5px; border-bottom:1px solid #ceb823; font-size:1.2em}
+.help h2 {padding:10px; border-bottom:1px solid #ceb823; font-size:1.2em}
 .help p {padding:5px 10px; font-size:1.1em}
 .help span.icon {position:absolute; right:-2px; top:0px;}
+.help .button {margin:0 2px 10px 10px}
+.help .hide {display:none}
 #listChat .help h2, #listChat .help p {padding-right:40px}
+
+/* ==|== animation styles ===================================================== */
+#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea
+{-webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
+
+
 
 /* ==|== primary styles ===================================================== */
 html {background:#282a2c}
@@ -145,6 +121,8 @@ body,
 #listArticle
 {z-index:1; position:absolute; display:block; top:0; left:0; right:0; bottom:0;}
 
+/*body {top:60px; bottom:-60px;}*/
+
 /* main blocks */
 #OnsideApp 		{overflow:hidden;}
 #listGroups 	{right:auto; width:265px; z-index:2; background:#282a2c url(/i/sprites/noise2.png) 0 0 repeat;}
@@ -152,10 +130,11 @@ body,
 
 #main 			{right:0; width:auto; z-index:3;}
 	#appNav 		{top:auto; z-index:3; left:5px; right:5px;}
-	#listDetail 	{box-shadow:0 0 8px 0px #000; }
-	#listArticle 	{z-index:2; display:none}
+	#listDetail 	{box-shadow:0 0 4px 0px #000; left:5px; right:5px; }
+	#listArticle 	{z-index:3; display:none; left:0px; right:0px; background:rgba(0,0,0,0.75)}
+	#listArticle > article {position:absolute; top:0px; left:50px; right:50px; bottom:0px; border-top:5px solid #000}
 	
-	#listDetail, #listArticle {background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; top:5px; left:5px; right:5px; border-radius:6px 6px 0 0;}
+	#listDetail, #listArticle > article .detailHead	{background:#3e4144 url(/i/sprites/noise3.png) 0 0 repeat; }
 
 /* inner elements used for scrolling */
 #listGroups > header,
@@ -168,6 +147,8 @@ body,
 #listDetail .detailItem .contentWrapper,
 #listArticle > article .contentWrapper {position:absolute; display:block; top:60px; left:0; right:0; bottom:50px; overflow:auto}
 
+#listArticle > article .contentWrapper {bottom:5px; background:rgba(0,0,0,0.5)}
+
 #appNav,
 #listGroups > footer,
 #listChat > footer {height:50px; background:#222325; box-shadow:0 1px 0 0px #18191A inset, 0px 2px 0px 0px #393B3D inset; -webkit-box-shadow:0 1px 0 0px #18191A inset, 0px 2px 0px 0px #393B3D inset;}
@@ -178,15 +159,11 @@ body,
 .iScrollEnabled #listDetail .scroller {padding-right:9px}
 .iScrollEnabled .contentWrapper {overflow:hidden !important}
 
-/* ==|== animation styles ===================================================== */
-#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea
-{-webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
-
 
 /* ==|== listGroups styles ===================================================== */
 #listGroups  header h1 {position:relative; display:block; background:url(/i/sprites/d3_logo.png) 10px center no-repeat; width:200px; height:60px; text-indent:-999px; overflow:hidden }
 
-#navSearch {position: relative; display: block; padding: 10px 20px 10px 10px; border-top:0px none}
+#navSearch {position: relative; display: block; padding: 10px 40px 10px 10px; border-top:0px none}
 #navSearch input {width:100%; display:inline}
 #navUser {display:none; border:5px solid #111}
 
@@ -197,34 +174,25 @@ body,
 
 
 #listGroups #navGlobal a,
-#listGroups article h1 {position:relative; display:block; color:#aeb9c4; font-size:1.2em; font-weight:normal; line-height:1.4em; /*width:267px*/}
+#listGroups .navListItem h1 {position:relative; display:block; color:#aeb9c4; font-size:1.2em; font-weight:normal; line-height:1.4em; /*width:267px*/}
 
 #listGroups #navGlobal a span {vertical-align:middle; margin:0 6px;}
 
-#listGroups article {display:block;}
-#listGroups article a {position:relative; display:table; padding:4px 2px 6px 4px}
-	#listGroups article h1, #listGroups article img, #listGroups article span {display:table-cell; vertical-align: middle}
-	#listGroups article h1 {width:267px}
-	#listGroups article span {width:58px;}
-	#listGroups article img {margin-right:10px; width:43px}
+#listGroups .navListItem {display:block;}
+#listGroups .navListItem a {position:relative; display:table; padding:4px 2px 4px 4px}
+	#listGroups .navListItem h1, #listGroups article img,  
+	#listGroups .navListItem span {display:table-cell; vertical-align: middle}
+		#listGroups .navListItem h1 {width:267px;}
+		#listGroups .navListItem span {width:58px;}
+		#listGroups .navListItem img {margin-right:10px; width:43px; opacity:0.5}
+		#listGroups .navListItem.active img {opacity:1}
 
 #listGroups #navGlobal a:hover,
-#listGroups article a:hover {background:#18191a}
+#listGroups .navListItem a:hover {background:#18191a}
 
 #listGroups #navGlobal a.active, #listGroups #navGlobal a.active:hover,
-#listGroups article.active a, #listGroups article.active a:hover {background:#393b3d}
+#listGroups .navListItem.active a, #listGroups .navListItem.active a:hover {background:#393b3d}
 
-
-/*
-#listGroups article {margin:0 0 0 3px; padding:4px 2px; border-radius:7px 0 0 7px}
-#listGroups article a {display:block; height:42px;}
-#listGroups article img {float:left; margin-right:10px}
-#listGroups article h1 {color:#fff; font-size:1.2em; font-weight:normal; line-height:1.4em; padding:5px 15px 0 0}
-
-#listGroups article a:hover {background:#222}
-#listGroups article.active {background:#474747}
-#listGroups article.active a:hover {background:#474747}
-*/
 
 /* ==|== appNav styles ===================================================== */
 #appNav nav {text-align:center}
@@ -236,81 +204,120 @@ body,
 
 
 /* ==|== listDetail styles ===================================================== */
-#listDetail .detailItem > header {border-radius:6px 6px 0 0 /*background:#065ea5; */}
-#listDetail .detailItem > .contentWrapper {}
-
 
 /* Header */
 .detailHead {border-bottom:1px solid #2a2a2a}
-.detailHead h1 {position:relative; display:block; margin:0 10px; /*height:60px;*/ font-size:1.6em; font-weight:normal; text-transform:capitalize; color:#fff}
-.detailHead h1 img {margin:5px 10px}
-.detailHead nav {position:absolute; right:3px; top:3px}
+.detailHead h1 {position:relative; display:block; margin:0 90px 0 10px; color:#fff; line-height:60px; z-index:2; text-transform: uppercase; font-size:2em; font-weight:600; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); height:60px; overflow:hidden}
+.detailHead h1 img {margin:-4px 10px 0 0;}
+.detailHead nav {position:absolute; right:10px; top:8px; z-index:3}
 .detailHead nav a {position:relative; display:inline-block}
-.detailHead .brandStripe {position:absolute; left:10px; right:10px; bottom:2px; height:5px; background:#ff0000; box-shadow:0 0 2px 0px #000000, inset 0 -2px 2px 0px rgba(0,0,0,0.6); -webkit-box-shadow:0 0 2px 0px #000000, inset 0 -2px 2px 0px rgba(0,0,0,0.6); border-radius:3px 3px 0 0}
 
-#listDetail .detailItem article {position:relative; background:#fff; border-radius:2px;}
-
-.detailItem .contentWrapper {}
-.detailItem .content {}
-
-.detailItem .content article {background:#fff; margin:3px; box-shadow:0 0 2px #000; -webkit-box-shadow:0 0 2px #000}
-
-.detailItem .channelList {padding:10px 5px 10px 2px;}
-.detailItem .channelList h2 {color: #DDDDDD; font-size: 1.2em; font-weight: normal; padding: 0 0 4px; text-transform: uppercase;}
-
-	.detailItem .channelList .channelItem {margin:0 0 6px 0; border-bottom:5px solid #ff0000}
-	.detailItem .channelList .channelItem:last-child {margin-bottom:0px}
-	.detailItem .channelList .channelItem a {position:relative; display:block; padding:2px; }
-	.detailItem .channelList .channelItem a:hover {background:#ccc}
-	.detailItem .channelList .channelItem h1 {display:inline-block; padding: 0 0 0 10px; font-size:1.4em; color:#444}
-
-	.detailItem .channelList .channelHomeItem {cursor:pointer}
-	.channelHomeItem header {border-bottom:1px solid #222; padding:5px; background:#065ca1}
-		.channelHomeItem .badge {width:30px}
-		.detailItem .channelHomeItem h1 {display:inline-block; font-weight:normal; font-size:1.4em; color:#fff}
+.detailHead:before, .detailHead:after {content:''; position:absolute; z-index:1; top:0; height:60px}
+	.detailHead:before {left:0; width:137px; background:url(/i/sprites/mask_headLeft.png) 0 0px no-repeat;}
+	.detailHead:after {right:0; width:533px; background:url(/i/sprites/mask_headRight.png) 0 0px no-repeat;}
 	
-	.detailItem .channelHomeItem .wrapArticle {padding:8px 5px}
-		.detailItem .channelHomeItem h2 {font-size:1.1em; color:#555}
-		.detailItem .channelHomeItem h3 {font-size:1.4em; font-weight:normal; color:#333}
-		.detailItem .channelHomeItem p {font-size:1.2em; color:#333}
+.detailItem h2.groupTitle {padding:10px; color:#fff; font-size:1.4em; font-weight:400}
+
+.type-list .detailHead nav {display:none}
+
+/* sections */
+.detailItem .channelList {position:relative; display:block; clear:both}
+.detailItem .channelList {}
+/*
+.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:10px}
+.detailItem .articleList {padding:2px 5px 0 280px}
+*/
+.detailItem .eventList {position:relative; display:block; padding:10px 5px 0 0}
+.detailItem .articleList {padding:2px 5px 0 0px}
+
+/* Channel Lists */
+.channelListItem {position:relative; padding:0 0 2px 0; margin:4px 2px; background:#ccc}
+.channelListItem header {position:relative; display:block; padding:0 10px 0 50px;}
+	.channelListItem header img {position:absolute; top:3px; left:3px; z-index:2}
+	.channelListItem header h1 {position:relative; z-index:2; display:table-cell; vertical-align:middle; height:48px; font-size:1.6em; color:#333; line-height: 1.3em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);}
+	.channelListItem header .stats {display:none}
+
+.channelListItem .inner {background:rgba(255,255,255,0.9); margin:2px 4px; border-radius:2px; padding:10px}
+.channelListItem h2 {font-size:1.6em; color:#444; padding-bottom:10px; font-weight:400; padding:0}
+.channelListItem .detail {font-size:1.2em; padding-bottom:10px; color:#888}
+.channelListItem .content {font-size:1.2em}
 
 
-.detailItem .eventList {}
+/* Channels */
+.channelItem {position:relative; display:block; margin:0 0.2% 0.4%; width:32.8%; float:left}
+.channelItem a {position:relative; display:block; padding:0 10px 0 50px; background:#777; border-radius:5px;}
+.channelItem a:hover {background-color:#999;}
+.channelItem a img {position:absolute; top:3px; left:3px;}
+.channelItem a h1 {display:table-cell; vertical-align:middle; height:48px; font-size:1.4em; color:#eee; line-height: 1.3em;}
 
-.detailItem .articleList {}
-	.detailItem article h1 {padding:15px 40px 5px 15px; font-size:1.4em; color:#333; font-weight:normal}
-	.detailItem article .content {font-size:1.2em; padding:5px 40px 10px 15px; line-height: 1.5em}
-	.detailItem article footer {height:20px; background:#eee; padding:0 15px; line-height:20px; box-shadow:0 1px 2px 0px #999 inset; -webkit-box-shadow:0 1px 2px 0px #999 inset}
-	.detailItem article a.open {float:none; margin:0 0 10px 15px}
-
-	.detailItem article nav {position:absolute; right:0; top:0; opacity:0; z-index:1}
-	.detailItem article nav a.settings {}
-	.detailItem article .filters {display:none; position:absolute; left:0; right:0; bottom:0; top:0; background:rgba(0,0,0,0.8); padding:20px;}
-	.detailItem article.showFilter .filters {display:block;}
+/* Events */
+.eventItem {position:relative; margin:0 15px; padding-left:5px;}
+.eventItem header {border-bottom:1px dotted #737373; padding:10px 0 5px}
+	.eventItem h1 {text-transform:uppercase; display:inline; font-size:1.1em; color:#fff}
+	.eventItem header time {color:#b3b3b3; font-size:1.1em; float:right}
+.eventItem section {padding:8px 0}
+	.eventItem section h1 {color:#b3b3b3; text-transform:capitalize; padding-bottom:2px; display:block}
+	.eventItem section p {font-size:1.4em; color:#fff}
+	.eventItem section p a {text-transform:capitalize }
+	.eventItem section p.location {font-size:1.2em}
+	.eventItem section p .score {font-size:1.2em}
+	.eventItem .location {color:#B3B3B3}
 	
-	.detailItem article .filters h2 {color:#fff}
-	.detailItem article .filters a {display:block; font-size:1.2em; line-height: 1.4em}
 	
-	.detailItem article.rss {}
-	
-	.detailItem article.on nav {opacity:1;}  
-	#listDetail .detailItem article.rss.on {background:#eee}
+/* Articles */
+.articleItem {position:relative; display:inline-block; background:#fff; margin:1px; width:100%}
+.articleItem .inner {display:block}
+.articleItem .filters {display:none}
+.articleItem nav a {color:#fff; background: #555; border-radius: 2px; font-family: 'Open Sans',serif; padding: 2px 6px; text-transform: uppercase;}
+.articleItem nav a:hover {color:#333; background:#ddd}
 
+.articleItem.rss:hover {background:#ddd; cursor:pointer}
+.articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
+.articleItem.rss .inner {padding:20px;}
+.articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:4.2em; overflow: hidden; }
+	.articleItem.rss .content h2, p {}
+	.articleItem.rss .content a {color:#000; text-decoration:underline}
 
-	.detailItem article.youtube {width:480px; height:360px}
-	.detailItem article.youtube a {margin:0; padding:0;}
-	.detailItem article.youtube a span {position:absolute; left:50%; top:50%; margin:-24px 0 0 -24px; z-index:2; border-radius:50%; background-color:rgba(0,0,0,0.8)}
-	.detailItem article.youtube a img {position:relative; display:block}
+.articleItem.rss footer {font-size:1.2em; color:#666;}
+	.articleItem.rss footer cite {font-style:normal}
+	.articleItem.rss footer time {}
+	.articleItem.rss nav {display:inline-block; float:right;}
+		.articleItem.rss nav a {background:#999}
+		.articleItem.rss nav a:hover {background:#ddd}
+
+.articleItem.twitter {background:#000}
+	.articleItem.twitter .inner {padding:40px;}
+	.articleItem.twitter p {position:relative; color:#fff; font-size:1.6em; }
+	.articleItem.twitter cite {color:#ddd; font-size:1.2em; display:block}
+	.articleItem.twitter nav {}
+	.articleItem.twitter nav a {}
+
+.articleItem.youtube {}
+.articleItem.youtube .inner {position:absolute; top:0; left:0; right:0; background:rgba(0,0,0,0.5); color:#fff; padding:10px 20px;}
+.articleItem.youtube .inner p {font-size: 1.2em; line-height: 20px; padding-bottom: 15px;}
+.articleItem.youtube .inner p time {float:right}
+.articleItem.youtube .inner h2 {}
+.articleItem.youtube a.open span {position:absolute; top:50%; left:50%; margin:-20px 0 0 -20px}
+
 
 /* ==|== listArticle styles ===================================================== */
 #listArticle.on {display:block}
+#listArticle .detailHead nav .save {display:none}
 
-#listArticle .articleIframe .detailHead h1 {margin:20px 145px 0 20px}
 #listArticle iframe {width:100%; height:99%; border:0px none}
+
+.articleTwitter {}
+.articleTwitter .contentWrapper {margin:20px;}
+.articleTwitter .original{background:#000; color:#fff; padding:10px}
+	.articleTwitter .original img {position:absolute; left:10px; top:10px;}
+	.articleTwitter .original p {font-size:1.6em; margin-left:70px; margin-right:20px}
+	.articleTwitter .original cite {}
+.articleTwitter .older {}
+
 
 
 /* ==|== listChat styles ===================================================== */
-#listChat header h1 {display:block; color:#fff; font-size:1.4em; font-weight:normal; line-height: 40px; padding:15px 0 0 10px}
+#listChat header h1 {display:block; color:#fff; font-size:1.4em; font-weight:normal; line-height: 40px; padding:15px 6px 0 10px; text-align:right}
 #listChat header nav {position:absolute; display:block; right:0; bottom:0; z-index:1; height:48px}
 
 #listChat footer nav a {margin:1px 2px 0}
@@ -323,6 +330,7 @@ body,
 #listChat .content .inner {border-top: 1px solid #393B3D;}
 #listChat .content form input,
 #listChat .content form textarea {width:230px; background:#fff url(/i/sprites/icon_comment.png) 5px 4px no-repeat; text-indent:30px}
+#listChat .content form textarea#tweetAdd {background:url("/i/sprites/twitter.png") no-repeat scroll -20px -18px #FFFFFF}
 #listChat .content form input {padding:7px 4px 5px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
@@ -347,11 +355,8 @@ body,
 	#listChat .tweet .wrapComment {padding:10px;}
 	#listChat .tweet .wrapComment p {font-size:1.3em; color:#333}
 
-
-/* toggle help content */
-#listChat .help {display:none}
-#listChat.showHelp .help {display:block}
-#listChat.showHelp .scroller {display:none}
+#twitterComments button {font-size:1.4em; padding:5px 10px; margin-top:10px; border:0px none}
+#twitterComments button span {position:relative; display:inline-block; width:20px; height:20px; background:url(/i/sprites/twitter.png) 0 0 no-repeat; }
 
 /* ==|== reused styles ===================================================== */
 
@@ -367,14 +372,15 @@ body,
 .csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
 
 .showchannels .show.channels,
-.showcomments .show.comments {background-color:#444; box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset;}
-.showchannels .show.channels {background-position:-160px -40px;}
-.showcomments .show.comments {background-position:-360px -40px;}
+.showcomments .show.comments {/*background-color:#444; box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #666 inset, 1px 1px 0px #000 inset;*/}
+.showchannels .show.channels {background-position:-680px -40px;}
+.showcomments .show.comments {background-position:-720px -40px;}
 
 
 @media only screen and (max-width: 480px) {
-.showchannels #listChat {}
-.showcomments #listGroups {left:-260px}
+	.showchannels #listChat {}
+	.showcomments #listGroups {left:-260px}
+	#listArticle > article {left:5px; right:5px; top:0px; bottom:5px; }
 }
 @media only screen and (min-width: 480px) {
 	#main {left:45px}
@@ -382,8 +388,9 @@ body,
 	.csstransforms .showchannels #main {-moz-transform: translate(215px, 0px); -webkit-transform: translate(215px, 0px); -o-transform: translate(215px, 0px); -ms-transform: translate(215px, 0px); transform: translate(215px, 0px);}
 	.csstransforms .showcomments #main {-moz-transform: translate(-260px, 0px); -webkit-transform: translate(-260px, 0px); -o-transform: translate(-260px, 0px); -ms-transform: translate(-260px, 0px); transform: translate(-260px, 0px);}
 
-	#navSearch input {width: 22px;}
+	#navSearch input {width: 0px;}
 	.showchannels #navSearch input {width: 100%;}
+	#listArticle > article {left:50px;}
 }
 @media only screen and (min-width: 620px) {
 	#main {right:45px}
@@ -392,8 +399,16 @@ body,
 
 	.csstransforms .showcomments #main {-moz-transform: translate(-215px, 0px); -webkit-transform: translate(-215px, 0px); -o-transform: translate(-215px, 0px); -ms-transform: translate(-215px, 0px); transform: translate(-215px, 0px);}
 
-	#listChat .content form input, #listChat .content form textarea {width:22px; left:215px}
-	.showcomments #listChat .content form input, .showcomments #listChat .content form textarea {width:230px; left:0}
+	#listChat .content form input {width:22px; left:215px}
+	#listChat .content form textarea {width:25px; left:215px}
+	.showcomments #listChat .content form input {width:238px; left:0}
+	.showcomments #listChat .content form textarea {width:240px; left:0}
+	#listArticle > article {left:50px; right:50px}
+}
+
+@media only screen and (min-width: 780px) {
+	.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:2px}
+	.detailItem .articleList {padding:2px 5px 0 280px}
 }
 
 @media only screen and (min-width: 1000px) {
@@ -417,4 +432,8 @@ body,
 	#listChat {width:265px}
 	#listChat .content form input, #listChat .content form textarea {width:230px; left:0}
 	.show.comments {display:none}
+}
+
+@media only screen and (min-width: 1300px) {
+	.articleItem {width:49.5%; vertical-align: top; min-height:200px;}
 }

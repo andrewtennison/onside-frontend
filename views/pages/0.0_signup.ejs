@@ -4,7 +4,7 @@
 		<a href="">Support</a>
 		<a href="">Contact Us</a>
 		<a href="">FAQ</a-->
-		<% if(loggedIn) { %>
+		<% if(everyauth.loggedIn) { %>
 			<a href="/logout">Sign out</a>
 		<% } else { %>
 			<a href="/enter">Got an invite - sign in</a>
@@ -20,25 +20,32 @@
 				<h2>Delivering Fans Personalised Sport Content</h2>
 				<p>Available to all early 2012</p>
 			</hgroup>
-			
-			<% if(loggedIn) { %>
+
+			<% if(everyauth.loggedIn) { %>
 			<article>
-				<h1><%= everyauth.user.name %> - Thanks for signing up</h1>
+				<h1>Thanks for signing up</h1>
 				<p>We will send you an email with your invitation once we release to more people.</p>
 			</article>
 			<% } else { %>
 			<article>
 				<h1>Sign up now</h1>
 				<p>Join our invite list  to be the first to experience the future of sports news.</p>
-				
+
 				<div class="notForIE6">
-					<!--form action="/register" method="post">
-						<input type="email" class="txt" name="email" value="" placeholder="enter your email" />
+					<form action="/signup" method="post">
+					    <% if('undefined' !== typeof errors && errors.length) { %>
+                            <ul id="errors">
+                                <% errors.forEach(function(error) { %>
+                                    <li class="error"><%= error %></li>
+                                <% }); %>
+                            </ul>
+                        <% } %>
+						<input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="" placeholder="enter your email" />
 						<input type="submit" class="submit" value="sign up" />
 					</form>
-					<p>or</p-->
+					<!--p>or</p>
 					<a class="joinF" href="/auth/facebook">Sign up with facebook</a>
-					<a class="joinT" href="/auth/twitter">Signup with twitter</a>
+					<a class="joinT" href="/auth/twitter">Signup with twitter</a-->
 				</div>
 
 				<div class="forIE6">
@@ -53,8 +60,8 @@
 			<div class="d_ipad">available on tablet devices</div>
 			<div class="d_desktop">available on desktop</div>
 		</article>
-		
-	</div>	
+
+	</div>
 </header>
 
 <section id="reasons">
@@ -86,14 +93,14 @@
 	</div>
 </section>
 
-<section id="support">	
+<section id="support">
 	<div class="inner">
-		<article id="challenge">			
+		<article id="challenge">
 			<img src="/i/content/signup/challenge.gif" />
-			
+
 			<h1>The Old Way</h1>
 			<p>You trawl the web looking for new blogs, and info on all the sports you like, you visit all your social networks, you scour through twitter.</p>
-			
+
 			<h1>The New Way</h1>
 			<p>Onside - we do the hard work so you don’t have to. You follow channels for each of your favourite sports, and as well as the best of the web you get exclusive content from them to you. We give you unique and intuitive ways of filtering content so if you want more of what you love or to find something new its easy and fun.</p>
 			<ol>
@@ -103,13 +110,13 @@
 				<li>Already have too many log on’s, we know, use your existing social networks, twitter, facebook, google to log in, share and conect with others... no need to do it all again.</li>
 			</ol>
 		</article><!-- /#challenge -->
-	
+
 		<article id="share">
 			<h1>Follow us <a href="http://twitter.com/KeepitOnside">@keep<span>it</span>onside</a></h1>
 			<ul id="tweets">
 				<li>loading latest tweets...</li>
 			</ul>
-			
+
 			<h2>Tell people about us</h2>
 			<a class="share SG" href="">google +1</a>
 			<a class="share ST" href="">tweet</a>

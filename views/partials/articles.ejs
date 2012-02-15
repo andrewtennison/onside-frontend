@@ -3,33 +3,24 @@
 
 <script id="articleTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( publish ); @>
-	<div class="inner">
-		<nav> 
-			<a class="icon settings filter" href="#">filter news</a>
-		</nav>
-		
+	<@ var imageClass = (images)? 'hasImage' : ''; @>
+	<div class="inner <@= imageClass @>">		
 		<h1><@= title @></h1>
 		<@ if(images) { @>
 			<img src='<@= images @>' />
 		<@ } @>
 		<div class="content"><@= content @></div>
-		
-		<@ if(extended) { @>
-		<a class="open button" href='<@= link @>'>read full article</a>
-		<@ } else { @>
-		<a class="open button" href='<@= link @>'>see website</a>
-		<@ } @>
-		
 		<footer>
-			<@ if(source) { @>
-				<cite>by: <@= source @></cite>
-			<@ } else { @>
-				<cite>by: [[ rss source ]]</cite>
-			<@ } @>			
-
-			<@ if(publish) { @>
-				<time><@= time @></time>
-			<@ } @>
+			<cite>from: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
+			<@ if(publish) { @>  / <time><@= time @></time><@ } @>
+			<nav> 
+				<a class="filter" href="#">filter results</a> 
+				<@ if(extended) { @>
+					<a class="open" href='<@= link @>'>read full article</a>
+				<@ } else { @>
+					<a class="open" href='<@= link @>'>see website</a>
+				<@ } @>
+			</nav>
 		</footer>
 	</div>
 	<section class="filters">
@@ -44,35 +35,22 @@
 </script>
 
 <script id="articleTemplate-twitter" class="tmpl" type="text/template">
-	<div class="pad">
-		<p><@= content @></p>
-		<cite><@= author @></cite>
-		<a class="open button" href='<@= link @>'>see more tweets</a>
+	<div class="inner">
+		<p class="quotes"><@= content @></p>
+		<cite>@<@= author @> on twitter</cite>
+		<nav><a class="filter" href="#">filter results</a><a class="open" href='<@= link @>'>see more tweets</a></nav>
 	</div>
 </script>
 
 <script id="articleTemplate-youtube" class="tmpl" type="text/template">
-	<div class="hidden">
-		<h2><@= author @>: <@= title @></h2>
-		<p><@= content @></p>
+	<@ var time = prettyDate( publish ); @>
+	<div class="inner">
+		<p><@= author @><time><@= time @></time></p>
+		<h2><@= title @></h2>
 		<input type="hidden" value="<@= link @>" name="videoData" />
-		<@ if(publish) { @>
-			<time><@= publish @></time>
-		<@ } @>
-	</div>
+	</div>	
 	<a href="<@= link @>" class="open">
 		<span class="icon play">watch video</span>
-		<img src="http://img.youtube.com/vi/<@= videoId @>/hqdefault.jpg" />
+		<img src="http://img.youtube.com/vi/<@= vid @>/hqdefault.jpg" width="100%" alt="[Video title]" />
 	</a>
-	
 </script>
-
-<script id="articleDetailTemplate-youtube" class="tmpl" type="text/template">
-	<!-- img src="http://img.youtube.com/vi/<@= videoId@>/0.jpg" /-->
-	<!--iframe class="youtube-player" type="text/html" width="373" height="220" src="http://www.youtube.com/embed/<@= videoId@>" frameborder="0"></iframe-->
-	<object style="height: 245; width: 373">
-	<param name="movie" value="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded"><param name="allowFullScreen" value="true"><param name="allowScriptAccess" value="always">
-	<embed src="https://www.youtube.com/v/<@= videoId@>?version=3&feature=player_embedded&autohide=1&fs=1&iv_load_policy=3&feature=player_embedded" type="application/x-shockwave-flash" allowfullscreen="true" allowScriptAccess="always" width="373" height="245"></object>
-</script>
-
-

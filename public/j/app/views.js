@@ -53,11 +53,21 @@ TweetView			- individual tweet comment
 
 (function(BB){
 
-// BASE OBJECTS ///////////////////////////////////////////////////////////		
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// BASE OBJECTS ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	var ev = {};
 	_.extend(ev, Backbone.Events);
 
+	Backbone.View.prototype.close = function(){
+		this.remove();
+		this.unbind();
+		if (this.onClose){
+			this.onClose();
+		}
+	};
+	
 	var _form = Backbone.View.extend({
 		events: {
 			'focus input.formEl' 	: 'focus',
@@ -77,60 +87,74 @@ TweetView			- individual tweet comment
 		},
 		submit: function(e){
 		    e.preventDefault();
-			var escVal = (this.escapeValue)? on.helper.esc($(this.el).serialize()) : $(this.el).serialize();
+			var escVal = (this.escapeValue)? on.helper.esc(this.$el.serialize()) : this.$el.serialize();
 			this.search(escVal);
 		},
 		search: function(value){
 		}		
 	});
 	
-	var _ListView 		= Backbone.View.extend({
+	var _ListView = Backbone.View.extend({
 		tagName: 'div',
-		title: {
-			auth: false,
-			unauth: false
+		title: false,
+		itemView: function(item){
+			return new ChannelView({model:item, app:this.options.app}); 
 		},
+		helpViewTemplate: 'navChannel',
 		initialize: function(){
 			this.app = this.options.app;
 			if(this.options.type) this.type = this.options.type;
 
-			_.bindAll(this, 'addOne', 'addAll', 'addHelp');
+			_.bindAll(this, 'onInit', 'addOne', 'addAll', 'addHelp');
 
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
+			this.onInit();
 		},
-		addOne: function(item){
-			// overwritten in extended object
+		onInit: function(){},
+		addOne: function(item, index){
+			var view = this.itemView(item);
+			if(!view) { console.error('no view to append'); return; };
+			this.activeViews.push(view);
+			this.$el.append(view.render().el);
+			if(index === this.collection.length - 1) this.updateView() ;
 		},
 		addHelp: function(){
-			// overwritten in extended object
+			var name = (typeof this.helpViewTemplate === 'string')? this.helpViewTemplate : this.helpViewTemplate();
+			if( !name ) return;
+			
+			var view = new _HelpView();
+			this.$el.append(view.render(name).el);
+			this.updateView();
 		},
-		
+		updateView: function(){
+			// runs after last item in collection is added
+		},
 		addAll: function(){
 			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
-			$(this.el).empty();
+			this.destroyViews();
 
-			/* set title */
-			var userAuth = (this.app)? this.app.get('userAuth') : null;
-			if(this.title.auth && userAuth) {
-				$(this.el).prepend('<h2 class="groupTitle">'+this.title.auth+'</h2>');
-			} else if(this.title.unauth/* && userAuth*/){
-				$(this.el).prepend('<h2 class="groupTitle">'+this.title.unauth+'</h2>');
-			};
-			
+			if(this.title) this.$el.prepend('<h2 class="groupTitle">'+this.title+'</h2>');
+
 			if(this.collection.length === 0){
 				this.addHelp();
 			}else{
 				this.collection.each(this.addOne);
 			}
-				
-		}
+		},
+		activeViews : [],
+		destroyViews : function(){
+			$.each(this.activeViews, function(index,view){
+				view.close();
+			});
+			this.activeViews = [];
+			this.$el.empty();
+		},
 		
 	});
 
 	var _ListItemView 	= Backbone.View.extend({
 		tagName: 'article',
-	
 		events: {
 			'click' : 'selectItem'
 		},
@@ -140,27 +164,26 @@ TweetView			- individual tweet comment
 			this.app.bind('change:selectedItemUID', this.updateItem)
 		},
 		render: function(){
-			$(this.el).html(this.template( this.model.toJSON() ));
+			this.$el.html(this.template( this.model.toJSON() ));
 		    return this;
 		},
 		updateItem: function(appModel,val){
 			if( (this.model.get('service') + '|' + this.model.id) === val){
-				$(this.el).addClass('active');
+				this.$el.addClass('active');
 				this.model.selected = true;
 			}else if ( this.model.selected ){
-				$(this.el).removeClass('active');
+				this.$el.removeClass('active');
 				this.model.selected = false;
 			}
 		},
 		selectItem: function(e){
 			e.preventDefault();			
 			on.helper.log('! View.listItem.selectItem => click');
-			
 			$('#main').attr('class', false);
-			
 			this.app.set({
 				selectedItemUID		: this.model.get('service') + '|' + this.model.id,
-				selectedItemTitle	: this.model.get('name') || this.model.get('title')
+				selectedItemTitle	: this.model.get('name') || this.model.get('title'),
+				selectedArticle		: false
 			});
 		}
 	});
@@ -175,26 +198,23 @@ TweetView			- individual tweet comment
 			'click .filter'			: 'toggleFilters',
 			'click .filters a'		: 'filterCollection'
 		},
-		
 		initialize: function(){
 			_.bindAll(this, 'render', 'select', 'preSelect', 'hoverOver', 'hoverOut', 'filterCollection', 'setDisplay');
 			this.app = this.options.app;
 			this.model.bind('change:filtered', this.setDisplay);
 			this.model.collection.bind('change:filter', this.updateFilters);
 		},
-		
 		render: function(){
 			var json = this.model.toJSON();
-			if(!json.filtered) $(this.el).addClass('hidden');
-			$(this.el).html(this.template(json));
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
 		    return this;
 		},
-		
 		setDisplay: function(){
 			if(this.model.get('filtered')) {
-				$(this.el).removeClass('hidden');
+				this.$el.removeClass('hidden');
 			}else{
-				$(this.el).addClass('hidden');
+				this.$el.addClass('hidden');
 			}
 		},
 		preSelect: function(){},
@@ -206,15 +226,15 @@ TweetView			- individual tweet comment
 				selectedItemTitle	: this.model.get('name') || this.model.get('title')
 			});
 		},
-		hoverOver: function(){ $(this.el).addClass('on'); },
+		hoverOver: function(){ this.$el.addClass('on'); },
 		hoverOut: function(){
-			$(this.el).removeClass('on').removeClass('showFilter');
+			this.$el.removeClass('on').removeClass('showFilter');
 			//this.$('.filters').removeClass('on');
 		},
 		toggleFilters: function(e){
 			e.preventDefault();
 			//this.$('.filters').toggleClass('on');
-			$(this.el).toggleClass('showFilter');
+			this.$el.toggleClass('showFilter');
 		},
 		filterCollection: function(e){
 			e.preventDefault();
@@ -245,47 +265,94 @@ TweetView			- individual tweet comment
 		events: {
 			'click .help' : 'hide'
 		},
+
+		template	: _.template( $('#help_defaultTemplate').html() ),
+		
+		templates: {
+			// left nav helpers
+			navChannel				: _.template( $('#help_navChannelTemplate').html() ),
+			navEvent				: _.template( $('#help_navEventTemplate').html() ),
+			navSearch				: _.template( $('#help_navSearchTemplate').html() ),
+			
+			// detail item helpers
+			detail404				: _.template( $('#help_detail404Template').html() ),
+			// detail type=home
+			detailHomeChannel		: _.template( $('#help_detailHomeChannelTemplate').html() ),
+			
+			// detail type=search
+			detailSearchChannel		: _.template( $('#help_detailSearchChannelTemplate').html() ),
+			detailSearchEvent		: _.template( $('#help_detailSearchEventTemplate').html() ),
+			detailSearchArticle		: _.template( $('#help_detailSearchArticleTemplate').html() ),
+
+			// detail type=channel / event
+			detailDefaultChannel	: _.template( $('#help_detailDefaultChannelTemplate').html() ),
+			detailDefaultEvent		: _.template( $('#help_detailDefaultEventTemplate').html() ),
+			detailDefaultArticle	: _.template( $('#help_detailDefaultArticleTemplate').html() ),
+			
+			// comment helpers
+			commentOnside			: _.template( $('#help_commentOnsideTemplate').html() ),
+			commentFacebook			: _.template( $('#help_commentFacebookTemplate').html() ),
+			commentTwitter			: _.template( $('#help_commentTwitterTemplate').html() ),
+			commentGoogle			: _.template( $('#help_commentGoogleTemplate').html() ),
+		},
 		
 		initialize: function(){
 			_.bindAll(this, 'render', 'hide');
 		},	
-		render: function(){
-			$(this.el).html(this.template());
+		render: function(name){
+			// console.info(name)
+			// console.info(this.templates)
+			// console.info(this.templates[name])
+			if(this.templates[name]){
+				this.$el.html(this.templates[name]());
+			}else{
+				this.$el.html(this.template());
+			}
 		    return this;
 		},
 		hide: function(e){
 			e.preventDefault();
-			$(this.el).slideUp(200);
+			this.$el.slideUp(200);
 		}
-	})
+	});
 
-
-// MAIN VIEWS ///////////////////////////////////////////////////////////
-	var AppView 		= Backbone.View.extend({
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MAIN views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	var AppView = Backbone.View.extend({
 		el: $(window),
 		currentShow: false,
 		
-		$el: {
+		$elem: {
 			app: $('#OnsideApp')
 		},
 		
 		events: {
 			'click .login'	: 'login',
-			'click .show'	: 'show' 
-			//'click focusSearch' : focus on the search box from anywhere
+			'click .show'	: 'triggerShow',
+			'click .triggerSearch' : 'triggerSearch'
+			//'click triggerFeedback' : open feedback form
+			//triggerAddChannel
+			//triggerAddSource
 		},
 		
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
+			var self = this;
 			
-			_.bindAll(this, 'onResize', 'show', 'setAuth');
+			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch');
 			this.app = this.options.app;
 
-			$(window).bind('resize', this.onResize);
-			this.onResize();
-			
+			$(window).bind('resize', this.onResize);			
 			this.app.bind('change:userAuth', this.setAuth);
+			ev.bind('update:view', function(val){
+				console.log('ev.bnd.updateView - ' + val) 
+				self.show(val,true)
+			});
+
 			this.setAuth(false,this.app.get('userAuth'));
+			this.onResize();
+
 		},
 				
 		login: function(){
@@ -293,63 +360,51 @@ TweetView			- individual tweet comment
 			// use chooses, auths, returns to page
 			// I update a number of APP params including URL, change URL 		
 		},
-		
 		setAuth: function(obj,val){
 			if(val){
-				$(this.el).addClass('auth').removeClass('unAuth');
+				this.$el.addClass('auth').removeClass('unAuth');
 			} else {
-				$(this.el).addClass('unAuth').removeClass('auth');
+				this.$el.addClass('unAuth').removeClass('auth');
 			}
 		},
-		
-		show: function(e){
+		triggerShow: function(e){
 			e.preventDefault();
-			var id = $(e.target).attr('href').replace('#',''),
-				newShow = 'show'+id,
-				oldShow = this.currentShow;
+			var id = $(e.target).attr('href').replace('#','');
+			this.show('show'+id, false);
+		},
+		show: function(newShow, force){
+			var oldShow = this.currentShow;
 				
-			if(oldShow === newShow){
-				this.$el.app.removeClass(oldShow);
+			if(oldShow === newShow && !force){
+				this.$elem.app.removeClass(oldShow);
 				this.currentShow = false;
 			}else if( !oldShow ){
-				this.$el.app.addClass(newShow);
+				this.$elem.app.addClass(newShow);
 				this.currentShow = newShow;
 			}else{
-				this.$el.app.removeClass(oldShow);
-				this.$el.app.addClass(newShow);
+				this.$elem.app.removeClass(oldShow);
+				this.$elem.app.addClass(newShow);
 				this.currentShow = newShow;
 			}
 		},
 		
 		onResize : function(e){
 			on.helper.log('App.onResize')
-			var $el = $('#OnsideApp'),
-				w = $el.width(),
-				h = $el.height(),
-				c;
-			
-			if(w >= 1024){c='size_full';
-			}else if(w >=640 && w< 1024){c="size_med";
-			}else if(w < 640){c="size_min";				
-			}else{c="unknown";}
-			c = (w < h)? c+' landscape' : c+' portrait';
-			$el.attr('class',c);
-			
-			$('.page').each(function(){
-				var $p = $(this),
-					$c = $('section.content',$p),
-					c = $c.height(),
-					h = $('header',$p).height() | 0, 
-					f = $('footer',$p).height() | 0,
-					nh = $p.height() - h - f;
-					
-				//$c.css('height', nh)
+		},
+		triggerSearch: function(e){
+			e.preventDefault();
+
+			this.show('showchannels', true);
+
+			$('#groupSearch')
+			.addClass('flash')
+			.animate({'delay':1},500, function(){
+				$(this).removeClass('flash').focus();	
 			});
-			
 		}
 	});
 	
-	var NavView 		= Backbone.View.extend({
+	var NavView = Backbone.View.extend({
 		el: $('#listGroups'),
 		scroll: null,
 		events: {
@@ -367,23 +422,29 @@ TweetView			- individual tweet comment
 			this.$channelButton = this.$('nav .channels');
 			
 			_.bindAll(this, 'updateView', 'changeGroup', 'toggleBlocks', 'updateScroll');
-			
+						
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
-			var channelList = new ChannelListView({ collection: this.options.app.channels, app: this.options.app }),
-				eventList = new EventListView({ collection: this.app.events, app: this.options.app }),
-				searchList = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
+			var myChannels = new ChannelListView({ collection: this.options.app.channels, app: this.options.app }),
+				myEvents = new EventListView({ collection: this.app.events, app: this.options.app }),
+				mySearches = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
 	
 			// commonly
-			this.$channels = $(channelList.el);
-			this.$events = $(eventList.el);
-			this.$searches = $(searchList.el);
+			this.$channels = $(myChannels.el);
+			this.$events = $(myEvents.el);
+			this.$searches = $(mySearches.el);
 			this.$content = this.$('.content');
+
+			// // first fetch of users content
+			myChannels.collection.fetch();
+			myEvents.collection.fetch();
+			mySearches.collection.fetch();
 			
-			ev.bind('update:navContent', this.updateScroll, this);
-			ev.trigger('update:navContent');
+			ev.bind('update:nav:scroll', this.updateScroll, this);
+			ev.trigger('update:nav:scroll');
 
 			// BIND: if model.app.selectedServiceName changes this view will get updated
-			this.app.bind('change:selectedServiceName', this.updateView);
+			//this.app.bind('change:selectedServiceName', this.updateView);
+			this.updateView('channels')
 			
 		},
 		
@@ -396,7 +457,7 @@ TweetView			- individual tweet comment
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
-					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar'});
+					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:true, fadeScrollbar: true});
 				} else if (!needsScroll && scroll){
 					self.scroll.destroy();
 					self.scroll = null;
@@ -432,15 +493,14 @@ TweetView			- individual tweet comment
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channels' : 'events';
 			
-			this.app.set({
-				selectedItemUID		: val + '|null',
-				selectedItemTitle	: 'Onside Home'	
-			});
+			//this.app.set({ selectedItemUID : val + '|null' });
+			this.updateView(val);
 		},
 		
-		updateView: function(){
+		updateView: function(val){
 			on.helper.log('* View.Nav.updateView');
-			switch(this.app.get('selectedServiceName')){
+			//switch(this.app.get('selectedServiceName')){
+			switch(val){
 				case 'event':
 				case 'events':
 					this.$content.append(this.$events);
@@ -450,6 +510,7 @@ TweetView			- individual tweet comment
 					this.$channelButton.removeClass('active');
 					break;
 					
+				case 'list':
 				case 'channel':
 				case 'channels':
 				case 'search':
@@ -481,92 +542,59 @@ TweetView			- individual tweet comment
 			// hack to fix iScroll focus issue
 			var selectField = document.getElementById('groupSearch');
 			selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+			selectField.addEventListener('touchstart', function(e) { e.stopPropagation() }, false);			
 		},
 		search: function(value){
-			var self = this,
-				model = new BB.Search();
-				
-			model.query = value.replace('q=','');
-			model.fetch({
-				success:function(searchModel){
-					console.info(searchModel)
-					self.app.set({
-						searchModel 		: searchModel,
-						selectedItemUID		: searchModel.service +'|'+value,
-						selectedItemTitle	: searchModel.title
-					});
-				},
-				error:function(){console.error('search failed')}
-			})
+			this.$el.focus();
+			this.app.set({
+				selectedItemUID: 'search|' + value.replace('q=','')
+			});
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showchannels');
 		}
 		
 	});
-	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Left navigation views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // Left Nav
 	// List Views for left nav
 	var ChannelListView = _ListView.extend({
 		className: 'channelList',
-		title: {
-			auth: 'Your channels',
-			unauth: 'Popular channels'
-		},
-		addOne: function(channel, index){
-			var view = new ChannelView({model:channel, app:this.options.app})
-			$(this.el).append(view.render().el);
-			if(index === this.collection.length - 1) ev.trigger('update:navContent');
-		},
-		addHelp: function(){
-			var view = new HelpChannelView();
-			$(this.el).append(view.render().el);
-			ev.trigger('update:navContent');
-		}
+		title: 'Your channels',
+		helpViewTemplate: 'navChannel',
+		itemView: function(item){ return new ChannelView({model:item, app:this.options.app});  },
+		updateView: function(){ ev.trigger('update:nav:scroll'); }
 	});
 	var EventListView 	= _ListView.extend({
 		className: 'eventList',
-		title: {
-			auth: 'Your events',
-			unauth: 'Popular events'
-		},
-		addOne: function(event, index){
-			var view = new EventView({model:event, app:this.options.app})
-			$(this.el).append(view.render().el);
-			if(index === this.collection.length - 1) ev.trigger('update:navContent');
-		},
-		addHelp: function(){
-			var view = new HelpEventView();
-			$(this.el).append(view.render().el);
-			ev.trigger('update:navContent');
-		}
+		title: 'Your events',
+		helpViewTemplate: 'navEvent',
+		itemView: function(item){ return new EventView({model:item, app:this.options.app});  },
+		updateView: function(){ ev.trigger('update:nav:scroll'); }
 	});
 	var SavedSearchListView = _ListView.extend({
 		className: 'searchList',
-		title: {
-			auth: 'Your saved searches',
-			unauth: 'Popular searches'
-		},
-		addOne: function(search, index){
-			var view = new SaveSearchView({model:search, app:this.options.app});
-			$(this.el).append(view.render().el);
-			if(index === this.collection.length - 1) ev.trigger('update:navContent');
-		},
-		addHelp: function(){
-			var view = new HelpSearchView();
-			$(this.el).append(view.render().el);
-			ev.trigger('update:navContent');
-		}
+		title: 'Your saved searches',
+		helpViewTemplate: 'navSearch',
+		itemView: function(item){ return new SaveSearchView({model:item, app:this.options.app});  },
+		updateView: function(){ ev.trigger('update:nav:scroll'); }
 	});
 	
 	// Item views for left nav
 	var ChannelView 	= _ListItemView.extend({
-		className:'channelItem bb',
+		className:'bb navListItem',
 		template: _.template( $('#channelItemTemplate').html() )
 	});
 	var EventView 		= _ListItemView.extend({
-		className:'eventItem bb',
+		className:'bb navListItem',
 		template: _.template( $('#eventItemTemplate').html() )
 	});
 	var SaveSearchView 	= _ListItemView.extend({
-		className:'searchItem bb',
+		className:'bb navListItem',
 		template: _.template( $('#savedSearchTemplate').html() ),
 		selectItem: function(e){
 			e.preventDefault();
@@ -577,283 +605,321 @@ TweetView			- individual tweet comment
 			});
 		}
 	});
-	var HelpChannelView = _HelpView.extend({
-		template: _.template( $('#help_channelItemTemplate').html() )
-	});
-	var HelpEventView = _HelpView.extend({
-		template: _.template( $('#help_eventItemTemplate').html() )
-	});
-	var HelpSearchView = _HelpView.extend({
-		template: _.template( $('#help_savedSearchTemplate').html() )
-	});
-	var Help_detail_search = _HelpView.extend({
-		template: _.template( $('#help_detail_searchTemplate').html() )
-	});
-	var Help_detail_channel = _HelpView.extend({
-		template: _.template( $('#help_detail_channelTemplate').html() )
-	});
-	var Help_detail_home = _HelpView.extend({
-		template: _.template( $('#help_detail_homeTemplate').html() )
-	});
 
 
-// Detail View
-	// List views for related items in detail view
-	var ChannelListDetailView = _ListView.extend({
-		tagName: 'section',
-		className: 'content channelList',
-		title: { auth: 'Related channels', unauth: 'Related channels' },
-		addOne: function(channel){
-			var view = ( channel.get('defaultArticle') )? new ChannelDetailHomeView({model:channel, app:this.options.app}) : new ChannelDetailView({model:channel, app:this.options.app}),
-				render = view.render().el;
-			
-			$(this.el).append(render);
-		},
-		addHelp: function(){
-			alert('// '+this.type);
-			var view = false;
-			switch(this.type){
-				case 'search':
-					view = new Help_detail_search();
-					break;
-				case 'channel':
-				case 'event':
-					//view = new Help_detail_channel();
-					break;
-				case 'home':
-					view = new Help_detail_home();
-				default:
-					break;
-			};
-			if(view) $(this.el).append(view.render().el);
-		}
-
-	});
-	var EventListDetailView = EventListView.extend({
-		tagName: 'section',
-		className: 'content eventList',
-		msg:{ empty: '<p>This channel has no associated events</p>', low: false },
-		title: { auth: false, unauth: false },
-		addOne: function(event){
-			var view = new EventDetailView({model:event, app:this.options.app})
-			$(this.el).append(view.render().el);
-		},
-		addHelp: function(){}
-	});
-
-	// Item view for related items in detail view
-	var ChannelDetailView 	= ChannelView.extend({
-		template: _.template( $('#channelDetailItemTemplate').html() )
-	});
-	var ChannelDetailHomeView = ChannelView.extend({
-		className:'channelHomeItem',
-		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
-		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
-		    return this;
-		}
-	});
-	var EventDetailView = EventView.extend({
-		template: _.template( $('#eventDetailItemTemplate').html() )
-	});
-	
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail View ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Detail List views
-	var DetailListView 	= Backbone.View.extend({
+	var DetailListView = Backbone.View.extend({
 		// manage multiple detail views and navigating between / transitions + pre load and get next at top or bottom
 		el: $('#listDetail'),
+		selectedModel : false,
 
 		events: {
 			//'click .refresh'	: 'refresh',
-			//'click .home'		: 'goHome'
+			//'click .home'		: 'goHome',
+			//'click .next .prev
 		},
-
 		initialize: function(){
-			on.helper.log('# View.Detail.initialize', 'info')
-			
+			on.helper.log('# View.Detail.initialize', 'info')			
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
-			_.bindAll(this, 'addOne', 'addAll', 'removeOne');
+			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne');
 			
 			// BIND Collection
 			this.collection.bind('add', this.addOne);
 			this.collection.bind('reset', this.addAll);
 			this.collection.bind('remove', this.removeOne);
-			
-			this.app.bind('change:selectedItemUID', this.collection.checkSetCreate)
-			
+			this.collection.bind('error', function(){
+				console.error('detail list collection')
+			});
+			this.app.bind('change:selectedItemUID', this.updateView)
 		},
-		
-		addOne: function(model){
-			on.helper.log('# View.DetailList.addOne');
-			var view = new DetailView({model:model, app:this.options.app});
-			this.el.append(view.render().el);
+		updateView: function(app,selectedItemUID){
+			this.$el.addClass('loading');
 			
-			setTimeout(function () {
-				view.scroll = new iScroll(view.id, {scrollbarClass: 'detailScrollbar', zoom:false});
-			}, 100);
-
-			// set page route
-			var s = model.get('originUId').split('|'),
-				route = '/' + s[0] + "/" + s[1];
+			var s = selectedItemUID.split('|'),
+				detailUID = 'detail|' + selectedItemUID;
 				
-			if(s[1] !== 'null') this.app.route.navigate(route);
+			if(s[1] === ('null' || null || 'home' || 'popular')) s[0] = 'list'
+			
+			// if there is a current model hide it
+			if(this.selectedModel !== false) {
+				this.collection.get(this.selectedModel).set({ selected : false});
+			};
+
+			// if model exists show it
+			if( this.collection.get( detailUID ) ) {
+				this.collection.get(detailUID).set({selected:true});
+				this.selectedModel = detailUID;
+				this.$el.removeClass('loading');
+			}else{
+				this.collection.fetchModel(selectedItemUID, detailUID);
+			};
+		},
+		addOne: function(model){
+			console.log('# View.DetailList.addOne');
+
+			this.$el.removeClass('loading');
+			ev.trigger('update:view', 'showDetail');
+			this.selectedModel = model.id;
+			model.setSaved(this.app);
+			
+			var view = new DetailView({model:model, app:this.options.app});
+			this.$el.append(view.render().el);
+			// setTimeout(function () {
+				// view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
+			// }, 100);
+			view.toggleDisplay();
+
 		},
 		addAll: function(models){
-			on.helper.log('View.DetailList.addAll');
+			console.error('View.DetailList.addAll');
 		},
 		removeOne: function(){
-			on.helper.log('View.DetailList.removeOne');
+			console.error('View.DetailList.removeOne');
 		}
 	});
-	
-	var DetailView		= Backbone.View.extend({
+
+	var DetailView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'detailItem',
-		id: 'detailContentWrap',
+		baseID: 'detailContentWrap',
 		template: _.template( $('#detailTemplate').html() ),
 		errorTemplate: _.template( $('#detail404Template').html() ),
 		events: {
-			'click .save': 'saveAction'
+			'click a.save': 'saveAction'
 		},
-		
 		initialize: function(){
-			on.helper.log('# View.Detail.initialize', 'info');
+			console.info('# View.Detail.initialize');
 			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton');
 			this.app = this.options.app;
+			this.type = this.model.get('type');
 
-			this.id += '_' + this.model.cid;
-			
+			this.baseID += '_' + this.model.cid;
 			this.model.bind('change:selected', this.toggleDisplay);
 			this.model.bind('change:saved', this.toggleButton);
 			this.toggleButton();
+
+			this.scrollDir = false;
+			this.scrollState = false;
+
 		},
-		
 		render: function(){
-			on.helper.log('# View.Detail.render');
+			console.log('# View.Detail.render');
 			
 			var json = this.model.toJSON();
-			
 			if(json.error) {
-				$(this.el).html(this.errorTemplate(json));
+				this.$el.html(this.errorTemplate(json));
 				return this;
 			};
-			
-			$(this.el).html(this.template(json));
-			this.$('.contentWrapper').attr({id: this.id});
 
-			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.model.get('type') }),
-			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.model.get('type') }),
-			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.model.get('type') });
+			this.$el.html(this.template(json));
+			this.$('.contentWrapper').attr({id: this.baseID});
+			this.$el.addClass('type-'+this.type)
+
+			// scroll
+			this.pullDownEl = this.$('#pullDown')[0];
+			this.pullUpEl = this.$('#pullUp')[0];
+			this.pullLoading = false;
+			this.pullDownOffset = 55;
+			this.pullUpOffset = 55;
+
+			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.type });
+			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.type });
+			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.type });
+
+			switch(this.type){
+				case 'list':
+					var v = this.model.get('val');
+					this.viewC.title = false;
+					this.viewE.title = false;
+					this.viewA.title = false;
+					break;
+				case 'search':
+					this.viewC.title = 'Channels that match your search';
+					this.viewE.title = 'Events that match your search';
+					this.viewA.title = 'Articles that match your search';
+					break;
+			}
 
 			this.app.set({selectedArticleList:this.viewA.collection});
 
-			$(this.el).find('.contentWrapper > .scroller') 
-				.append(this.viewC.el)
-				.append(this.viewE.el)
-				.append(this.viewA.el);
-			
-			this.model.refresh();
+			this.$el.find('.contentWrapper > .scroller > #pullDown') 
+				.after(this.viewA.el)
+				.after(this.viewE.el)
+				.after(this.viewC.el);
 
+			var hex = this.model.get('author').branding;
+			if(hex){
+				hex = hex.split(',');
+				this.$('.detailHead').css({'background-color':hex[0]});
+				if(hex.length == 2) this.$('.detailHead h1').css({'color':hex[1]});
+			}
+			this.model.refresh();
 		    return this;
 		},
 		
+		toggleButton: function(){
+			if(this.model.get('saved')) {
+				this.$('a.save').addClass('active');
+			}else{
+				this.$('a.save').removeClass('active');
+			}
+		},
+		saveAction: function(e){
+			e.preventDefault();
+			this.model.follow(this.app);
+		},
+		pullDownAction: function(self){
+			//self.channel.fetch({add: true});
+			console.log(this);
+			var id = self.model.id.split('|'),
+				params = id[1] +'='+id[2];
+				
+			self.viewA.collection.params = params;
+			self.viewA.collection.fetch({add: true, success:function(){
+				self.scroll.refresh();
+			}}); // channel?channel=1
+		},
+		pullUpAction: function(self){
+			setTimeout(function () { // <-- Simulate network congestion, remove setTimeout from production!
+				self.scroll.refresh(); // Remember to refresh when contents are loaded (ie: on ajax completion)
+			}, 1000); 
+		},
 		toggleDisplay: function(){
 			var self = this;
 			if(this.model.get('selected')) {
 				this.app.set({selectedArticleList:this.viewA.collection});
-				$(this.el).fadeIn(200,function(){
-					self.scroll = new iScroll(self.id, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
+				this.$el.fadeIn(200,function(){
+					var pageLength = self.$('.contentWrapper').height(),
+						contentLength = self.$('.scroller').height();
+					
+					if(contentLength < pageLength) {
+						self.$('.scrollLoad').css('display','none');
+						return;
+					};
+					
+					self.scroll = new iScroll(self.baseID, {
+						useTransition	: true,
+						useTransition	: true,
+						hScroll 		: false,
+						zoom			: false,
+						scrollbarClass	: 'detailScrollbar',
+						topOffset		: self.pullDownOffset,
+						onRefresh		: function(){
+							if (self.pullDownEl.className.match('loadingSmall')) {
+								self.pullDownEl.className = '';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+							} else if (self.pullUpEl.className.match('loadingSmall')) {
+								self.pullUpEl.className = '';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+							}
+						},
+						onScrollMove	: function(){
+							if (this.y > 5 && !self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = 'flip';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Release to refresh...';
+								this.minScrollY = 0;
+							} else if (this.y < 5 && self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = '';
+								self.pullDownEl.querySelector('.label').innerHTML = 'Pull down to refresh...';
+								this.minScrollY = -self.pullDownOffset;
+							} else if (this.y < (this.maxScrollY - 5) && !self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = 'flip';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Release to refresh...';
+								this.maxScrollY = this.maxScrollY;
+							} else if (this.y > (this.maxScrollY + 5) && self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = '';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Pull up to load more...';
+								this.maxScrollY = self.pullUpOffset;
+							}
+						},
+						onScrollEnd		: function(){ 
+							if (self.pullDownEl.className.match('flip')) {
+								self.pullDownEl.className = 'loadingSmall';
+								self.pullDownEl.querySelector('.label').inner = 'Loading...';	
+								self.pullDownAction(self);
+							} else if (self.pullUpEl.className.match('flip')) {
+								self.pullUpEl.className = 'loadingSmall';
+								self.pullUpEl.querySelector('.label').innerHTML = 'Loading...';				
+								self.pullUpAction(self);
+							}
+						}
+					})
 				});
 			}else{
-				$(this.el).fadeOut(200,function(){
+				this.$el.fadeOut(200,function(){
 					if(self.scroll) {
 						self.scroll.destroy();
 						self.scroll = null;
 					}
 				});
 			}
-		},
-		toggleButton: function(){
-			if(this.model.get('saved')) {
-				this.$('a.save').addClass('active');	//.text('remove').attr('data-action','remove');
-			}else{
-				this.$('a.save').removeClass('active');	//.text('save').attr('data-action','save');
-			}
-		},
-		saveAction: function(e){
-			e.preventDefault();
-			var that = this,
-				OUID = this.model.get('originUId').split('|'),
-				saved = this.model.get('saved'),
-				title = this.model.get('title');
-			
-			switch(OUID[0]){
-				case 'search':
-					if(saved) return;
-					
-					var url = on.path.api + '/search/save';
-					$.post(url, {
-						query:title,
-						name:title
-					}, function(res){
-						on.helper.log(res);
-						that.model.set({saved:true});
-					})
-					break;
-				case 'channel':
-					if(saved){
-						// saved, so un-save
-						var url = on.path.api + '/channel/unfollow';
-						$.post(url, {
-							channel:OUID[1]
-						},function(res){
-							on.helper.log(res)
-							//  that.model.set({saved:res.saved}); - once saved is setup, needs to be added to backend
-							that.model.set({saved:false});
-							this.app.searches.fetch();
-						})
-					}else{
-						// if not saved, then save
-						var url = on.path.api + '/channel/follow';
-						$.post(url,{
-							channel: OUID[1]
-						}, function(res){
-							on.helper.log(res)
-							//  that.model.set({saved:res.saved}); - once saved is setup
-							that.model.set({saved:true});
-							that.app.channels.fetch();
-						})
-					}
-					break
-				case 'event':
-					break;
-				default:
-					on.helper.log('DetailView.save failed service = ' + this.model.get('service'), 'error')
-					break;
-			}
 		}
 	});
 
-	// Article views
-	var ArticleListView = Backbone.View.extend({
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail View Lists ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// List views for related items in detail view
+	var ChannelListDetailView = _ListView.extend({
+		tagName: 'section',
+		className: 'content channelList clearfix',
+		title: false, // set when creating view
+		itemView: function(item){ 
+			return ( this.type === 'list' )? new ChannelDetailHomeView({model:item, app:this.options.app}) : new ChannelDetailView({model:item, app:this.options.app}); 
+		},
+		helpViewTemplate: function(){
+			var name;
+			switch(this.type){
+				case 'search':
+					name = 'detailSearchChannel';
+					break;
+				case 'channel':
+				case 'event':
+					//name = 'detailDefaultChannel';
+					break;
+				case 'list':
+					name = 'detailHomeChannel';
+				default:
+					break;
+			};
+			return name;
+		}
+	});
+	var EventListDetailView = _ListView.extend({
+		tagName: 'section',
+		className: 'content eventList',
+		title: false,
+		itemView: function(item){ return new EventDetailView({model:item, app:this.options.app}) },
+		helpViewTemplate: function(){
+			var name = false;
+			switch(this.type){
+				case 'search':
+					name = 'detailSearchEvent';
+					break;
+				case 'channel':
+				case 'event':
+					name = 'detailDefaultEvent';
+					break;
+				case 'list':
+				default:
+					break;
+			};
+			return name;
+		}
+	});
+
+	var ArticleListView = _ListView.extend({
 		tagName: 'section',
 		className: 'content articleList',
-		initialize: function(){
-			on.helper.log('# View.ArticleList.initialize');
-			_.bindAll(this, 'addAll', 'addOne', 'addHelp');
-			
-			this.type = this.options.type;
-			this.app = this.options.app;
-			this.collection.bind('reset', this.addAll);
-			this.collection.bind('add', this.addOne);
-		},
-		
-		addAll: function(){
-			this.collection.each(this.addOne);
-			if(this.collection.length === 0) this.addHelp();
-		},
-		addOne: function(article){
+		onInit: function(){},
+		itemView: function(article){ 
 			var view = false,
 				json = article.toJSON(),
 				type = json.type;
@@ -873,42 +939,126 @@ TweetView			- individual tweet comment
 				default:
 					console.error('View.ArticleList.addOne - type not recognised = ' + type)
 			};
-			if(!view) return;
-			
-			$(this.el).append(view.render().el);
+			return view;
 		},
-		addHelp: function(){
-			alert(this.type);
-			var view = false;
+		helpViewTemplate: function(){
+			var name = false;
 			switch(this.type){
 				case 'search':
-					view = new Help_detail_search();
+					name = 'detailSearchArticle';
 					break;
 				case 'channel':
 				case 'event':
-					view = new Help_detail_channel();
+					name = 'detailDefaultArticle';
 					break;
-				case 'home':
+				case 'list':
 				default:
 					break;
-			}
-			if(view) $(this.el).append(view.render().el);
+			};
+			return name;
 		}
 	});
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Detail List Items ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// Item view for related items in detail view
+	var ChannelDetailView 	= ChannelView.extend({
+		className:'channelItem',
+		template: _.template( $('#channelDetailItemTemplate').html() ),
+		render: function(){
+			this.$el.html(this.template( this.model.toJSON() ));
+			var hex = this.model.get('branding');
+			if(hex){
+				hex = hex.split(',');
+				this.$('a').css({'background-color':hex[0]});
+				if(hex.length == 2) this.$('h1').css({'color':hex[1]});
+			}
+		    return this;
+		}
+	});
+	var ChannelDetailHomeView = ChannelView.extend({
+		className:'channelListItem',
+		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
+		render: function(){
+			this.$el.html(this.template(this.model.toJSON()));
+			var hex = this.model.get('branding');
+			if(hex){
+				hex = hex.split(',');
+				this.$el.css({'background-color':hex[0]});
+				if(hex.length == 2) this.$('header h1').css({'color':hex[1]});
+			}
+		    return this;
+		}
+	});
+	var EventDetailView = EventView.extend({
+		className:'eventItem bb',
+		template: _.template( $('#eventDetailItemTemplate').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			json.participantsObj = makeObject(json.participants);
+			this.$el.html(this.template( json ));
+		    return this;
+		},
+	});
+	
+	var makeObject = function(val){
+		var t = val.split(/\}\,\s?{/g),
+			i = 0, 
+			l = t.length, 
+			arr = [];
+			
+		for(i; i<l; i++){ 
+		    var tmp = t[i].replace(/\{|\}/g,'').split(','),
+		    	j = 0, ll = tmp.length,
+		    	obj = {};
+
+		    for(j; j<ll; j++){
+		        var tmp2 = tmp[j].replace(' ','').split(':');
+		        obj[ tmp2[0] ] = tmp2[1];
+		    }
+		    arr.push(obj)
+		};
+		return arr;
+	}
+	
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Article item views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 	var ArticleView_twitter = _ArticleView.extend({
-		className: 'twitter',
+		className: 'twitter articleItem',
 		template: _.template( $('#articleTemplate-twitter').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			console.log(json)
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
+		    return this;
+		}
 	});
 	var ArticleView_youtube = _ArticleView.extend({
-		className: 'youtube',
+		className: 'youtube articleItem',
 		template: _.template( $('#articleTemplate-youtube').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			json.vid = json.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
+			this.model.set({vid:json.vid});
+			console.log(json)
+			if(!json.filtered) this.$el.addClass('hidden');
+			this.$el.html(this.template(json));
+		    return this;
+		}
 	});
 	var ArticleView_rss = _ArticleView.extend({
-		className: 'rss',
+		className: 'rss articleItem',
 		template: _.template( $('#articleTemplate').html() ),
 		preSelect: function(e){
 			var json = this.model.toJSON();
+			console.log(json)
 			console.log(json.extended + ' / ' + json.link)
 			if(json.extended === null && (/http:\/\//gi).test(json.link)){
 				this.model.set({ iframe : true});
@@ -918,8 +1068,9 @@ TweetView			- individual tweet comment
 		}
 	});
 
-
-// Article Detail Views (overlays)
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Article Detail Views (overlays) ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	var ArticleDetailView = Backbone.View.extend({
 		el: $('#listArticle'),
 		view: false,
@@ -935,27 +1086,46 @@ TweetView			- individual tweet comment
 			var oldId = this.app.previous('selectedArticle'),
 				s = this.app.get('selectedItemUID').split('|');
 
-			console.log('id = ' + id + ', oldId = '+oldId);
-
-			if(id === oldId){
+			console.log(oldId +' / '+id)
+			if(id === oldId || ( !id && !oldId )){
+				// no change do nothing
 				return;
-			} else if(id === null) {
+			} else if(oldId && !id){
+				// was article, no more - hide
 				this.hide();
-				// set page route
-				var route = '/' + s[0] + "/" + s[1];
-				this.app.route.navigate(route);
 			} else {
-				var list = this.app.get('selectedArticleList'),
-					model = list.get(id),
-					view = this.selectView(model);
+				// show article
+				var list = this.app.get('selectedArticleList');
+				if(list){
+					var model = list.get(id);
+					if(model){
+						var view = this.selectView(model);
+						this.view = view.render().el;
+						this.$el.append(this.view);
+						this.show();
+					}else{
+						model = BB.Article({ id:id });
+						model.fetch({
+							success:function(){
+							alert('success')
+							}, 
+							error:function(){
+							alert('error')
+							}
+						});
+					}
+				}else{
+					model = BB.Article({ id:id });
+					model.fetch({
+						success:function(){
+						alert('success')
+						}, 
+						error:function(){
+						alert('error')
+						}
+					});
+				}
 				
-				this.view = view.render().el;
-				$(this.el).append(this.view);
-				this.show();
-				
-				// set page route
-				var route = '/' + s[0] + "/" + s[1] + '/article-' + model.id;
-				this.app.route.navigate(route);
 			}
 		},
 		selectView: function(model){
@@ -973,16 +1143,14 @@ TweetView			- individual tweet comment
 		},
 		close: function(e){
 			e.preventDefault();
-			this.app.set({
-				selectedArticle		: null,
-			});
+			this.app.set({ selectedArticle : false });
 			this.app.setTitle();
 		},
 		show: function(){
-			$(this.el).addClass('on');
+			this.$el.addClass('on');
 		},
 		hide: function(){
-			$(this.el).removeClass('on');
+			this.$el.removeClass('on');
 			$(this.view).remove();
 		}
 	});
@@ -994,7 +1162,7 @@ TweetView			- individual tweet comment
 		template: _.template( $('#articleDetail').html() ),
 		render: function(){
 			console.log(this.model.toJSON())
-			$(this.el).html(this.template(this.model.toJSON()));
+			this.$el.html(this.template(this.model.toJSON()));
 		    return this;
 		}
 	});
@@ -1015,14 +1183,16 @@ TweetView			- individual tweet comment
 	});
 
 	
-	// Comment views
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Comment views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
 	var CommentPostView = _form.extend({
 		el: $('#onsideComments form'),
 		escapeVal: false,
 		initialize : function(){
 			_.bindAll(this, 'submit', 'search');
 			this.app = this.options.app;
-			this.collection = this.app.comments;
+			this.collection = this.options.collection;
 		},
 		search: function(value){
 			console.log(value)
@@ -1037,27 +1207,39 @@ TweetView			- individual tweet comment
 			this.collection.urlParams = '';
 		    this.collection.create(postParams);
 		    this.$('input[name="comment"]').val('');
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showcomments');
 		}
-		
 	});
-	var PostTweet = _form.extend({
+	var TweetPostView = _form.extend({
 		escapeValue: false,
 		el: $('#twitterComments form'),
-		escapeVal: false,
+		escapeValue: false,
 		initialize : function(){
-			_.bindAll(this, 'submit', 'search');
+			_.bindAll(this, 'submit', 'search', 'updateContent');
 			this.app = this.options.app;
-			this.collection = this.app.tweets;
+			this.collection = this.options.collection;
+			var twit = this.app.get('twitter');
+			this.$('button').text('tweet now @'+ twit.screen_name);
+			this.escapeValue = false;
 		},
-		search: function(value){
-			console.log(value);
-			var params = {
-				message: value.replace('tweet=','')
-			}
+		search: function(){
+			var value = this.$('#tweetAdd').val(),
+				self = this,
+				params = { message: value.replace('tweet=','') };
+				
 			$.post('/tweet', params, function(res){
-				console.log(res)
-			})
+				console.log(res);
+				self.collection.add(res);
+			});
 			//this.collection.create(params)
+		},
+		updateContent: function(){
+			this.$('textarea').text('#' + this.collection.hash);
+		},
+		focus: function(){
+			ev.trigger('update:view', 'showcomments');
 		}
 	});
 	
@@ -1066,46 +1248,39 @@ TweetView			- individual tweet comment
 		scroll: null,
 		
 		events: {
-			'click nav > a'		: 'changeTab'
+			'click #chatContentWrap' : 'checkView',
+			'click nav > a'	: 'changeTab'
 		},
 		
+		defaultTab: false,
 		activeTab: false,
 		activeBlock: false,
 		
 		$el: {
-			on_block: this.$('#onsideComments > .inner'),
-			fb_block: this.$('#facebookComments'),
-			tw_block: this.$('#twitterComments > .inner'),
-			go_block: this.$('#googleComments')
+			on_block		: this.$('#onsideComments'),
+			fb_block		: this.$('#facebookComments'),
+			tw_block		: this.$('#twitterComments'),
+			go_block		: this.$('#googleComments'),
 		},
 		
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'commentsActive', 'empty', 'addOne', 'addAll', 'addOneTweet', 'addAllTweets', 'changeTab', 'facebookComments', 'updateScroll');
+			_.bindAll(this, 'checkView', 'changeTab', 'updateScroll');
 			
-			this.app.bind('change:selectedItemUID', this.empty); 
-			this.app.bind('change:selectedItemUID', this.commentsActive); 			
-			this.app.bind('change:selectedArticle', this.empty );
-
-			this.collection = this.app.comments;
-			this.collection.bind('add', this.addOne);
-			this.collection.bind('reset', this.addAll);
-
-			this.tweets = this.app.tweets;
-			this.tweets.bind('add', this.addOneTweet);
-			this.tweets.bind('reset', this.addAllTweets);
+				// comment lists views
+			var onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments}),
+				twitterComments = new TwitterCommentListView({app: this.options.app, collection:this.app.tweets}),
+				facebookComments = new FacebookCommentListView({app: this.options.app}),			
+				// Post Comment view
+				onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
 			
-			this.$('nav a.onside').click();
+			this.$('a.onside').click();
 			
-			ev.bind('update:commentContent', this.updateScroll, this);
-			ev.trigger('update:commentContent');
+			ev.bind('update:scroll:comments', this.updateScroll, this);
+			ev.trigger('update:scroll:comments');
 		},
-		commentsActive: function(model, val){
-			if(val.split('|')[1] === 'null'){
-				this.el.addClass('showHelp');
-			}else{
-				this.el.removeClass('showHelp');
-			};
+		checkView: function(){
+			ev.trigger('update:view', 'showcomments');
 		},
 		updateScroll: function(){
 			var self = this;
@@ -1123,15 +1298,8 @@ TweetView			- individual tweet comment
 				}
 			}, 100);
 		},
-		empty:  function(val){
-			this.$el.fb_block.empty();
-			this.$el.go_block.empty();
-			this.$el.tw_block.empty();
-			this.$el.on_block.empty();
-			ev.trigger('update:commentContent');
-			//if(this.activeBlock === '#facebookComments') this.facebookComments();
-		},
 		changeTab: function(e){
+			alert('change tab')
 			e.preventDefault();
 			var newTab = $(e.target),
 				newBlock = newTab.attr('href');
@@ -1148,57 +1316,160 @@ TweetView			- individual tweet comment
 			if(newBlock === '#facebookComments' && this.$el.fb_block.is(':empty')){
 				this.facebookComments();
 			}
-			ev.trigger('update:commentContent');
+			ev.trigger('update:scroll:comments');
+		}
+	});
+
+	var _genericCommentListView = Backbone.View.extend({
+		//el : $('#onsideComments'),
+		helpGeneral: 'commentOnside',
+		helpAuth: 'commentOnside',
+		active: false,
+		initialize: function(){		
+			_.bindAll(this, 'onInit', 'setupComments', 'addOne', 'addAll', 'reset', 'checkContent', 'showHelp', 'createHash');
+			
+			this.app = this.options.app;
+			this.collection = this.options.collection;		
+			this.$inner = this.$('.inner');
+			this.$form = this.$('form');
+			this.$help = false;
+			
+			var self = this;
+			this.app.bind('change:selectedItemUID', this.checkContent); 
+			this.app.bind('change:selectedArticle', function(){
+				var val = self.app.get('selectedItemUID');
+				self.checkContent(false, val);
+			});
+
+			if(this.collection) {
+				this.collection.bind('add', this.addOne);
+				this.collection.bind('reset', this.addAll);
+			}
+			this.onInit();
+		},
+		onInit: function(){},
+		setupComments: function(){},
+		addOne: function(comment, index){},
+		addAll: function(comment){
+			this.$inner.empty();
+			this.collection.each(this.addOne);
+		},
+		reset: function(){
+			// empty + if present
+			this.$form.show();
+			this.$inner.empty().show();
+			console.log(this.$help);
+			if(this.$help) this.$help.remove();
+		},
+		checkContent: function(model, val){
+			this.reset();
+			var s = val.split('|');
+			if( s[1] === ('null') || s[0] ==='list' || s[0] === 'search' ){
+				// home/search - no comments
+				this.showHelp('general');
+			}else if(!this.auth){
+				// not auth to use this module - login help
+				this.showHelp('auth');
+			}else{
+				this.setupComments(val);
+			};
+		},
+		showHelp: function(type){
+			var help = (type === 'general')? this.helpGeneral : this.helpAuth,
+				view = new _HelpView();
+				
+			this.$help = $( view.render(help).el );
+			this.$el.prepend(view.render(help).el);
+			this.$form.hide();
+			this.$inner.hide();
+			ev.trigger('update:scroll:comments');
+		},
+		createHash: function(val){
+			var s = val.split('|');
+			s[0] = s[0].substring(0,1).toUpperCase();
+			var hash = 'On' + s[0] + s[1];
+			if(s[2]) hash += s[2];
+			return hash;
+		}
+	});
+	
+	var OnsideCommentListView = _genericCommentListView.extend({
+		el : $('#onsideComments'),
+		onInit: function(){
+			this.auth = true;
 		},
 		addOne: function(comment, index){
 			var view = new CommentView({model:comment, app:this.options.app})
-			this.$el.on_block.append(view.render().el);
-			
-			if(index === this.collection.length - 1) ev.trigger('update:commentContent');
+			this.$inner.append(view.render().el);
+			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
+		}
+	});	
+	var TwitterCommentListView = _genericCommentListView.extend({
+		el : $('#twitterComments'),
+		auth: function(){
+			var u = this.app.get('user');
+			return (u.twitter && u.twitter.length >= 2)? true : false;
 		},
-		addAll: function(comment){
-			this.$el.on_block.empty();
-			this.collection.each(this.addOne);
+		helpAuth: 'commentTwitter',
+		onInit: function(){
+			this.postView = new TweetPostView({ app: this.options.app, collection: this.options.collection });
+			this.auth = this.app.get('twitter');
 		},
-		addOneTweet: function(tweet){
-			var view = new TweetView({model:tweet, app:this.options.app})
-			this.$el.tw_block.append(view.render().el);
-			
-			if(index === this.tweets.length - 1) ev.trigger('update:commentContent');
+		addOne: function(tweet, index){
+			var view = new TweetView({model:tweet, app:this.options.app});
+			this.$inner.prepend(view.render().el);
+			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
 		},
-		addAllTweets: function(tweet){
-			this.$el.tw_block.empty();
-			this.tweets.each(this.addOneTweet);
+		setupComments: function(val){
+			var hash = this.createHash(val);
+			this.collection.hash = hash;
+			this.postView.updateContent(hash);
+			this.collection.fetch();
+		}
+	});
+	var FacebookCommentListView = _genericCommentListView.extend({
+		el : $('#facebookComments'),
+		helpAuth: 'commentFacebook',
+		onInit: function(){
+			this.auth = this.app.get('facebook');
 		},
-		facebookComments: function(){
+		setupComments: function(val){
 			var url = document.location.href.replace('#',''),
-				width = $(this.el).width(),
+				width = '265px', //this.$inner.width(),
 				comments = '<input type="hidden" value="'+url+'" /><div class="fb-comments" data-href="'+url+'" data-num-posts="2" data-width="'+width+'" data-colorscheme="dark" css=" '+on.path.facebookCss+' " simple="false"></div>';
-				
-			this.$el.fb_block.html(comments);
+
+			this.$inner.html(comments);
 			if (typeof FB  != "undefined"){
 			    FB.XFBML.parse(document.getElementById('facebookComments'));
-			    ev.trigger('update:commentContent');
+			    ev.trigger('update:scroll:comments');
 			}
-		} 
+		}
 	});
-	var CommentView 	= Backbone.View.extend({
+
+	var CommentView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'comment bb',
-		template:  _.template( $('#commentTemplate').html() ),
+		template: _.template( $('#commentTemplate').html() ),
+		officialTemplate: _.template( $('#officialTweetTemplate').html() ),
 		initialize: function(){
 			_.bindAll(this, 'render');
 		},
 		render: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+			console.log(this.model.toJSON())
+			this.$el.html(this.template(this.model.toJSON()));
 		    return this;
 		}
 	});
-	var TweetView 	= CommentView.extend({
-		className	: 'tweet bb',
-		template	:  _.template( $('#tweetTemplate').html() ),
-		render		: function(){
-			$(this.el).html(this.template(this.model.toJSON()));
+	var TweetView = CommentView.extend({
+		className: 'tweet bb',
+		template:  _.template( $('#tweetTemplate').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			if(typeof json.user === 'object'){
+				this.$el.html(this.officialTemplate(this.model.toJSON()));			
+			}else{
+				this.$el.html(this.template(this.model.toJSON()));
+			}
 		    return this;
 		}
 	});
@@ -1210,7 +1481,7 @@ TweetView			- individual tweet comment
 	BB.DetailListView 	= DetailListView;
 	BB.ArticleDetailView = ArticleDetailView;
 	BB.CommentPostView 	= CommentPostView;
-	BB.PostTweet		= PostTweet; 
+	BB.TweetPostView	= TweetPostView; 
 	BB.CommentListView 	= CommentListView; 
 
 })(this.BB);

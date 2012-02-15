@@ -1,0 +1,206 @@
+<section id="OnsideCMS">
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="#">Onside CMS</a>
+
+				<% if(everyauth.loggedIn){ %>
+				<ul class="nav" id="primaryNav">
+					<li><a href="#dashboard">Dashboard</a></li>
+					<li><a href="#users">Users</a></li>
+					<li><a href="#channels">Channels</a></li>
+					<li><a href="#events">Events</a></li>
+					<li><a href="#sources">Sources</a></li>
+					<li><a href="#articles">Articles</a></li>
+					<li><a href="#relations">Relations</a></li>
+				</ul>
+				<p class="pull-right">Logged in as <a href="#"><%= everyauth.user.name %></a></p>
+				<% }else{ %>
+				<p class="pull-right">You are not logged in.</p>					
+				<% } %>
+
+
+			</div>
+		</div>
+	</div>
+	
+
+	<div class="container-fluid">
+		<div class="sidebar"></div>
+		<div class="content">
+			<% if(everyauth.loggedIn){ %>
+			<section id="dashboard" class="page">
+				<div class="page-header">
+					<h1>Dashboard <small></small></h1>
+				</div>
+				<div class="row"><div class="span">
+					<h4>Possible features</h4>
+					<ul>
+						<li>Channel: Upload / resize images</li>
+						<li>Channel: Colour picker for brand</li>
+						<li>Source: test load (and save an article to test mapping)</li>
+						<li>Article: as there are lots add filters on which to load (per channel / event / source) + number limit</li>
+					</ul>
+				</div></div>
+			</section>
+
+			<section id="users" class="page">
+				<div class="page-header">
+					<h1>Users <small>create &amp; edit</small></h1>
+				</div>
+				<%- partial('partials/cms.filterForm.ejs') %>
+			</section>
+
+			<section id="channels" class="page">
+				<div class="page-header">
+					<h1>Channels <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
+				</div>
+				<%- partial('partials/cms.filterForm.ejs') %>
+			</section>
+
+			<section id="events" class="page">
+				<div class="page-header">
+					<h1>Events <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
+				</div>
+				<%- partial('partials/cms.filterForm.ejs') %>
+			</section>
+
+			<section id="sources" class="page">
+				<div class="page-header">
+					<h1>Sources <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
+				</div>
+				<%- partial('partials/cms.filterForm.ejs') %>
+			</section>
+
+			<section id="articles" class="page">
+				<div class="page-header">
+					<h1>Articles <small>create &amp; edit</small><button class="btn success create">Create new</button></h1>
+				</div>
+				<article class="well filter">
+					<form class="form-stacked">
+						<div class="row">
+							<div class="span3">
+								<div class="clearfix">
+		            				<label for="channel">Select channel</label>
+									<div class="input">
+										<select id="channelSelect" name="channel" class="dynamicSelect" data-content="channels">
+											<option>all</option>
+										</select>
+									</div>
+								</div>
+							</div>
+
+							<div class="span3">
+								<div class="clearfix">
+		            				<label for="limit">Select limit</label>
+									<div class="input">
+										<select id="limitSelect" name="limit">
+											<option>10</option>
+											<option>20</option>
+											<option>30</option>
+											<option>40</option>
+											<option>50</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							
+							<div class="span3 foot">
+								<input type="submit" value="Get articles" class="btn primary">
+							</div>
+						</div>
+					</form>
+				</article>
+				<table class="zebra-striped">
+					<thead></thead>
+					<tbody></tbody>
+				</table>
+			</section>
+			
+			<section id="relations" class="page">
+				<div class="page-header">
+					<h1>Relate Items</h1>
+				</div>
+				
+				<div class="row blocks">
+					<div class="span4">
+						<h3>Channel > Event</h3>
+						<a data-rel="channel:event" class="btn" href="#">open</a>
+					</div>
+					<div class="span4">
+						<h3>Channel > Channel</h3>
+						<a data-rel="channel:channel" class="btn" href="#">open</a>
+					</div>
+				</div>
+				
+				
+			</section>
+
+
+<!-- Non Auth ///////////////////////////////////  -->
+			<% } else { %>
+				<section id="login">
+					<div class="page-header">
+						<h1>Login <small>to make changes - <a href="/auth/facebook" class="btn success">facebook</a> or <a href="/auth/twitter" class="btn success">twitter</a></small></h1>
+					</div>
+				</section>
+			<% } %>
+<!-- Non Auth ///////////////////////////////////  -->
+
+			<footer>
+				<p>&copy; Company 2011</p>
+
+			</footer>
+		</div>
+	</div>
+
+
+	<div class="modal hide fade in" id="overlay">
+		<div class="modal-header">
+			<a class="close" href="#">×</a>
+			<h3>Modal Heading</h3>
+		</div>
+		<div class="modal-body">
+			<p>One fine body…</p>
+		</div>
+		<div class="modal-footer">
+			<a class="btn primary" href="#">Primary</a>
+			<a class="btn secondary" href="#">Secondary</a>
+		</div>
+	</div>
+
+	
+</section><!-- /#OnsideCMS -->
+
+<script id="overlayTemplate" class="tmpl" type="text/template">
+	<div class="modal-header">
+		<a class="close" href="#">×</a>
+		<h3>Modal Heading</h3>
+	</div>
+	<div class="modal-body">
+	</div>
+	<div class="modal-footer">
+		<a class="btn btn-primary save" href="#"  data-loading-text="Saving data...">Save</a>
+		<a class="btn btn-secondary cancel" href="#">Cancel</a>
+		<a class="btn btn-danger delete" href="#" data-loading-text="Deleting data...">Delete</a>
+	</div>
+</script>
+
+<script id="detailTemplate" class="tmpl" type="text/template">
+	<h3>Related channels <button class="btn success edit">add</button></h3>
+	<div class="row rel-channels">				
+	</div>
+
+	<h3>Related events <button class="btn success edit">add</button></h3>
+	<div class="row rel-events">				
+	</div>
+
+	<h3>Related articles</h3>
+	<div class="row rel-articles">
+	</div>
+</script>
+
+
+
+
+

@@ -5,7 +5,7 @@
 
 <script id="channelItemTemplate" class="tmpl" type="text/template">
 	<a href="#">
-		<@ if(img) { @><img src="<@= img @>" /><@ } @>
+		<img src="<@= image @>" />
 		<h1><@= name @></h1>
 	</a>
 </script>
@@ -24,65 +24,20 @@
 	</a>
 </script>
 
-<!-- help templates -->
-<script id="help_channelItemTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<a href="#" class="hide">hide help</a>
-	<h2>You are currently not following any channels</h2>
-	<p>Start by finding new channels <a class="focusSearch" href="#">searching</a> or browsing some of our <a href="#">popular</a> channels.</p>
-</script>
-
-<script id="help_eventItemTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<a href="#" class="hide">hide help</a>
-	<h2>No events to see..</h2>
-	<p>Some channels do not have any events, so why not follow some more channels?</p>
-</script>
-
-<script id="help_savedSearchTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<a href="#" class="hide">hide help</a>
-	<h2>No saved searches</h2>
-	<p>If you the channel you want doesnt exist you can save a search to get news on something specific.</p>
-</script>
-
-<script id="help_channelDetailTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<h2>This channel does not have any related channels</h2>
-	<p>Start by finding new channels <a class="focusSearch" href="#">searching</a> or browsing some of our <a href="#">popular</a> channels.</p>
-</script>
-
-<script id="help_detail_searchTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<h2>There are no search results for that term, please be patient as we add new content sources.</h2>
-	<p>If you can recommend a content source we will add it to the channel. We can pull in RSS feeds, tweets, youtube videos and we are always adding new sources as well.</p>
-	<a href="#">Make a recommendation</a>
-</script>
-
-<script id="help_detail_channelTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<h2>There are no articles to show</h2>
-	<p>... who knows why</p>
-</script>
-
-<script id="help_detail_homeTemplate" class="tmpl" type="text/template">
-	<span class="icon think"></span>
-	<h2>You have no channels saved</h2>
-	<p>Search for some new channels and save the ones you like, thats all there is too it...</p>
-</script>
 
 
 <!-- // DETAIL ITEM TEMPLATES // -->
 <script id="detailTemplate" class="tmpl" type="text/template">
-	<header class="detailHead bb">
+	<header class="detailHead bb shadows">
 		<h1>
-			<img class="badge" src="/i/placeholder/listIcon2.png" />
+			<img class="badge" src="<@= image @>" />
 			<@= title @>
 		</h1>
 		<nav>
 			<!--a class="refresh" href="#">refresh</a-->
-			<% if (everyauth.loggedIn) { %>	
-			<a class="save" href="#"><span class="icon save">save</span></a>
+			<% if (everyauth.loggedIn) { %>
+			<@ var saveClass = (saved)? 'active' : ''; @>
+			<a class="save <@= saveClass @>" href="#"><span class="icon save">save</span></a>
 			<% } else { %>
 			<a class="login" href="#"><span class="icon login"></span>login to save</a>
 			<% } %>
@@ -92,7 +47,11 @@
 	</header>
 	
 	<div class="contentWrapper">
-		<div class="scroller"></div><!-- /.scroller -->
+		<div class="scroller">
+			<div id="pullDown" class="scrollLoad"><span class="icon pullDown"></span><span class="label">Pull down to refresh...</span></div>		
+			
+			<div id="pullUp" class="scrollLoad"><span class="icon pullUp"></span><span class="label">Pull up to load more...</span></div>		
+		</div><!-- /.scroller -->
 	</div>
 </script>
 
@@ -107,33 +66,91 @@
 
 <script id="channelDetailItemTemplate" class="tmpl" type="text/template">
 	<a href="#">
-		<img class="badge" src="/i/placeholder/listIcon2.png" />
+		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
 	</a>
 </script>
 	
 <script id="channelDetailHomeItemTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( defaultArticle.publish ); @>
-	<header>
-		<img class="badge" src="/i/placeholder/listIcon2.png" />
+	<header class="shadows">
+		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
-		<p>[[ 120 followers / 20 articles since last visit ]]</p>
+		<p class="stats">[[ 120 followers / 20 articles since last visit ]]</p>
 	</header>
-	<div class="wrapArticle <@= defaultArticle.type @>">
-		<h2>Latest news from: <time><@= time @></time></h2>
-		<h3><@= defaultArticle.title @></h3>
-		<p class="more">see all <@= name @> news &gt;</p>
-	</div>
-	<div class="wrapEvent">
-		<h2>[[ latest / Next event info if any - determine if this is more important than news ]]</h2>
+	<div class="inner">
+		<div class="wrapArticle <@= defaultArticle.type @>">
+			<@ if( defaultArticle.title ) { @>
+			<h2><@= defaultArticle.title @></h2>
+			<p class="detail">Latest news from: <time><@= time @></time></p>
+			<div class="content"><@= defaultArticle.content @></div>
+			<@} else {@>
+			<h2>no new articles to display</h2>
+			<@ } @>
+		</div>
+		<!--div class="wrapEvent">
+			<h2>[[ latest / Next event info if any - determine if this is more important than news ]]</h2>
+		</div-->
 	</div>
 </script>
 
 <script id="eventDetailItemTemplate" class="tmpl" type="text/template">
-	<h1><@= name @></h1>
-	<p><@= sport @> / <@= type @></p>
+	<@ var time = prettyDate( stime ); @>
+	<@ var typeName = type; if(type === 'match'){ typeName = (participantsObj[0].score)? 'RESULT' : 'FIXTURE'; } @>
+	<header>
+		<h1><@= typeName @></h1>
+		<time><@= time @></time>
+	</header>
+	<section>
+		<@ if(participantsObj.length == 2) { @>
+		<p>
+			<a href="/channel/<@= participantsObj[0].channel @>"><@= participantsObj[0].name @></a>
+			<@ if(participantsObj[0].score) { @><span class="score"><@= participantsObj[0].score @></span><@ } @>
+			<span>v</span>
+			<@ if(participantsObj[1].score) { @><span class="score"><@= participantsObj[1].score @></span><@ } @>
+			<a href="/channel/<@= participantsObj[1].channel @>"><@= participantsObj[1].name @></a>
+		</p>
+		<@ } else { @>
+			<p><@= name @></p>
+		<@ } @>
+		<p class="location"><@ if(location) { @>@ <@= location @><@ } @></p>
+		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
+	</section>
 </script>
 
+<script id="!!eventDetailItemTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( stime ); @>
+	<header>
+		<h1><@= type @></h1>
+		<time><@= time @></time>
+	</header>
+	<section>
+		<h1><@= name @></h1>
+		<p><@= participants.length @></p>
+		<@ if(participants.length == 2) { @>
+			<@= participants[0] @>
+			
+			<a href="/channel/<@= participantsObj[0].channel @>">
+				<@= participantsObj[0].name @>
+				<@ if(participantsObj[0].score) { @><span><@= participantsObj[0].score @></span><@ } @>
+			</a>
+			<span>v</span>
+			<a href="/channel/<@= participantsObj[1].channel @>">
+				<@ if(participantsObj[1].score) { @><span><@= participantsObj[1].score @></span><@ } @>
+				<@= participantsObj[1].name @>
+			</a>
+		<@ } else { @>
+			<@ for(var i=0; i<participants.length; i++) { @>
+				<a href="/channe/<@= participants[i].channel @>">
+					<@= participants[i].name @>
+					<@ if(participants[i].score) { @><span><@= participants[i].score @></span><@ } @>
+				</a>
+			<@ } @>
+		<@ } @>		
+		<p><@= location @></p>
+		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
+	</section>
+</script>
 
 
 <!-- // COMMENT TEMPLATES // -->
@@ -164,6 +181,20 @@
 	<div class="user">
 		<cite>
 			<a href='https://twitter.com/#!/<@= from_user_name @>' ><@= from_user_name @> </a> - <a class="reply" href="#">reply</a>
+		</cite>
+		<time><@= time @></time>
+	</div>
+	<div class="wrapComment">
+		<p><@= text @></p>
+	</div>
+</script>
+<script id="officialTweetTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( created_at ); @>
+	<img src="<@= user.profile_image_url @>" />
+	
+	<div class="user">
+		<cite>
+			<a href='https://twitter.com/#!/<@= user.screen_name @>' ><@= user.screen_name @> </a> - <a class="reply" href="#">reply</a>
 		</cite>
 		<time><@= time @></time>
 	</div>

@@ -5,11 +5,21 @@
    Created by andrew tennison on 2011-09-08.
    Copyright 2011 andrew tennison. All rights reserved.
 */
- 
+@import url(http://fonts.googleapis.com/css?family=Glegoo); /* font-family: 'Open Sans', sans-serif; */
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,600); /* font-family: 'Glegoo',serif; */
+
 body {font-family:Helvetica,Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif}
 p, h1, h2, h3, h4, h5, h6 {margin:0; padding:0} 
- 
-/*
-.page > header h1, 
-.page .detailItem > header h1 {font-size:2em; text-transform:uppercase; padding:16px; color:#494c4f}
-*/
+
+.articleItem.youtube .inner h2,
+.scrollLoad .label,
+.channelListItem h2,
+.help h2,
+.eventItem,
+.detailItem h2.groupTitle,
+.channelListItem header h1,
+.detailHead h1 {font-family: 'Open Sans', sans-serif;}
+
+.articleTwitter .original p,
+.articleItem.twitter p,
+.articleItem.rss h1 {font-family: 'Glegoo',serif;}

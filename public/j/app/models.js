@@ -13,15 +13,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			// create + init collections for channels + events
 			this.channels = new BB.ChannelList();
+			this.channels.params = {user:'me'};
+			
 			this.events = new BB.EventList();
-			this.detailedList = new BB.DetailList(false,app);
+			this.events.params = {user:'me'};
+			
 			this.searches = new BB.SavedSearchList();
+			this.searches.params = {user:'me'};
+
+			this.detailedList = new BB.DetailList();
 			this.comments = new BB.CommentList(false,app);
 			this.tweets = new BB.TweetList(false,app);
 			
 			this.bind('change:selectedItemUID', this.updateService);
 			this.bind('change:selectedArticle', this.updateService);
-			
 		},
 		defaults: {
 			selectedServiceName: null,
@@ -48,9 +53,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.set({selectedItemTitle : title})
 		},
 		updateService: function(model,val){
-			this.set({
-				selectedServiceName	: this.get('selectedItemUID').split('|')[0]
-			}) 
+			var article = this.get('selectedArticle'),
+				url = '/' + this.get('selectedItemUID').replace('|','/') + ((article)? '/article-' + article : '');
+			this.route.navigate(url);
+			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
 		}
 	});
 
@@ -60,15 +66,42 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		service: 'channel',
 		initialize: function(){
-			on.helper.log('# Model.Channel.initialize','info');
+			console.info('# Model.Channel.initialize');
+			this.setImage();
+			// var i = this.get('image');
+			// if( i === 'null' || i === null || i.length === 0) this.set({image:'/i/placeholder/listIcon2.png'});
+		},
+		setImage: function(){
+			var attr = this.attributes;
+			
+			var sport = this.get('sport'),
+				image = this.get('image');
+			
+			if(attr.sport && ( attr.image === 'null' || attr.image === '' )){
+				var imagePath;
+				switch(attr.sport){
+					case 'golf':
+						imagePath = '/i/content/channel/_golf.png';
+						break;
+					case 'football':
+						imagePath = '/i/content/channel/_football.png'
+						break;
+					default:
+						imagePath = this.defaults.image;
+						break;
+				};
+				this.set({image:imagePath});
+			}
 		},
 		parse: function(resp){
-			return resp.resultset.channels[0];
+			//return resp.resultset.channels[0];
+			return resp
 		},
 		defaults: {
 			selected	: false,
 			service		: 'channel',
-			img			: '/i/placeholder/listIcon2.png'
+			image		: '/i/placeholder/listIcon2.png',
+			branding	: '#ffffff'
 			
 		// DB model structure
 			// id 				: undefined,
@@ -84,9 +117,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Event = Backbone.Model.extend({
 		service: 'events',
-		initialize: function(){
-			on.helper.log('# Model.Event.initialize','info');
-		},
 		defaults: {
 			selected	: false,
 			service		: 'event',
@@ -98,6 +128,29 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			// type 			: undefined,
 			// geolat			: null,
 			// geolng			: null			
+		},
+		parse: function(resp){
+			//resp.participants = this.makeObject(resp.participants);
+			return resp;
+		},
+		makeObject: function(val){
+			var t = val.split(/\}\,\s?{/g),
+				i = 0, 
+				l = t.length, 
+				arr = [];
+				
+			for(i; i<l; i++){ 
+			    var tmp = t[i].replace(/\{|\}/g,'').split(','),
+			    	j = 0, ll = tmp.length,
+			    	obj = {};
+
+			    for(j; j<ll; j++){
+			        var tmp2 = tmp[j].split(':');
+			        obj[ tmp2[0] ] = tmp2[1];
+			    }
+			    arr.push(obj)
+			};
+			return arr;
 		}
 	});
 
@@ -110,7 +163,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			on.helper.log('# Model.SavedSearch.initialize','info');
 		},
 		parse: function(resp){
-			return resp.resultset.searches[0];
+			//return resp.resultset.searches[0];
+			return resp
 		},
 		defaults: {
 			selected	: false,
@@ -142,27 +196,97 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	})
 	
 	var Detail = Backbone.Model.extend({
-		initialize: function(){
-		},
 		url: function(){
 			return '/' + this.id.replace(/\|/g,'/');
 		},
 		defaults: {
 			selected 	: true,
-			// saved 		: false,
+			title		: '',
+			type		: 'default',
+			image		: '/i/placeholder/listIcon2.png',
+			saved		: false
 		},
 		refresh: function(){
-			console.log(this)
 			this.get('channels').reset(this.get('channelJson'));
 			this.get('events').reset(this.get('eventJson'));
 			this.get('articles').reset(this.get('articleJson'));
 		},
-		validate: function(attrs) {
-			// if (attrs.error) {
-				// return "channel does not exist";
-			// }
+		setSaved: function(app){},
+		follow : function(){}
+	});
+	var DetailChannel = Detail.extend({
+		parse: function(attr){
+			if(attr.image === undefined && (attr.author.image === 'null' || attr.author.image === '')){
+				switch(attr.author.sport){
+					case 'golf':
+						attr.image = '/i/content/channel/_golf.png';
+						break;
+					case 'football':
+						attr.image = '/i/content/channel/_football.png'
+						break;
+					default:
+						attr.image === this.defaults.image
+						break;
+				};
+			};
+			return attr;
+		},
+		setSaved: function(app){
+			var id = this.get('author').id,
+				val = (app.channels.get(id))? true : false;
+			this.set({saved: val });
+		},
+		follow : function(app){
+			var self = this,
+				saved = this.get('saved'),
+				id = this.get('author').id,
+				url = on.path.api + '/channel/';
+			
+			url += (saved)?	'unfollow' : 'follow';
+
+			console.log(saved +' || '+url);
+			$.post(url, {channel: id})
+			.success(function(){
+				self.set({saved: (!saved) });
+				app.channels.fetch();
+			}).error(function(res){
+				console.error(res)
+			});
 		}
 	});
+	var DetailSearch = Detail.extend({
+		initialize: function(){
+			this.defaults.image = '/i/content/channel/_search.png';
+		},
+		setSaved: function(app){
+			console.info('////// set saved')
+			console.log(this)
+			var id = this.get('author').id,
+				val = (app.channels.get(id))? true : false;
+			this.set({saved: val });
+		},
+		follow: function(app){
+			console.dir(this.attributes);
+			var self = this,
+				saved = this.get('saved'),
+				url = on.path.api + '/search/',
+				title = this.get('title');
+			
+			url += (saved)? 'save' : 'unsave';
+			$.post(url, {query:title, name:title})
+			.success(function(){
+				self.set({saved:true});
+				app.searches.fetch();
+			})
+			.error(function(res){
+				console.error(res)
+			});
+			
+		}
+		
+	});
+
+
 
 	var Article = Backbone.Model.extend({
 		initialize: function(){
@@ -171,16 +295,18 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		defaults: {
 			selected : false,
 			filtered : true
+		},
+		parse: function(resp, xhr){
+			if(resp.type === 'youtube'){
+				resp.vid = resp.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
+			}
+			return resp;
 		}
-
 	});
 	
 	var Comment = Backbone.Model.extend({
 		initialize: function(){
 			//on.helper.log('# Model.Comment.initialize','info');
-		},
-		parse: function(resp, xhr){
-			return resp.resultset.comments[0];
 		},
 		defaults: {
 			service	: 'comment',
@@ -204,6 +330,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Tweet = Backbone.Model.extend({
+		url: '/tweet'
+		/*
 		methodToURL: {
 			'read': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
 			'update': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
@@ -216,6 +344,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			options.url = model.methodToURL[method.toLowerCase()];
 			Backbone.sync(method, model, options);
 		}
+		*/
 	});
 	
 	
@@ -229,6 +358,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.SavedSearch = SavedSearch;
 	BB.Search = Search;
 	BB.Detail = Detail;
+	BB.DetailChannel = DetailChannel;
+	BB.DetailSearch = DetailSearch;
 	BB.Article = Article;
 	BB.Comment = Comment;
 	BB.Chat = Chat;
