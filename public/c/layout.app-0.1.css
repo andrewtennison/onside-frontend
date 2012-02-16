@@ -101,7 +101,8 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 #listChat .help h2, #listChat .help p {padding-right:40px}
 
 /* ==|== animation styles ===================================================== */
-#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea
+#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea,
+.articleIframe .contentWrapper
 {-webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
 
 
@@ -223,23 +224,28 @@ body,
 /* sections */
 .detailItem .channelList {position:relative; display:block; clear:both}
 .detailItem .channelList {}
-/*
-.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:10px}
-.detailItem .articleList {padding:2px 5px 0 280px}
-*/
 .detailItem .eventList {position:relative; display:block; padding:10px 5px 0 0}
 .detailItem .articleList {padding:2px 5px 0 0px}
 
+/* Static Item */
+.staticItem {}
+.staticItem .contentWrapper {}
+.staticItem .contentWrapper .scroller {}
+.staticItem .contentWrapper h2 {padding:20px; font-size:2em; color:#fff}
+.staticItem .contentWrapper h3 {padding:20px 20px 10px 20px; font-size:1.6em; color:#fff}
+.staticItem .contentWrapper p {padding:0 20px 10px 20px; font-size:1.4em; color:#ccc}
+.staticItem .contentWrapper p a {text-decoration: underline}
+
 /* Channel Lists */
 .channelListItem {position:relative; padding:0 0 2px 0; margin:4px 2px; background:#ccc}
-.channelListItem header {position:relative; display:block; padding:0 10px 0 50px;}
+.channelListItem header {position:relative; display:block; padding:0 10px 0 50px; min-height: 48px}
 	.channelListItem header img {position:absolute; top:3px; left:3px; z-index:2}
-	.channelListItem header h1 {position:relative; z-index:2; display:table-cell; vertical-align:middle; height:48px; font-size:1.6em; color:#333; line-height: 1.3em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);}
+	.channelListItem header h1 {position:relative; z-index:2; display:table-cell; vertical-align:middle; height:30px; font-size:1.6em; color:#333; line-height: 1.3em; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);}
 	.channelListItem header .stats {display:none}
 
 .channelListItem .inner {background:rgba(255,255,255,0.9); margin:2px 4px; border-radius:2px; padding:10px}
 .channelListItem h2 {font-size:1.6em; color:#444; padding-bottom:10px; font-weight:400; padding:0}
-.channelListItem .detail {font-size:1.2em; padding-bottom:10px; color:#888}
+.channelListItem .detail {font-size:1.2em; height:16px; color:#888}
 .channelListItem .content {font-size:1.2em}
 
 
@@ -304,7 +310,8 @@ body,
 #listArticle.on {display:block}
 #listArticle .detailHead nav .save {display:none}
 
-#listArticle iframe {width:100%; height:99%; border:0px none}
+#listArticle > article.articleIframe {background:url(/i/sprites/loader.gif) center center no-repeat}
+#listArticle .articleIframe iframe {width:100%; height:99%; border:0px none;}
 
 .articleTwitter {}
 .articleTwitter .contentWrapper {margin:20px;}
@@ -361,6 +368,11 @@ body,
 /* ==|== reused styles ===================================================== */
 
 /* ==|== media querys ===================================================== */
+
+.csstransforms #listArticle	{display:block; /*opacity:0.5;*/ -moz-transform: translate(0, -100%); -webkit-transform: translate(0, -100%); -o-transform: translate(0, -100%); -ms-transform: translate(0, -100%); transform: translate(0, -100%);}
+.csstransforms #listArticle.on {/*opacity:1;*/  -moz-transform: translate(0,0); -webkit-transform: translate(0,0); -o-transform: translate(0,0); -ms-transform: translate(0,0); transform: translate(0,0);}
+
+
 
 .no-csstransforms .showchannels #main {left:260px; right:-260px}
 .no-csstransforms .showcomments #main {left:-260px; right: 260px}

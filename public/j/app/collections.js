@@ -112,6 +112,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				model;
 				
 			switch(type){
+				case 'static':
+					this.add(hash);
+					return;
 				case 'search':
 					model = new BB.DetailSearch(hash);
 					break;

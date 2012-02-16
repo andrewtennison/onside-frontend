@@ -4,6 +4,7 @@ on.preload = window.on.preload || {};
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
+		'/help'							: 'help',
 		':service/:id/:id2'				: 'getArticle',
 		':service/:id'					: 'getDetail',
 		'search?q=:id'					: 'getSearch',
@@ -73,7 +74,11 @@ BB.appRoutes = Backbone.Router.extend({
 	home: function(){
 		console.log('// Routes = "/"  (index)');
 		on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });
-	},	
+	},
+	help: function(){
+		console.log('// Routes = "/"  (help)');
+		on.m.app.set({ selectedItemUID : 'static|help', selectedArticle: false });
+	},
 	getDetail: function(service, id){
 		console.log('// Routes = "/'+service+'/'+id+'"');
 		if(id === '') {
@@ -87,9 +92,11 @@ BB.appRoutes = Backbone.Router.extend({
 		on.m.app.set({ selectedItemUID : 'search|'+id, selectedArticle: false });
 	},
 	getArticle: function( service, id, id2){
+		var article = id2.replace('article-','');
+		
 		on.m.app.set({ 
 			selectedItemUID : service +'|'+ id,
-			selectedArticle : id2
+			selectedArticle : article
 		});
 	}
 });

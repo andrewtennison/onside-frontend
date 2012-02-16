@@ -34,16 +34,14 @@
 			<@= title @>
 		</h1>
 		<nav>
-			<!--a class="refresh" href="#">refresh</a-->
 			<% if (everyauth.loggedIn) { %>
 			<@ var saveClass = (saved)? 'active' : ''; @>
-			<a class="save <@= saveClass @>" href="#"><span class="icon save">save</span></a>
+			<a class="save <@= saveClass @>" href="#!/save"><span class="icon save">save</span></a>
 			<% } else { %>
-			<a class="login" href="#"><span class="icon login"></span>login to save</a>
+			<a class="login" href="#!/signup"><span class="icon login"></span>login to save</a>
 			<% } %>
-			<a class="filter" href="#"><span class="icon filter">filter</span></a>
+			<a class="filter" href="#!/filter"><span class="icon filter">filter</span></a>
 		</nav>
-		<span class="brandStripe"></span>
 	</header>
 	
 	<div class="contentWrapper">
@@ -53,15 +51,6 @@
 			<div id="pullUp" class="scrollLoad"><span class="icon pullUp"></span><span class="label">Pull up to load more...</span></div>		
 		</div><!-- /.scroller -->
 	</div>
-</script>
-
-<script id="detail404Template" class="tmpl" type="text/template">
-	<header class="detailHead bb">
-		<h1>404: Channel not found</h1>
-		<span class="brandStripe"></span>
-	</header>
-	
-	<div class="contentWrapper"></div>
 </script>
 
 <script id="channelDetailItemTemplate" class="tmpl" type="text/template">
@@ -82,12 +71,12 @@
 	<div class="inner">
 		<div class="wrapArticle <@= defaultArticle.type @>">
 			<@ if( defaultArticle.type === 'rss' ) { @>
-				<h2><@= defaultArticle.title @></h2>
-				<!--div class="content"><@= defaultArticle.content @></div-->
+				<h2>RSS: <@= defaultArticle.title @></h2>
 			<@ } else if(defaultArticle.type === 'twitter') { @>
-				<p class="quotes"><@= defaultArticle.content @></p>
+				<h2>twitter: <@= defaultArticle.content @></h2>
 				<cite>@<@= defaultArticle.author @> on twitter</cite>
 			<@ } else if(defaultArticle.type === 'youtube') { @>
+				<h2>Youtube: <@= defaultArticle.title @></h2>
 			<@ } else { @>
 				<h2>no new articles to display</h2>
 			<@ } @>

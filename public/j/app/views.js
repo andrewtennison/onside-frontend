@@ -668,21 +668,68 @@ TweetView			- individual tweet comment
 			this.$el.removeClass('loading');
 			ev.trigger('update:view', 'showDetail');
 			this.selectedModel = model.id;
-			model.setSaved(this.app);
 			
-			var view = new DetailView({model:model, app:this.options.app});
-			this.$el.append(view.render().el);
-			// setTimeout(function () {
-				// view.scroll = new iScroll(view.baseID, {scrollbarClass: 'detailScrollbar', zoom:false});
-			// }, 100);
-			view.toggleDisplay();
+			var type = model.get('type'),
+				view;
+			if(type === 'static'){
+				view = new StaticView({model:model, app:this.options.app});
+			}else{
+				model.setSaved(this.app);
+				view = new DetailView({model:model, app:this.options.app});
+			}
 
+			this.$el.append(view.render().el);
+			view.toggleDisplay();
 		},
 		addAll: function(models){
 			console.error('View.DetailList.addAll');
 		},
 		removeOne: function(){
 			console.error('View.DetailList.removeOne');
+		}
+	});
+	
+	var StaticView = Backbone.View.extend({
+		tagName: 'article',
+		className: 'detailItem staticItem',
+		baseID: 'detailContentWrap',
+		templates: {
+			error	: _.template( $('#detail404Template').html() ),
+			help	: _.template( $('#static_helpTemplate').html() )
+		},
+		initialize: function(){
+			_.bindAll(this, 'render', 'toggleDisplay');
+			this.baseID += '_' + this.model.get('val');
+			this.model.bind('change:selected', this.toggleDisplay);
+		},
+		render: function(){
+			var val = this.model.get('val'), tpl;
+			switch(val){
+				case 'help':
+					tpl = this.templates.help( this.model.toJSON() );
+					break;
+				default:
+					tpl = this.templates.error( this.model.toJSON() );
+					break;
+			};
+			this.$el.html( tpl );
+			this.$('.contentWrapper').attr({id: this.baseID});
+		    return this;
+		},
+		toggleDisplay: function(){
+			var self = this;
+			if(this.model.get('selected')) {
+				this.$el.fadeIn(200,function(){
+					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
+				});
+			}else{
+				this.$el.fadeOut(200,function(){
+					if(self.scroll) {
+						self.scroll.destroy();
+						self.scroll = null;
+					}
+				});
+			}
 		}
 	});
 
@@ -745,7 +792,7 @@ TweetView			- individual tweet comment
 				case 'search':
 					this.viewC.title = 'Channels that match your search';
 					this.viewE.title = 'Events that match your search';
-					this.viewA.title = 'Articles that match your search';
+					this.viewA.title = 'Articles that match your search, (20 of ' + this.model.get('articleCount')+ ')';
 					break;
 			}
 
@@ -1194,7 +1241,12 @@ TweetView			- individual tweet comment
 			this.app.setTitle();
 		},
 		show: function(){
+			var iframe = this.$('.iframeWrap');
+			iframe.css({opacity:0});
 			this.$el.addClass('on');
+			setTimeout(function () {
+				iframe.css({opacity:1});//.fadeIn(200);
+			}, 1500);
 		},
 		hide: function(){
 			this.$el.removeClass('on');
@@ -1415,7 +1467,7 @@ TweetView			- individual tweet comment
 		checkContent: function(model, val){
 			this.reset();
 			var s = val.split('|');
-			if( s[1] === ('null') || s[0] ==='list' || s[0] === 'search' ){
+			if( s[1] === ('null') || s[0] ==='list' || s[0] === 'search' || s[0] === 'static' ){
 				// home/search - no comments
 				this.showHelp('general');
 			}else if(!this.auth){

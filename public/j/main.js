@@ -74,7 +74,6 @@ $LAB
 	on.path.js + 'lib/backbone-0.9.1.min.js',
 	on.path.js + 'lib/pretty.js',
 	on.path.js + 'lib/iscroll.js'
-//	on.path.js + 'lib/mbp.helper.js',
 )
 .wait()
 .script(

@@ -35,16 +35,23 @@
 	</header>
 
 	<div class="contentWrapper">
+		<iframe class="youtube-player" type="text/html" width="<@= width @>" height="<@= height @>" src="http://www.youtube.com/embed/<@= vid @>" frameborder="0"></iframe>
+	</div>
+
+	<!--video id="videoPlayer" class="projekktor" title="<@= title @>" poster="http://img.youtube.com/vi/<@= vid @>/0.jpg" src="http://www.youtube.com/watch?v=<@= vid @>" type="video/youtube" width="<@= width @>" height="<@= height @>" controls>
+	</video-->
+
+<!-- 	<div class="contentWrapper">
 		<object type="application/x-shockwave-flash" data="http://www.youtube.com/v/<@= vid @>" width="<@= width @>" height="<@= height @>">
 			<param name="movie" value="http://www.youtube.com/v/<@= vid @>" />
 			<param name="quality" value="high" />
 			<param name="allowFullScreen" value="true" />
-			<!-- Fallback content -->
 			<a href="http://www.youtube.com/watch?v=<@= vid @>">
 				<img src="http://img.youtube.com/vi/<@= vid @>/0.jpg" width="<@= width @>" height="<@= height @>" alt="[Video title]" />
 			</a>
 		</object>
-	</div>
+	</div> -->
+
 </script>
 
 <script id="articleDetail_iframe" class="tmpl overlay" type="text/template">

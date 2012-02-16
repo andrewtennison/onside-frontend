@@ -330,7 +330,8 @@ exports.getDetailApi = function(req,res){
 				if(!c) {
 					content.error = true;
 				} else {
-					content.articles = c.articles;
+					content.articleCount = c.articles.length;
+					content.articles = c.articles.slice(0, 20);
 					content.channels = c.channels;
 					content.events = c.events;
 				};

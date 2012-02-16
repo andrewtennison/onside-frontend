@@ -9,7 +9,7 @@
 		<@ if(images) { @>
 			<img src='<@= images @>' />
 		<@ } @>
-		<div class="content"><@= content @></div>
+		<@ if(content){ @><div class="content"><@= content @></div><@ } @>
 		<footer>
 			<cite>from: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
 			<@ if(publish) { @>  / <time><@= time @></time><@ } @>
