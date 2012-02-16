@@ -2,19 +2,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 // Onside Models
 (function(BB){
-	
+
 	var CMS	= Backbone.Model.extend({
 		initialize: function(route){
 			console.info('# Model.App.initialize');
 			var app = this;
 			this.route = route;
-			
+
 			this.users = new BB.Users();
 			this.channels = new BB.Channels();
 			this.events = new BB.Events();
 			this.sources = new BB.Sources();
 			this.articles = new BB.Articles();
-			
+
 			//_.bindAll(this, );
 		}
 	});
@@ -58,6 +58,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			branding	: {type:'text', help:'hex value for brand colour'},
 			geolat		: {type:'text'},
 			geolng		: {type:'text'},
+      status    : {type:'select', values: on.settings.channelStatus},
+      search_term : {type:'text'},
 		},
 		validate: function(attrs){
 			//if(attrs.name.length <= 1) return 'name required';
@@ -135,5 +137,5 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.Event = Event;
 	BB.Source = Source;
 	BB.Article = Article;
-	
+
 })(this.BB);

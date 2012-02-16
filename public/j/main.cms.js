@@ -20,13 +20,14 @@ on.settings = {
 	sports 		: ['', 'football', 'rugby union', 'rugby league', 'cricket', 'tennis', 'golf', 'badminton', 'cycling', 'archery'],
 	channelType	: ['', 'team', 'player', 'competition', 'sponsor', 'organisation'],
 	eventType	: ['', 'match', 'league', 'tournament'],
-	articleTypes: ['', 'rss', 'youtube', 'twitter']
+	articleTypes: ['', 'rss', 'youtube', 'twitter'],
+  channelStatus : ['active', 'hidden'],
 };
 
 
 $LAB
-.script( 
-	on.path.js + 'lib/json2.js', 
+.script(
+	on.path.js + 'lib/json2.js',
 	on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.2.1.min.js'
 )
