@@ -9,7 +9,7 @@ var rest 		= require('restler'),
 
 // Base object for checkAuth function
 baseAuthObject = {
-	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events : content.events,  searches: content.searches, popular: content.popularChannels, bpa: content.bypassAuth } })},
+	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events : content.events,  searches: content.searches, popular: content.popularChannels } })},
 	notAuthorized	: function(res){ res.statusCode = 401; res.end('Not authorized'); },
 	notAuthenticated: function(req, res) { req.session.redirectTo = req.url; res.redirect('/signup') },
 	reject	: function(res){  res.render('pages/0.1_signup_suspended.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup'}); },
@@ -185,7 +185,7 @@ var checkAuth = function(opts){
 			( opts[stage] )? opts[stage](res,content) : opts.pass(res,content);
 		});
 	}else{
-		var content = {channels: false, events: false, searches: false, popularChannels: false, bypassAuth:bypassAuth };
+		var content = {channels: false, events: false, searches: false, popularChannels: false };
 		( opts[stage] )? opts[stage](res,content) : opts.pass(res,content);
 	}
 }
