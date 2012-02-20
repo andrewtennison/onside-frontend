@@ -9,13 +9,13 @@ var rest 		= require('restler'),
 
 // Base object for checkAuth function
 baseAuthObject = {
-	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events	: content.events,  searches: content.searches, popular: content.popularChannels } })},
+	pass	: function(res, content){ res.render('pages/1.0_app.v0.1.ejs', { title: 'Onside', cssPath: '.app-0.1', jsPath:'', data: { channels: content.channels, events : content.events,  searches: content.searches, popular: content.popularChannels, bpa: content.bypassAuth } })},
 	notAuthorized	: function(res){ res.statusCode = 401; res.end('Not authorized'); },
 	notAuthenticated: function(req, res) { req.session.redirectTo = req.url; res.redirect('/signup') },
 	reject	: function(res){  res.render('pages/0.1_signup_suspended.ejs', { title: 'Onside', cssPath: '.signup', jsPath:'.signup'}); },
 	preload	: false,
 	authReq	: true,
-  admin   : false
+	admin   : false
 	// other options = ,stage1:function(){}, stage2:function(){}, stage3:function(){}, stage4:function(){}, stage5:function(){}, stage6:function(){}, stage7:function(){}, stage8:function(){}
 };
 
@@ -125,28 +125,33 @@ exports.getTweet = function(req,res){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 /* Check user authentication */
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
-var checkAuth = function(opts){
+var checkAuth = function(opts){	
 	if(opts.req == undefined || opts.res == undefined) { console.log('routes.index.checkAuth - req/res not defined'); return; };
 
-	var user = opts.req.user || {},
+	var bypassAuth = opts.req.param('bypassauth'),
+		user = opts.req.user || {},
 		res = opts.res,
 		loggedIn = opts.req.loggedIn,
 		stage = false,
 		userStatus = false;
 
+	// bypass authentication - here for load testing secure pages.
+	if((bypassAuth === conf.bypassAuthKey) && !loggedIn){
+		loggedIn = true;
+		user.enabled = 1;
+		user.admin = 1;
+		user.status = '1';
+		opts.req.session.bypassAuth = true;
+	}
+	
 	// if auth needed - check for login + user.enabled property
 	if(opts.authReq) {
-    if (!loggedIn) return opts.notAuthenticated(opts.req, res);
-    if (user.enabled == 0 || (opts.admin && user.admin != 1) ) {
-      return opts.notAuthorized(res);
-    }
-  }
+		if (!loggedIn ) return opts.notAuthenticated(opts.req, res);
+		if ( user.enabled == 0 || (opts.admin && user.admin != 1) ) return opts.notAuthorized(res);
+	}
 
 	// user status - hack if auth not required
 	userStatus = (!opts.authReq && user.status === 0)? '1' : user.status;
-
-	// hack for admin accounts not setup properly
-	//if(user.enabled === '1' && user.admin === '1' && user.status === '0') userStatus = '2';
 
 	// We can extend this property for different scenarios later
 	switch(userStatus){
@@ -180,7 +185,7 @@ var checkAuth = function(opts){
 			( opts[stage] )? opts[stage](res,content) : opts.pass(res,content);
 		});
 	}else{
-		var content = {channels: false, events: false, searches: false, popularChannels: false};
+		var content = {channels: false, events: false, searches: false, popularChannels: false, bypassAuth:bypassAuth };
 		( opts[stage] )? opts[stage](res,content) : opts.pass(res,content);
 	}
 }
@@ -190,9 +195,21 @@ var checkAuth = function(opts){
 /* ////////////////////////////////////////////////////////////////////////////////////////////////// */
 
 function callApi(req, res, action, authReq, userReq, callback){
-	var response = {};
+	var response = {},
+		loggedIn = req.loggedIn,
+		user = req.user,
+		UID = false;
 
-	if(authReq && !req.loggedIn){
+	console.log('req.session.bpa = ' + req.session.bypassAuth)
+
+	// bypass authentication - here for load testing secure pages.
+	if(req.session.bypassAuth && !loggedIn){
+		loggedIn = true;
+		user = {id: '1'};
+		UID = 1;
+	}
+
+	if(authReq && !loggedIn){
 		response.error = 'User must be logged in to perform this action';
 		console.err('user must be auth')
 		callback(response);
@@ -212,7 +229,7 @@ function callApi(req, res, action, authReq, userReq, callback){
 				}
 			};
 
-		var UID = (req.loggedIn)? req.user.id : false;
+		if(loggedIn && !UID) UID = req.user.id;
 
 		if(path.indexOf('user=me') !== -1) {
 			if(!UID) {
@@ -226,12 +243,12 @@ function callApi(req, res, action, authReq, userReq, callback){
 		switch(action){
 			case 'post':
 				obj.data = req.body;
-				if(req.loggedIn && userReq) obj.data.user = UID;
+				if(loggedIn && userReq) obj.data.user = UID;
 				if(token) obj.data.token = token;
 
 				break;
 			case 'get':
-				if(req.loggedIn && userReq) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + UID;
+				if(loggedIn && userReq) path += ((path.indexOf('?') === -1)? '?' : '&') + 'user=' + UID;
 				if(token) path += ((path.indexOf('?') === -1)? '?' : '&') + 'token=' + token;
 				break
 
@@ -245,7 +262,7 @@ function callApi(req, res, action, authReq, userReq, callback){
 		console.log('# call api: action='+action + ' & url=' + url.replace(token,'token123'))
 
 		rest[action](url,obj).on('complete', function(data) {
-			data.auth = req.loggedIn;
+			data.auth = loggedIn;
 			response.success = data;
 			callback(response);
 		}).on('error', function(err){

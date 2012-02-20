@@ -24,6 +24,7 @@ BB.appRoutes = Backbone.Router.extend({
 		on.m.app.set({ user : (on.preload.user)? on.preload.user : false });
 		on.m.app.set({ twitter : (on.preload.twitter)? on.preload.twitter : false });
 		on.m.app.set({ facebook : (on.preload.facebook)? on.preload.facebook : false });
+		on.m.app.set({ bpa : (on.preload.bpa)? on.preload.bpa : false });
 		
 		// Create main views
 		// Application view
@@ -70,7 +71,6 @@ BB.appRoutes = Backbone.Router.extend({
 		// on.m.app.events.fetch();
 		// on.m.app.searches.fetch();
 	},
-	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
 		on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });

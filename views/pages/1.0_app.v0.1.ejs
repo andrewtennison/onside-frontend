@@ -39,8 +39,12 @@
 						<a class="bb" href='/auth/twitter'><!--img src='https://si0.twimg.com/images/dev/buttons/sign-in-with-twitter-l.png' /--><span class="icon twitter"></span>Sign in with twitter</a>
 						<a class="bb" href='/auth/google'><span class="icon google"></span>Sign in with google</a>
 					</div>
-					<h2>Help <!--a class="hide" href="#">hide</a--></h2>
-					<div class="help bb"><p>Please login to view your content</p></div>
+					<a class="bb" href="#/help"><span class="icon assist"></span>Help</a>
+					<article class="help">
+						<span class="icon think"></span>
+						<h2>Your Channels</h2>
+						<p>Please login to view your content.</p>
+					</article>
 					<% } %>
 
 				</div>
@@ -140,11 +144,12 @@ on.preload = {};
 on.preload.user		= <%- JSON.stringify(cleanUser) %>;
 on.preload.twitter	= <%- twitterUser %>;
 on.preload.facebook	= <%- facebookUser %>;
-on.preload.auth		= <%- everyauth.loggedIn %>;
+on.preload.auth		= <% if(everyauth.loggedIn) { %> <%- everyauth.loggedIn %> <% } else { %>false<% } %>;
 on.preload.channels	= <% if(data.channels) { %> <%- data.channels %> <% } else { %>false<% } %>;
 on.preload.popular	= <% if(data.popular) { %> <%- data.popular %> <% } else { %>false<% } %>;
 on.preload.events	= <% if(data.events) { %><%- data.events %><% } else { %>''<% } %>;
 on.preload.searches	= <% if(data.searches) { %><%- data.searches %><% } else { %>false<% } %>;
 on.preload.path		= <% if(data.sessionPath) { %> <%- data.sessionPath %> <% } else { %>false<% } %>;
+on.preload.bpa		= <% if(data.bpa) { %> <%- data.bpa %> <% } else { %>false<% } %>;
 </script>
 

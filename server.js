@@ -128,15 +128,12 @@ app.get('*', function(req, res, next){
 });
 
 app.get('/', routes.index);
-/*app.get('/enter', routes.enter);*/
 app.get('/exit', routes.exit);
 
-//app.all('/channel/*', function(){});
-//app.all('/event/:id/:article', function(){});
+//app.all('/:action/:id/:article', function(){});
 
 // CMS
 app.get('/cms', routes.cms);
-
 
 // API proxy requests
 app.get('/api/*', routes.getApi);
