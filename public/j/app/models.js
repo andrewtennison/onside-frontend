@@ -256,7 +256,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	var DetailSearch = Detail.extend({
 		initialize: function(){
-			this.defaults.image = '/i/content/channel/_search.png';
+			this.set({image: '/i/content/channel/_search.png'});
 		},
 		setSaved: function(app){
 			console.info('////// set saved')
@@ -286,6 +286,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 		}
 		
+	});
+	var DetailEvent = Detail.extend({
+		initialize: function(){
+			this.set({image: '/i/content/channel/_event.png'});
+		}
 	});
 
 	var Article = Backbone.Model.extend({
@@ -360,6 +365,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	BB.Detail = Detail;
 	BB.DetailChannel = DetailChannel;
 	BB.DetailSearch = DetailSearch;
+	BB.DetailEvent = DetailEvent;
 	BB.Article = Article;
 	BB.Comment = Comment;
 	BB.Chat = Chat;

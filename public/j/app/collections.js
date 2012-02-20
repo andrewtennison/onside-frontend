@@ -122,8 +122,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					model = new BB.DetailChannel(hash);
 					break;
 				case 'event':
-					// model = new BB.DetailEvent(hash);
-					// break;
+					model = new BB.DetailEvent(hash);
+					break;
 				case 'list':
 					// model = new BB.DetailList(hash);
 					// break;
@@ -131,7 +131,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					model = new BB.Detail(hash);
 					break;
 			}
-			
 			model.fetch({
 				success:function(data){
 					console.log('success');

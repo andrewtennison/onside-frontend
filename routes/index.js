@@ -358,8 +358,8 @@ exports.getDetailApi = function(req,res){
 			break;
 		case 'event':
 			console.log('detail = event')
-			required = [content.channels, content.articles, content.author];
-			singleList(req, res, 'channels', '/event/'+id, function(c){
+			required = ['channels', 'articles', 'events', 'author'];
+			singleList(req, res, 'events', '/event/'+id, function(c){
 				if(!c) {
 					content.error = true;
 				} else {
@@ -367,10 +367,13 @@ exports.getDetailApi = function(req,res){
 					content.title = content.author.name
 				};
 			});
-			singleList(req, res, 'channels', '/channel?'+action+'='+id, function(c){
+			singleList(req, res, 'events', '/event?'+action+'='+id, function(c){
 				if(!c) content.error = true; else content.events = c;
 			});
-			singleList(req, res, 'articles', '/article?'+action+'='+id, function(c){
+			singleList(req, res, 'channels', '/channel?'+action+'='+id, function(c){
+				if(!c) content.error = true; else content.channels = c;
+			});
+			singleList(req, res, 'articles', '/article?limit=10&'+action+'='+id, function(c){
 				if(!c) content.error = true; else content.articles = c;
 			});
 			break;
