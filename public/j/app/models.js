@@ -323,6 +323,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 
 	var Article = Backbone.Model.extend({
+		url: function(){
+			return on.path.api + '/article/' + this.id
+		},
 		initialize: function(){
 			//on.helper.log('# Model.Article.initialize', 'info');
 		},
@@ -331,6 +334,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			filtered : true
 		},
 		parse: function(resp, xhr){
+			if(resp.resultset){
+				resp = resp.resultset.articles[0];
+			}
+			console.info(resp)
 			if(resp.type === 'youtube'){
 				resp.vid = resp.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
 			}

@@ -80,6 +80,28 @@ $.fn.serializeObject = function() {
     return o;
 };
 
+$.fn.convertToObject = function(val){
+	var t = val.split(/\}\,\s?{/g),
+		i = 0, 
+		l = t.length, 
+		arr = [];
+		
+	for(i; i<l; i++){ 
+	    var tmp = t[i].replace(/\{|\}/g,'').split(','),
+	    	j = 0, ll = tmp.length,
+	    	obj = {};
+
+	    for(j; j<ll; j++){
+	        var tmp2 = tmp[j].replace(' ','').split(':');
+	        obj[ tmp2[0] ] = tmp2[1];
+	    }
+	    arr.push(obj)
+	};
+	return arr;
+}
+
+
+
 window.MBP = window.MBP || {}; 
 // Hide URL Bar for iOS and Android by Scott Jehl
 // https://gist.github.com/1183357

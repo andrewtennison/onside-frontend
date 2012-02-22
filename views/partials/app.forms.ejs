@@ -1,6 +1,6 @@
 <!-- // STATIC TEMPLATES /////////////////////////////////////////// -->
 
-<!-- // DETAIL ITEM TEMPLATES // -->
+<!-- // CREATE A CHANNEL // -->
 <script id="static_channelCreateTemplate" class="tmpl" type="text/template">
 	<header class="detailHead bb shadows">
 		<h1>Create Channel</h1>
@@ -33,6 +33,67 @@
 				</fieldset>
 				
 			</form>
+		</div><!-- /.scroller -->
+	</div>
+</script>
+
+<!-- // FEEDBACK FORM // -->
+<script id="static_feedbackTemplate" class="tmpl overlay" type="text/template">
+	<header class="detailHead">
+		<h1>Give us some feedback</h1>
+		<nav>
+			<a class="icon close" href="#">close</a>
+		</nav>
+	</header>
+
+	<div class="contentWrapper">
+		<div class="scroller">
+			<form method="post" action="/feedback" class="inlineForm" id="feedbackForm">
+				<fieldset>
+					<div class="bb">
+						<label>Thanks</label>
+						<span class="formEl"><@= user.name @></span>
+					</div>
+					<div class="bb">
+						<label>Current page:</label>
+						<span class="formEl"><@= hash @></span>
+					</div>
+					
+					<div class="bb">
+						<label for="type">I have..</label>
+						<select class="formEl" name="type">
+							<option value="">please select an option</option>
+							<option value="bug1">found a bug</option>
+							<option value="bug2">busted it!</option>
+							<option value="feature">got a great idea</option>
+							<option value="missing">noticed something is missing</option>
+							<option value="thanks">really enjoyed onside, thanks</option>
+							<option value="other">something else to say!</option>
+						</select>
+					</div>
+					<div class="bb">
+						<label for="description">Some more details</label>
+						<textarea class="formEl" name="description" maxlength="200" placeholder="I think ...."></textarea>
+					</div>
+					
+					<input type="hidden" name="userName" value="<@= user.name @>" />
+					<input type="hidden" name="email" value="<@= user.email @>" />
+					<input type="hidden" name="userId" value="<@= user.id @>" />
+					<input type="hidden" name="browser" value="<@= url @>" />
+					<input type="hidden" name="browser" value="<@= useragent @>" />
+					
+					<div class="formActions">
+						<button class="btn" type="submit">create</button>
+						<button class="btn cancel" type="reset">cancel</button>
+					</div>
+					
+				</fieldset>
+				
+			</form>
+			<div class="onComplete">
+				<h1>We've got it.. thanks for the feedback.</h1>
+				<p>We really value your input, so feel free to do this when ever you want.</p>
+			</div>
 		</div><!-- /.scroller -->
 	</div>
 </script>

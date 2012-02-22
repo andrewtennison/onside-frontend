@@ -57,6 +57,14 @@ TweetView			- individual tweet comment
 // BASE OBJECTS ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	// Fixes an iscroll bug that prevents inputs being focused
+	var scrollFixOnInputs = function(parent){
+		var el = $('input[type=text]')
+			// selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+			// selectField.addEventListener('touchstart', function(e) { e.stopPropagation() }, false);	
+
+	};
+	
 	var ev = {};
 	_.extend(ev, Backbone.Events);
 
@@ -107,8 +115,8 @@ TweetView			- individual tweet comment
 
 			_.bindAll(this, 'onInit', 'addOne', 'addAll', 'addHelp');
 
-			this.collection.bind('add', this.addOne);
-			this.collection.bind('reset', this.addAll);
+			this.collection.on('add', this.addOne);
+			this.collection.on('reset', this.addAll);
 			this.onInit();
 		},
 		onInit: function(){},
@@ -161,7 +169,7 @@ TweetView			- individual tweet comment
 		initialize: function(){
 			this.app = this.options.app;
 			_.bindAll(this, 'render', 'updateItem', 'selectItem');
-			this.app.bind('change:selectedItemUID', this.updateItem)
+			this.app.on('change:selectedItemUID', this.updateItem)
 		},
 		render: function(){
 			this.$el.html(this.template( this.model.toJSON() ));
@@ -201,8 +209,8 @@ TweetView			- individual tweet comment
 		initialize: function(){
 			_.bindAll(this, 'render', 'select', 'preSelect', 'hoverOver', 'hoverOut', 'filterCollection', 'setDisplay');
 			this.app = this.options.app;
-			this.model.bind('change:filtered', this.setDisplay);
-			this.model.collection.bind('change:filter', this.updateFilters);
+			this.model.on('change:filtered', this.setDisplay);
+			this.model.collection.on('change:filter', this.updateFilters);
 		},
 		render: function(){
 			var json = this.model.toJSON();
@@ -330,22 +338,20 @@ TweetView			- individual tweet comment
 		events: {
 			'click .login'	: 'login',
 			'click .show'	: 'triggerShow',
-			'click .triggerSearch' : 'triggerSearch'
-			//'click triggerFeedback' : open feedback form
-			//triggerAddChannel
-			//triggerAddSource
+			'click .triggerSearch' : 'triggerSearch',
+			'click .triggerFeedback' : 'triggerFeedback'
 		},
 		
 		initialize: function(){
 			on.helper.log('# View.Appview.initialize', 'info');
 			var self = this;
 			
-			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch');
+			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch', 'triggerFeedback');
 			this.app = this.options.app;
 
-			$(window).bind('resize', this.onResize);			
-			this.app.bind('change:userAuth', this.setAuth);
-			ev.bind('update:view', function(val){
+			$(window).on('resize', this.onResize);			
+			this.app.on('change:userAuth', this.setAuth);
+			ev.on('update:view', function(val){
 				console.log('ev.bnd.updateView - ' + val) 
 				self.show(val,true)
 			});
@@ -403,6 +409,9 @@ TweetView			- individual tweet comment
 			.animate({'delay':1},500, function(){
 				$(this).removeClass('flash').focus();	
 			});
+		},
+		triggerFeedback: function(){
+			ev.trigger('open:overlay', false, 'feedback');
 		}
 	});
 	
@@ -441,11 +450,11 @@ TweetView			- individual tweet comment
 			myEvents.collection.fetch();
 			mySearches.collection.fetch();
 			
-			ev.bind('update:scroll:nav', this.updateScroll, this);
+			ev.on('update:scroll:nav', this.updateScroll, this);
 			ev.trigger('update:scroll:nav');
 
 			// BIND: if model.app.selectedServiceName changes this view will get updated
-			//this.app.bind('change:selectedServiceName', this.updateView);
+			//this.app.on('change:selectedServiceName', this.updateView);
 			this.updateView('channels')
 			
 		},
@@ -453,14 +462,17 @@ TweetView			- individual tweet comment
 		updateScroll: function(){
 			var self = this;
 			setTimeout(function () {
-				var needsScroll = (self.$('#groupContentWrap').height() >= self.$('#groupContentWrap > .scroller').height())? false : true,
+				var el = this.$('input[type=text], input[type=search], textarea, select'),
+					needsScroll = (self.$('#groupContentWrap').height() >= self.$('#groupContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
 				
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
+					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
 					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:true, fadeScrollbar: true});
 				} else if (!needsScroll && scroll){
+					el.off('ontouchstart mousedown touchstart');
 					self.scroll.destroy();
 					self.scroll = null;
 				}
@@ -542,10 +554,7 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			_.bindAll(this, 'submit', 'search');
 
-			// hack to fix iScroll focus issue
-			var selectField = document.getElementById('groupSearch');
-			selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
-			selectField.addEventListener('touchstart', function(e) { e.stopPropagation() }, false);			
+			scrollFixOnInputs();
 		},
 		search: function(value){
 			this.$el.focus();
@@ -633,13 +642,13 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne');
 			
 			// BIND Collection
-			this.collection.bind('add', this.addOne);
-			this.collection.bind('reset', this.addAll);
-			this.collection.bind('remove', this.removeOne);
-			this.collection.bind('error', function(){
+			this.collection.on('add', this.addOne);
+			this.collection.on('reset', this.addAll);
+			this.collection.on('remove', this.removeOne);
+			this.collection.on('error', function(){
 				console.error('detail list collection')
 			});
-			this.app.bind('change:selectedItemUID', this.updateView)
+			this.app.on('change:selectedItemUID', this.updateView)
 		},
 		updateView: function(app,selectedItemUID){
 			this.$el.addClass('loading');
@@ -711,7 +720,7 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'render', 'toggleDisplay', 'formError', 'submit', 'buildForm');
 			this.app = this.options.app;
 			this.baseID += '_' + this.model.get('val');
-			this.model.bind('change:selected', this.toggleDisplay);
+			this.model.on('change:selected', this.toggleDisplay);
 			
 			switch(this.model.get('type')){
 				case 'channel': 
@@ -751,15 +760,20 @@ TweetView			- individual tweet comment
 		    return this;
 		},
 		toggleDisplay: function(){
-			var self = this;
+			var self = this,
+				el = this.$('input[type=text], textarea, select');
+				
 			if(this.model.get('selected')) {
 				this.$el.fadeIn(200,function(){
+					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
 					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
 				});
 			}else if(this.errorView){
 				this.close();
 			}else{
 				this.$el.fadeOut(200,function(){
+					el.off('ontouchstart mousedown touchstart');
+
 					if(self.scroll) {
 						self.scroll.destroy();
 						self.scroll = null;
@@ -838,14 +852,14 @@ TweetView			- individual tweet comment
 			this.type = this.model.get('type');
 
 			this.baseID += '_' + this.model.cid;
-			this.model.bind('change:selected', this.toggleDisplay);
-			this.model.bind('change:saved', this.toggleButton);
+			this.model.on('change:selected', this.toggleDisplay);
+			this.model.on('change:saved', this.toggleButton);
 			this.toggleButton();
 
 			this.scrollDir = false;
 			this.scrollState = false;
 
-			ev.bind('update:scroll:detail', this.updateScroll, this);
+			ev.on('update:scroll:detail', this.updateScroll, this);
 		},
 		render: function(){
 			console.log('# View.Detail.render');
@@ -968,6 +982,13 @@ TweetView			- individual tweet comment
 		},
 		createScroll: function(){
 			var self = this;
+
+			var el = this.$('input[type=text], textarea, select');
+			el.each(function(i){
+				el[i].addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+				el[i].addEventListener('touchstart', function(e) { e.stopPropagation() }, false);			
+			});
+
 			this.scroll = new iScroll(self.baseID, {
 				useTransition	: true,
 				useTransition	: true,
@@ -1180,31 +1201,11 @@ TweetView			- individual tweet comment
 		template: _.template( $('#eventDetailItemTemplate').html() ),
 		render: function(){
 			var json = this.model.toJSON();
-			json.participantsObj = makeObject(json.participants);
+			json.participantsObj = $().convertToObject(json.participants);
 			this.$el.html(this.template( json ));
 		    return this;
 		},
 	});
-	
-	var makeObject = function(val){
-		var t = val.split(/\}\,\s?{/g),
-			i = 0, 
-			l = t.length, 
-			arr = [];
-			
-		for(i; i<l; i++){ 
-		    var tmp = t[i].replace(/\{|\}/g,'').split(','),
-		    	j = 0, ll = tmp.length,
-		    	obj = {};
-
-		    for(j; j<ll; j++){
-		        var tmp2 = tmp[j].replace(' ','').split(':');
-		        obj[ tmp2[0] ] = tmp2[1];
-		    }
-		    arr.push(obj)
-		};
-		return arr;
-	}
 	
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1257,18 +1258,25 @@ TweetView			- individual tweet comment
 		el: $('#listArticle'),
 		view: false,
 		events: {
-			'click .close'	: 'close'
+			'click .close'	: 'close',
+			'click button.cancel':'close'
 		},
 		initialize: function(){
-			_.bindAll(this, 'updateView', 'close', 'show', 'hide');
+			_.bindAll(this, 'updateView', 'getModel', 'close', 'show', 'hide');
 			this.app = this.options.app;
-			this.app.bind('change:selectedArticle', this.updateView);
+			this.app.on('change:selectedArticle', this.updateView);
+			
+			ev.on('open:overlay', this.updateView);
+			ev.on('close:overlay', this.hide);
+			// ev.trigger('open:overlay', false, 'feedback');
+			// ev.trigger('close:overlay');
 		},
 		updateView: function(app, id){
-			var oldId = this.app.previous('selectedArticle'),
-				s = this.app.get('selectedItemUID').split('|');
+			console.log(app)
+			console.log(id)
+			
+			var oldId = this.app.previous('selectedArticle');
 
-			console.log(oldId +' / '+id)
 			if(id === oldId || ( !id && !oldId )){
 				// no change do nothing
 				return;
@@ -1276,38 +1284,48 @@ TweetView			- individual tweet comment
 				// was article, no more - hide
 				this.hide();
 			} else {
-				// show article
-				var list = this.app.get('selectedArticleList');
-				if(list){
-					var model = list.get(id);
-					if(model){
-						var view = this.selectView(model);
-						this.view = view.render().el;
-						this.$el.append(this.view);
-						this.show();
-					}else{
-						model = BB.Article({ id:id });
-						model.fetch({
-							success:function(){
-							alert('success')
-							}, 
-							error:function(){
-							alert('error')
-							}
-						});
-					}
+				if( (/feedback/gi).test(id) ){
+					var data = { hash: document.location.hash, url: document.location, user: this.app.get('user'), useragent: window.navigator.userAgent };
+					this.view = new ADIV_feedback();
+					this.$el.append( this.view.render(data).el );
+					this.show();
 				}else{
-					model = BB.Article({ id:id });
-					model.fetch({
-						success:function(){
-						alert('success')
-						}, 
-						error:function(){
-						alert('error')
-						}
-					});
+					// show article
+					this.getModel(id);
 				}
-				
+			}
+		},
+		getModel: function(id){
+			var self = this,
+				list = this.app.get('selectedArticleList'),
+				model;
+			
+			function loadModel(){
+				model = new BB.Article({ id:id });
+				model.fetch({
+					success:function(){
+						self.view = self.selectView(model);
+						self.$el.append( self.view.render().el );
+						self.show();
+					}, 
+					error:function(){
+						console.error('Article.addContent - fetch error')
+						self.close()
+					}
+				});
+			}
+			if(list){
+				model = list.id;
+				if(model){
+					var view = this.selectView(model);
+					this.view = view.render().el;
+					this.$el.append(this.view);
+					this.show();
+				}else{
+					loadModel();
+				}
+			}else{
+				loadModel();
 			}
 		},
 		selectView: function(model){
@@ -1320,37 +1338,104 @@ TweetView			- individual tweet comment
 					return new ADIV_youtube({model:model});
 					break;
 				case 'rss':
-					return (model.get('iframe'))? new ADIV_iframe({model:model}) : new ADIV({model:model});
+					return (model.get('iframe') || !model.get('extended'))? new ADIV_iframe({model:model}) : new ADIV({model:model});
 			};
 		},
-		close: function(e){
-			e.preventDefault();
-			this.app.set({ selectedArticle : false });
+		close: function(){
 			this.app.setTitle();
+			if(!this.app.get('this.app')){
+				this.hide();
+			}else{
+				this.app.set({ selectedArticle : false });
+			}
+			return false;
 		},
 		show: function(){
 			var iframe = this.$('.iframeWrap');
-			iframe.css({opacity:0});
-			this.$el.addClass('on');
-			setTimeout(function () {
-				iframe.css({opacity:1});//.fadeIn(200);
-			}, 1500);
+			if(iframe.length){
+				iframe.css({opacity:0});
+				this.$el.addClass('on');
+				setTimeout(function () {
+					iframe.css({opacity:1});
+					this.view.setScroll();
+				}, 1500);
+			}else{
+				this.$el.addClass('on');
+				this.view.setScroll();
+			}
 		},
 		hide: function(){
 			this.$el.removeClass('on');
-			$(this.view).remove();
+			setTimeout(function () {
+				$(this.view).remove();
+			}, 1000);
+			//if( this.app.get('selectedArticle') ) this.app.set({selectedArticle:false});
 		}
 	});
 
 	// ADIV = ArticleDetailItemView
 	var ADIV = Backbone.View.extend({
 		tagName: 'article',
+		baseId: 'articleContentWrap',
 		className:'articleDetail',
-		template: _.template( $('#articleDetail').html() ),
-		render: function(){
-			console.log(this.model.toJSON())
-			this.$el.html(this.template(this.model.toJSON()));
+		template: _.template( $('#static_feedbackTemplate').html() ),
+		initialize: function(){
+			_.bindAll(this, 'render', 'setScroll');
+		},
+		render: function(data){
+			var json = (data)? data : this.model.toJSON();
+			this.$el.html(this.template(json));
 		    return this;
+		},
+		close: function(){
+			this.app.set({ selectedArticle : false });
+			this.app.setTitle();
+			return false;
+		},
+		setScroll: function(){
+			var self = this,
+				id = this.baseId,
+				$contentWrapper = this.$('.contentWrapper'),
+				pageLength = $contentWrapper.height(),
+				contentLength = this.$('.scroller').height();
+
+			$contentWrapper.attr('id', this.baseId);
+
+			if(contentLength < pageLength) {
+				return
+			}else if(contentLength > pageLength){
+				var el = this.$('input[type=text], textarea, select');
+				el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() })
+
+				setTimeout(function () {
+					self.scroll = new iScroll(id, {hScroll:false, zoom: false, scrollbarClass: 'detailScrollbar'});
+				}, 500);
+			};
+		}
+	});
+	
+	var ADIV_feedback = ADIV.extend({
+		className:'articleFeedback',
+		template: _.template( $('#static_feedbackTemplate').html() ),
+		events: {
+			'submit form': 'submit'
+		},
+		submit: function(e){
+			e.preventDefault();
+			var self = this,
+				$close = this.$('.close'),
+				$form = this.$('form'),
+				data = $form.serializeObject();
+			
+			$form.addClass('loadingMask');
+			
+			$.post('/feedback', data, function(res){
+				$form.removeClass('loadingMask');
+				self.$el.addClass('complete');
+				setTimeout(function () {
+					$close.click();
+				}, 2500);
+			})
 		}
 	});
 	
@@ -1463,7 +1548,7 @@ TweetView			- individual tweet comment
 			
 			this.changeTab(false, this.$('nav a.onside') );
 			
-			ev.bind('update:scroll:comments', this.updateScroll, this);
+			ev.on('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
 		},
 		checkView: function(){
@@ -1472,14 +1557,17 @@ TweetView			- individual tweet comment
 		updateScroll: function(){
 			var self = this;
 			setTimeout(function () {
-				var needsScroll = (self.$('#chatContentWrap').height() >= self.$('#chatContentWrap > .scroller').height())? false : true,
+				var el = this.$('input[type=text], textarea, select'),
+					needsScroll = (self.$('#chatContentWrap').height() >= self.$('#chatContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
-				
+
 				if(needsScroll && scroll){
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
+					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
 					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'commentScrollbar'});
 				} else if (!needsScroll && scroll){
+					el.off('ontouchstart mousedown touchstart');
 					self.scroll.destroy();
 					self.scroll = null;
 				}
@@ -1526,15 +1614,15 @@ TweetView			- individual tweet comment
 			this.$help = false;
 			
 			var self = this;
-			this.app.bind('change:selectedItemUID', this.checkContent); 
-			this.app.bind('change:selectedArticle', function(){
+			this.app.on('change:selectedItemUID', this.checkContent); 
+			this.app.on('change:selectedArticle', function(){
 				var val = self.app.get('selectedItemUID');
 				self.checkContent(false, val);
 			});
 
 			if(this.collection) {
-				this.collection.bind('add', this.addOne);
-				this.collection.bind('reset', this.addAll);
+				this.collection.on('add', this.addOne);
+				this.collection.on('reset', this.addAll);
 			}
 			this.onInit();
 		},

@@ -11,6 +11,8 @@
 body {font-family:Helvetica,Arial,'DejaVu Sans','Liberation Sans',Freesans,sans-serif}
 p, h1, h2, h3, h4, h5, h6 {margin:0; padding:0} 
 
+#appNav nav a.btn,
+.inlineForm span.formEl,
 .articleItem.youtube .inner h2,
 .scrollLoad .label,
 .channelListItem h2,
@@ -20,6 +22,7 @@ p, h1, h2, h3, h4, h5, h6 {margin:0; padding:0}
 .channelListItem header h1,
 .detailHead h1 {font-family: 'Open Sans', sans-serif;}
 
+.onComplete h1,
 .inlineForm label,
 .articleTwitter .original p,
 .articleItem.twitter p,

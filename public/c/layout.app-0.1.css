@@ -28,7 +28,8 @@ a.filter {display:none !important}
 
 .bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset; -webkit-box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset; padding-bottom:2px}
 header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset, 0 18px 15px -12px #282a2c; -webkit-box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset, 0 18px 15px -12px #282a2c;}
-#listDetail .bb {box-shadow: 0 -1px 0 0 #555555 inset, 0 -2px 0 0 #222222 inset}
+#listDetail .bb,
+.inlineForm .bb {box-shadow: 0 -1px 0 0 #555555 inset, 0 -2px 0 0 #222222 inset}
 
 .shadows {position:relative}
 	.shadows:before, .shadows:after {content:''; position:absolute; z-index:1; top:0; height:100%}
@@ -87,9 +88,15 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 #pullUp, #pullDown { color: #ccc; font-size: 14px; font-weight: bold; height: 40px; line-height: 40px; padding: 5px 10px; margin:5px; background:rgba(0,0,0,0.1)}
 #pullUp .icon, #pullDown .icon {opacity:0.4}
 
-
-
+.loadingMask:after,
 .loading:after {content:'loading'; background:url(/i/sprites/loader.gif) no-repeat center center; width:100px; height:100px; margin:-50px 0 0 -50px; left:50%; top:40%; position:absolute; font-size:1.2em; color:#fff; text-align: center}
+.loadingMask:after {background-color:rgba(0,0,0,0.7); width:100%; height:100%; top:0; left:0; margin:0}
+.onComplete {background: rgba(0,0,0,0.85); color: #FFF; height: 100%; width: 100%; padding: 50px 10px; position: absolute; z-index:1; display:none; top:0}
+	.onComplete h1 {font-size:1.6em; color:#ddd; padding-bottom:10px; text-align: center}
+	.onComplete p {font-size:1.4em; text-align: center}
+.complete .onComplete {display:block}
+
+
 .flash {background-color:#FFFF00 !important}
 
 .help {position:relative; border:4px solid #ceb823; background:#fff668; border-radius: 5px; margin:10px;}
@@ -148,7 +155,7 @@ body,
 #listDetail .detailItem .contentWrapper,
 #listArticle > article .contentWrapper {position:absolute; display:block; top:60px; left:0; right:0; bottom:50px; overflow:auto}
 
-#listArticle > article .contentWrapper {bottom:5px; background:rgba(0,0,0,0.5)}
+#listArticle > article .contentWrapper {bottom:5px; background:rgba(0,0,0,0.5); margin:0}
 
 #appNav,
 #listGroups > footer,
@@ -197,12 +204,16 @@ body,
 
 /* ==|== appNav styles ===================================================== */
 #appNav nav {text-align:center}
-#appNav nav a {border-radius:5px; margin:6px}
+#appNav nav a {border-radius:5px; margin:6px; vertical-align: middle}
 #appNav nav a:hover,
 #appNav nav a.active {box-shadow:-1px -1px 0px 0px #444 inset, 1px 1px 0px #000 inset; -webkit-box-shadow:-1px -1px 0px 0px #444 inset, 1px 1px 0px #000 inset; background-color:#222;}
 #appNav nav a.channels {float:left}
 #appNav nav a.comments {float:right}
 
+#appNav nav a.btn {
+	display:inline-block; background:#CCC; border-radius:12px; color:#000; font-size: 1.4em; line-height: 1em; padding: 6px 12px 4px;
+    box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 1px 1px 0 #000000 inset, 0 -13px 5px -5px rgba(0, 0, 0, 0.3) inset;
+}
 
 /* ==|== listDetail styles ===================================================== */
 
@@ -338,7 +349,7 @@ body,
 #listChat .content form input,
 #listChat .content form textarea {width:230px; background:#fff url(/i/sprites/icon_comment.png) 5px 4px no-repeat; text-indent:30px}
 #listChat .content form textarea#tweetAdd {background:url("/i/sprites/twitter.png") no-repeat scroll -20px -18px #FFFFFF}
-#listChat .content form input {padding:7px 4px 5px}
+#listChat .content form input {padding:2px 4px 4px}
 #listChat .content form p {color:#aaa; font-size:1.2em}
 
 /* comment-default */
@@ -367,25 +378,30 @@ body,
 
 /* ==|== reused styles ===================================================== */
 
-form.inlineForm {margin-right:-9px}
-.inlineForm div {position:relative; display:block; padding:20px}
+form.inlineForm {position:relative}
+.inlineForm div {position:relative; display:block; padding:10px 20px}
 .inlineForm label,
 .inlineForm .formEl {position:relative; display:inline-block; vertical-align: middle;}
 
 .inlineForm label {width:26%; margin-right:3%; color:#ddd; font-size:1.4em; line-height:1em; text-align:right}
 .inlineForm .formEl {max-width:70%; min-width:30%}
+.inlineForm span.formEl {color:#fff; font-size:1.4em}
 
 .inlineForm input {}
 .inlineForm select {font-size:1.4em;}
-.inlineForm textarea {}
+.inlineForm textarea.formEl {min-width:65%; line-height:1.2em; height:4.9em}
 
-.inlineForm .formActions {background:#333; padding:20px;}
+.inlineForm .formActions {background:rgba(0,0,0,0.2); padding:20px;}
 .inlineForm .formActions button:first-child {margin-left:30%}
 button.btn { background: none repeat scroll 0 0 #006DCC; border: 0px none; border-radius: 4px; color: #FFFFFF; font-size: 1.2em; padding: 8px 14px; text-transform: uppercase; box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 -1px 0 0 #000000 inset; margin-right:10px}
 button.cancel {background:#333; color:#ddd}
 
 button.btn:hover {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -1px 1px 0 rgba(255, 255, 255, 0.8) inset, 0 1px 1px 0 #000000 inset;}
 button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 1px 0 rgba(255, 255, 255, 0.5) inset, 0 2px 1px 0 #000000 inset;}
+
+#listDetail form.inlineForm {margin-right:-9px}
+#listArticle form.inlineForm {background:url("/i/sprites/noise3.png") repeat scroll 0 0 #3E4144}
+
 
 
 /* ==|== media querys ===================================================== */
@@ -414,6 +430,9 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 	.showchannels #listChat {}
 	.showcomments #listGroups {left:-260px}
 	#listArticle > article {left:5px; right:5px; top:0px; bottom:5px; }
+	
+	.inlineForm label {width:100%; margin-right:0%; text-align:left; padding:0 0 5px 0}
+	.inlineForm .formEl {max-width:100%; min-width:30%}
 }
 @media only screen and (min-width: 480px) {
 	#main {left:45px}

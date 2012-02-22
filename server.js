@@ -135,6 +135,9 @@ app.get('/exit', routes.exit);
 // CMS
 app.get('/cms', routes.cms);
 
+// Feedback > sends email
+app.post('/feedback', email.postFeedback);
+
 // API proxy requests
 app.get('/api/*', routes.getApi);
 app.put('/api/*', routes.postApi);
