@@ -118,11 +118,12 @@
 	</section>
 </section><!-- /#OnsideApp -->
 
-<%- partial('partials/static') %>
-<%- partial('partials/general') %>
-<%- partial('partials/articles') %>
-<%- partial('partials/articleDetail') %>
-<%- partial('partials/helpers') %>
+<%- partial('partials/app.articleDetail.ejs') %>
+<%- partial('partials/app.articles.ejs') %>
+<%- partial('partials/app.forms.ejs') %>
+<%- partial('partials/app.general.ejs') %>
+<%- partial('partials/app.helpers.ejs') %>
+<%- partial('partials/app.static.ejs') %>
 
 <%
 var cleanUser = false, facebookUser = false, twitterUser = false;

@@ -18,7 +18,14 @@ on.env = {
 	docReady			: false
 };
 on.env.twitterKey =  (on.env.server === 'development')? 'K2PPhkjulGIReJQsvhsZg' : 'eACWy9QqyIOyWUjREhh08Q';
-	
+
+on.settings = {
+	sports 			: ['football', 'rugby union', 'rugby league', 'cricket', 'tennis', 'golf', 'badminton', 'cycling', 'archery','other'],
+	channelType		: ['team', 'player', 'competition', 'sponsor', 'organisation','other'],
+	eventType		: ['match', 'league', 'tournament','other'],
+	articleTypes	: ['rss', 'youtube', 'twitter','other'],
+	channelStatus	: ['active', 'hidden']
+};
 
 console.log('1. namespace - ' + on.env.v)
 

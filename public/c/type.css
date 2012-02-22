@@ -20,6 +20,15 @@ p, h1, h2, h3, h4, h5, h6 {margin:0; padding:0}
 .channelListItem header h1,
 .detailHead h1 {font-family: 'Open Sans', sans-serif;}
 
+.inlineForm label,
 .articleTwitter .original p,
 .articleItem.twitter p,
 .articleItem.rss h1 {font-family: 'Glegoo',serif;}
+
+input[type=text],input[type=search],
+select,
+textarea,
+button {font-family: 'Open Sans', sans-serif;}
+
+input[type=text],input[type=search] {padding-top:4px; padding-bottom:2px}
+select {padding:1px 2px}

@@ -54,7 +54,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		updateService: function(model,val){
 			var article = this.get('selectedArticle'),
-				url = '/' + this.get('selectedItemUID').replace('static|','').replace('|','/') + ((article)? '/article-' + article : '');
+				url = '/' + this.get('selectedItemUID').replace(/\|/g,'/').replace('static|','') + ((article)? '/article-' + article : '');
+				
 			this.route.navigate(url);
 			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
 		}
@@ -62,14 +63,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var Channel = Backbone.Model.extend({
 		url: function(){
-			return on.path.api + '/channel/' + this.id;
+			return on.path.api + '/channel/' + ( this.id || '' );
 		},
 		service: 'channel',
 		initialize: function(){
 			console.info('# Model.Channel.initialize');
 			this.setImage();
-			// var i = this.get('image');
-			// if( i === 'null' || i === null || i.length === 0) this.set({image:'/i/placeholder/listIcon2.png'});
 		},
 		setImage: function(){
 			var attr = this.attributes;
@@ -97,21 +96,51 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			//return resp.resultset.channels[0];
 			return resp
 		},
+		defaultOptions: {
+			name: {required:true, regex: true},
+			search_term: {required:true, regex: true},
+			sport: {required:true, values: on.settings.sports},
+			type: {required:true, values: on.settings.channelType}
+		},
 		defaults: {
 			selected	: false,
 			service		: 'channel',
 			image		: '/i/placeholder/listIcon2.png',
-			branding	: '#ffffff'
 			
 		// DB model structure
-			// id 				: undefined,
-			// name 			: undefined,
-			// description 	: undefined,
-			// // type 			: undefined, duplicate - is mine used, if so rename mine
-			// sport 			: undefined,
-			// level 			: undefined,
-			// geolat 			: null,
-			// geolng 			: null
+			// id 				: '',
+			// name 			: '',
+			// description 		: '',
+			// type 			: '',
+			// sport 			: '',
+			// level 			: '',
+			// geolat 			: '',
+			// geolng 			: ''
+
+			//{"hash":"","name":"chris hoy","image":"","description":"british cyclist","sport":"cycling","type":"player","level":"","keywords":"chris hoy","branding":"","geolat":"","geolng":"","status":"active","search_term":"chris hoy"}
+
+		},
+		validate: function(attr){
+			// console.info('# Model.Channel.validate');
+			// var err = [], key;
+			// for(key in this.defaultOptions){
+				// var obj = this.defaultOptions[key];
+				// if(obj.required && this.test(attr[key], obj)){
+					// err.push({ name: key, msg: key + ' is required. Please ' + ((obj.regex)? 'enter' : 'select') + 'a value' })
+				// }
+			// };
+			// if(err.length) return err;
+		},
+		test: function(val, obj){
+			var res = true;
+			if(!val || val.length == 0){
+				res = false;
+			}else if(obj.regex){
+				res = (/^[a-zA-Z-'\.\s]{2,128}$/gi).test(val);
+			}else if(obj.values){
+				if( _.indexOf(obj.values, val) === -1 ) res = false;
+			}
+			return res;
 		}
 	});
 	

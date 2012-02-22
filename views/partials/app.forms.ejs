@@ -1,0 +1,38 @@
+<!-- // STATIC TEMPLATES /////////////////////////////////////////// -->
+
+<!-- // DETAIL ITEM TEMPLATES // -->
+<script id="static_channelCreateTemplate" class="tmpl" type="text/template">
+	<header class="detailHead bb shadows">
+		<h1>Create Channel</h1>
+	</header>
+	<div class="contentWrapper">
+		<div class="scroller">
+			<form method="post" action="/api/channel" class="inlineForm" id="channelCreate">
+				<fieldset>
+					<div class="bb">
+						<label for="name">Channel Name</label>
+						<input class="formEl" name="name" type="text" value="" placeholder="Channel Name" />
+					</div>
+					<div class="bb">
+						<label for="sport">Sport</label>
+						<select class="formEl" name="sport"><option value="">select a sport</option></select>
+					</div>
+					<div class="bb">
+						<label for="type">Type</label>
+						<select class="formEl" name="type"><option value="">select a type</option></select>
+					</div>
+					
+					<input type="hidden" name="search_term" value="" />
+					<input type="hidden" name="status" value="active" />
+					
+					<div class="formActions">
+						<button class="btn" type="submit">create</button>
+						<button class="btn cancel" type="cancel">cancel</button>
+					</div>
+					
+				</fieldset>
+				
+			</form>
+		</div><!-- /.scroller -->
+	</div>
+</script>

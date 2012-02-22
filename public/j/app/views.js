@@ -538,6 +538,7 @@ TweetView			- individual tweet comment
 	var SearchView 		= _form.extend({
 		el: $('#navSearch > form'),
 		initialize : function(){
+			this.escapeValue = false;
 			this.app = this.options.app;
 			_.bindAll(this, 'submit', 'search');
 
@@ -548,15 +549,15 @@ TweetView			- individual tweet comment
 		},
 		search: function(value){
 			this.$el.focus();
-			this.$('#groupSearch').val('');
+			var val = this.$('#groupSearch').val();
 			this.app.set({
-				selectedItemUID: 'search|' + value.replace('q=','')
+				selectedItemUID: 'search|' + val
 			});
 		},
 		focus: function(){
 			ev.trigger('update:view', 'showchannels');
-		}
-		
+		},
+		blur: function(){ this.$('#groupSearch').val(''); }
 	});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -669,15 +670,19 @@ TweetView			- individual tweet comment
 			ev.trigger('update:view', 'showDetail');
 			this.selectedModel = model.id;
 			
-			var type = model.get('type'),
+			var type = ( model.get('form') )? 'form' : model.get('type'),
 				view;
-			if(type === 'static'){
-				view = new StaticView({model:model, app:this.options.app});
-			}else{
-				model.setSaved(this.app);
-				view = new DetailView({model:model, app:this.options.app});
-			}
-
+				
+			switch(type){
+				case 'form':
+				case 'static':
+					view = new StaticView({model:model, app:this.options.app});
+					break;
+				default:
+					model.setSaved(this.app);
+					view = new DetailView({model:model, app:this.options.app});
+					break;
+			};
 			this.$el.append(view.render().el);
 			view.toggleDisplay();
 		},
@@ -689,31 +694,60 @@ TweetView			- individual tweet comment
 		}
 	});
 	
+	
 	var StaticView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'detailItem staticItem',
 		baseID: 'detailContentWrap',
+		events: {
+			'submit form' : 'submit'
+		},
 		templates: {
-			error	: _.template( $('#detail404Template').html() ),
-			help	: _.template( $('#static_helpTemplate').html() )
+			error			: _.template( $('#detail404Template').html() ),
+			help			: _.template( $('#static_helpTemplate').html() ),
+			channelCreate	: _.template( $('#static_channelCreateTemplate').html() )
 		},
 		initialize: function(){
-			_.bindAll(this, 'render', 'toggleDisplay');
+			_.bindAll(this, 'render', 'toggleDisplay', 'formError', 'submit', 'buildForm');
+			this.app = this.options.app;
 			this.baseID += '_' + this.model.get('val');
 			this.model.bind('change:selected', this.toggleDisplay);
+			
+			switch(this.model.get('type')){
+				case 'channel': 
+					this.collection = this.app.channels;
+					this.child = new this.collection.model;
+					this.child.on('error', this.formError)
+					break;
+			}
 		},
 		render: function(){
-			var val = this.model.get('val'), tpl;
+			var val = this.model.get('val'),
+				tpl;
+				
+			if(this.model.get('form')){
+				var tplName = this.model.get('type') + (val.charAt(0).toUpperCase() + val.slice(1));
+				val = 'form';
+			};
+			
 			switch(val){
 				case 'help':
-					tpl = this.templates.help( this.model.toJSON() );
+					tpl = this.templates.help;
 					break;
+				case 'form':
+					if(this.templates[tplName]){
+						tpl = this.templates[tplName];
+						break;
+					}
 				default:
-					tpl = this.templates.error( this.model.toJSON() );
+					this.errorView = true;
+					tpl = this.templates.error;
 					break;
 			};
-			this.$el.html( tpl );
+			
+			this.$el.html( tpl( this.model.toJSON() ) );
 			this.$('.contentWrapper').attr({id: this.baseID});
+			if(this.templates[tplName]) this.buildForm();
 		    return this;
 		},
 		toggleDisplay: function(){
@@ -722,6 +756,8 @@ TweetView			- individual tweet comment
 				this.$el.fadeIn(200,function(){
 					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
 				});
+			}else if(this.errorView){
+				this.close();
 			}else{
 				this.$el.fadeOut(200,function(){
 					if(self.scroll) {
@@ -730,6 +766,58 @@ TweetView			- individual tweet comment
 					}
 				});
 			}
+		},
+		formError: function(){},
+		submit: function(e){
+			e.preventDefault();
+			var $form = this.$('form'),
+				hash = $form.serializeObject();
+				
+			var hash2 = {
+				"name":"athletics",
+				"keywords":"athletics",
+				"search_term":"athletics",
+				"description":"athletics",
+				"sport":"athletics",
+				"type":"organisation",
+				"hash":"","image":"","level":"","branding":"","geolat":"","geolng":"","status":"active"
+			};
+			
+			// this.child.set(hash2);
+			// this.child.save({
+				// success:function(){}, error:function(){}
+			// });
+
+			//this.collection.create(this.child);
+			this.collection.create(hash2, {
+				wait: true,
+				success: function(res){ console.log(res) },
+				error: function(err){ console.error(err) }
+			})
+			
+		},
+		buildForm: function(){
+			var opts = this.child.defaultOptions,
+				name = this.model.id.split('|')[3], 
+				nameInput = this.$('input[name=name]'),
+				key;
+
+			nameInput[0].addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
+			nameInput[0].addEventListener('touchstart', function(e) { e.stopPropagation() }, false);
+			nameInput.val(name);
+			this.$('input[name=search_term]').val(name);
+			for(key in opts){
+				if( opts[key].values && _.isArray(opts[key].values) ){
+					var string = '',
+						el = this.$('select[name='+key+']');
+						
+					$.each(opts[key].values, function(i,val){
+						console.log(val +' / '+i);
+						string += '<option value="'+val+'">'+val+'</option>'
+					})
+					el.append( $(string) );
+				}
+			};
 		}
 	});
 
@@ -740,11 +828,12 @@ TweetView			- individual tweet comment
 		template: _.template( $('#detailTemplate').html() ),
 		errorTemplate: _.template( $('#detail404Template').html() ),
 		events: {
-			'click a.save': 'saveAction'
+			'click a.save': 'saveAction',
+			'click a.triggerAddChannel': 'createChannel'
 		},
 		initialize: function(){
 			console.info('# View.Detail.initialize');
-			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton', 'updateScroll', 'createScroll');
+			_.bindAll(this, 'render', 'toggleDisplay', 'saveAction', 'toggleButton', 'updateScroll', 'createScroll', 'createChannel');
 			this.app = this.options.app;
 			this.type = this.model.get('type');
 
@@ -792,7 +881,8 @@ TweetView			- individual tweet comment
 				case 'search':
 					this.viewC.title = 'Channels that match your search';
 					this.viewE.title = 'Events that match your search';
-					this.viewA.title = 'Articles that match your search, (20 of ' + this.model.get('articleCount')+ ')';
+					this.viewA.title = 'Articles that match your search'; 
+					if(this.model.get('articleCount') > 20) this.viewA.title += ', (20 of ' + this.model.get('articleCount')+ ')';
 					break;
 			}
 
@@ -860,23 +950,16 @@ TweetView			- individual tweet comment
 			if( this.$('.scroller').height() < this.$('.contentWrapper').height() ) {
 				this.$('.scrollLoad').css('display','none');
 				if(this.scroll) {
-					console.log('destroy')
 					this.scroll.destroy();
 					this.scroll = null;
-					//this.$('#pullUp').hide();
-					//this.$('#pullDown').hide();
 				}
 			} else {
 				if(this.scroll) {
-					console.log('refresh')
 					setTimeout(function () {
 						self.scroll.refresh();
 						if(elementIndex) self.scroll.scrollToElement('.articleItem:nth-child('+elementIndex+')', 500);
 					}, 500);
 				} else {
-					console.log('create')
-					//this.$('#pullUp').show();
-					//this.$('#pullDown').show();
 					setTimeout(function () {
 						self.createScroll();
 					}, 500);
@@ -952,6 +1035,11 @@ TweetView			- individual tweet comment
 					}
 				});
 			}
+		},
+		createChannel: function(e){
+			e.preventDefault();
+			this.app.set({selectedItemUID: 'channel|create|' + escape(this.model.get('title'))})
+			//this.app.route.navigate('/channel/create/' + escape(this.model.get('title')), {trigger: true});
 		}
 	});
 
@@ -1467,8 +1555,8 @@ TweetView			- individual tweet comment
 		checkContent: function(model, val){
 			this.reset();
 			var s = val.split('|');
-			if( s[1] === ('null') || s[0] ==='list' || s[0] === 'search' || s[0] === 'static' ){
-				// home/search - no comments
+			if( (/list|search|static/gi).test(s[0]) || (/null|create/gi).test(s[1]) ){
+				// no comments on certain pages - may be simpler to test revers (check for channel/event/article)
 				this.showHelp('general');
 			}else if(!this.auth){
 				// not auth to use this module - login help

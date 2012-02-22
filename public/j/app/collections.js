@@ -106,11 +106,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				id = s[1],
 				hash = {
 					id:detailUID,
-					type:s[0],
-					val:s[1]
+					type:s[0].toLowerCase(),
+					val:s[1].toLowerCase()
 				},
 				model;
-				
+			
+			if( (/create|edit|delete/gi).test(s[1]) ){
+				hash.form = true;
+				this.add(hash);
+				return;
+			};
+
 			switch(type){
 				case 'static':
 					this.add(hash);
