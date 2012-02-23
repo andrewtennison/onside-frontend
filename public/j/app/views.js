@@ -1276,8 +1276,8 @@ TweetView			- individual tweet comment
 		el: $('#listArticle'),
 		view: false,
 		events: {
-			'click .close'	: 'close',
-			'click button.cancel':'close'
+			'click .close'			: 'close',
+			'click button.cancel'	: 'close'
 		},
 		initialize: function(){
 			_.bindAll(this, 'updateView', 'getModel', 'close', 'show', 'hide');
@@ -1290,9 +1290,6 @@ TweetView			- individual tweet comment
 			// ev.trigger('close:overlay');
 		},
 		updateView: function(app, id){
-			console.log(app)
-			console.log(id)
-			
 			var oldId = this.app.previous('selectedArticle');
 
 			if(id === oldId || ( !id && !oldId )){
@@ -1335,9 +1332,8 @@ TweetView			- individual tweet comment
 			if(list){
 				model = list.id;
 				if(model){
-					var view = this.selectView(model);
-					this.view = view.render().el;
-					this.$el.append(this.view);
+					this.view = this.selectView(model);
+					this.$el.append(this.view.render().el);
 					this.show();
 				}else{
 					loadModel();
@@ -1361,7 +1357,7 @@ TweetView			- individual tweet comment
 		},
 		close: function(){
 			this.app.setTitle();
-			if(!this.app.get('this.app')){
+			if(!this.app.get('selectedArticle')){
 				this.hide();
 			}else{
 				this.app.set({ selectedArticle : false });
@@ -1383,9 +1379,10 @@ TweetView			- individual tweet comment
 			}
 		},
 		hide: function(){
+			var self = this;
 			this.$el.removeClass('on');
 			setTimeout(function () {
-				$(this.view).remove();
+				self.view.close();
 			}, 1000);
 			//if( this.app.get('selectedArticle') ) this.app.set({selectedArticle:false});
 		}
@@ -1405,11 +1402,11 @@ TweetView			- individual tweet comment
 			this.$el.html(this.template(json));
 		    return this;
 		},
-		close: function(){
-			this.app.set({ selectedArticle : false });
-			this.app.setTitle();
-			return false;
-		},
+		// close: function(){
+			// this.app.set({ selectedArticle : false });
+			// this.app.setTitle();
+			// return false;
+		// },
 		setScroll: function(){
 			var self = this,
 				id = this.baseId,
@@ -1452,6 +1449,7 @@ TweetView			- individual tweet comment
 				self.$el.addClass('complete');
 				setTimeout(function () {
 					$close.click();
+					self.$el.removeClass('complete');
 				}, 2500);
 			})
 		}

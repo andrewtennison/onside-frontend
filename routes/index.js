@@ -375,7 +375,7 @@ exports.getDetailApi = function(req,res){
 			break;
 		case 'event':
 			console.log('detail = event')
-			required = ['channels', 'articles', 'events', 'author'];
+			required = ['channels', 'articles', 'author'];
 			singleList(req, res, 'events', '/event/'+id, function(c){
 				if(!c) {
 					content.error = true;
@@ -383,9 +383,6 @@ exports.getDetailApi = function(req,res){
 					content.author = c[0];
 					content.title = content.author.name
 				};
-			});
-			singleList(req, res, 'events', '/event?'+action+'='+id, function(c){
-				if(!c) content.error = true; else content.events = c;
 			});
 			singleList(req, res, 'channels', '/channel?'+action+'='+id, function(c){
 				if(!c) content.error = true; else content.channels = c;
