@@ -49,7 +49,7 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
  */
 .navScrollbarV,
 .detailScrollbarV,
-.commentScrollbarV {position:absolute;z-index:100;width:8px;bottom:7px;top:2px;right:2px}
+.commentScrollbarV {position:absolute;z-index:100;width:8px;bottom:2px;top:2px;right:2px; background:rgba(0,0,0,0.2); border-radius:4px}
 
 .navScrollbarV > div,
 .detailScrollbarV > div,
@@ -85,7 +85,7 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 	*/
 }
 
-#pullUp, #pullDown { color: #ccc; font-size: 14px; font-weight: bold; height: 40px; line-height: 40px; padding: 5px 10px; margin:5px; background:rgba(0,0,0,0.1)}
+#pullUp, #pullDown { color: #ccc; font-size: 14px; font-weight: bold; height: 40px; line-height: 40px; padding: 5px 10px; background:rgba(0,0,0,0.1)}
 #pullUp .icon, #pullDown .icon {opacity:0.4}
 
 .loadingMask:after,
@@ -164,7 +164,7 @@ body,
 #listGroups > footer,
 #listChat > footer {position:absolute; display:block; bottom:0; left:0; right:0; text-align:center}
 
-.iScrollEnabled #listDetail .scroller {padding-right:9px}
+.iScrollEnabled #listDetail .scroller {padding-right:0px}
 .iScrollEnabled .contentWrapper {overflow:hidden !important}
 
 
@@ -233,10 +233,19 @@ body,
 .type-list .detailHead nav {display:none}
 
 /* sections */
+.detailItem .banner {margin-right:-0px} 
 .detailItem .channelList {position:relative; display:block; clear:both}
 .detailItem .channelList {}
 .detailItem .eventList {position:relative; display:block; padding:10px 5px 0 0}
 .detailItem .articleList {padding:2px 5px 0 0px}
+
+/* Ads */
+.detailItem .banner {background-position:0 0; background-repeat: repeat-x}
+.detailItem .banner img {width:100%; max-width:500px; position:relative; display:block; margin:0px auto}
+
+.articleItem.advert {}
+.articleItem.advert img {max-width:300px; width:100%; display:block; margin:0px auto}
+
 
 /* Static Item */
 .staticItem {}
@@ -288,9 +297,10 @@ body,
 .articleItem nav a {color:#fff; background: #555; border-radius: 2px; font-family: 'Open Sans',serif; padding: 2px 6px; text-transform: uppercase;}
 .articleItem nav a:hover {color:#333; background:#ddd}
 
-.articleItem.rss:hover {background:#ddd; cursor:pointer}
+.articleItem.rss:hover {cursor:pointer}
 .articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
 .articleItem.rss .inner {padding:20px;}
+.articleItem.rss img {float:left; margin:10px 10px 10px 0}
 .articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:4.2em; overflow: hidden; }
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}
@@ -460,7 +470,7 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 
 @media only screen and (min-width: 780px) {
 	.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:2px}
-	.detailItem .articleList {padding:2px 5px 0 280px}
+	.detailItem .articleList {padding:2px 2px 0 280px}
 }
 
 @media only screen and (min-width: 1000px) {

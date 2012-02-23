@@ -47,7 +47,13 @@
 	<div class="contentWrapper">
 		<div class="scroller">
 			<div id="pullDown" class="scrollLoad"><span class="icon pullDown"></span><span class="label">Pull down to refresh...</span></div>		
-			
+			<@ if(adverts && adverts.banner) { @>
+			<div class="banner" style="background-image:url(<@= adverts.banner.imageBg @>)">
+				<a href="<@= adverts.banner.link @>">
+					<img src="<@= adverts.banner.image @>" alt="<@= adverts.banner.text @>" />
+				</a>
+			</div>
+			<@ } @>
 			<div id="pullUp" class="scrollLoad"><span class="icon pullUp"></span><span class="label">Pull up to load more...</span></div>		
 		</div><!-- /.scroller -->
 	</div>

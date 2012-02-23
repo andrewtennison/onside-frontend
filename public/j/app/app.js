@@ -15,6 +15,10 @@ BB.appRoutes = Backbone.Router.extend({
 	initialize: function(){
 		console.info('# appRoutes.initialize');
 		
+		if( (/iphone|ipad/gi).test(window.navigator.userAgent) ){
+			$('body').css({bottom:'-60px'});
+			$('body').scrollTop(1);
+		}
 		/*
 		 look for local.session storage - saved preferences to load
 		 */

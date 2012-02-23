@@ -130,8 +130,8 @@ TweetView			- individual tweet comment
 		addHelp: function(){
 			var name = (typeof this.helpViewTemplate === 'string')? this.helpViewTemplate : this.helpViewTemplate();
 			if( !name ) return;
-			
 			var view = new _HelpView();
+			this.activeViews.push(view);
 			this.$el.append(view.render(name).el);
 			this.updateView();
 		},
@@ -869,7 +869,7 @@ TweetView			- individual tweet comment
 				this.$el.html(this.errorTemplate(json));
 				return this;
 			};
-
+			
 			this.$el.html(this.template(json));
 			this.$('.contentWrapper').attr({id: this.baseID});
 			this.$el.addClass('type-'+this.type)
@@ -878,12 +878,12 @@ TweetView			- individual tweet comment
 			this.pullDownEl = this.$('#pullDown')[0];
 			this.pullUpEl = this.$('#pullUp')[0];
 			this.pullLoading = false;
-			this.pullDownOffset = 55;
-			this.pullUpOffset = 55;
+			this.pullDownOffset = 48;
+			this.pullUpOffset = 48;
 
 			this.viewC = new ChannelListDetailView({ collection: this.model.get('channels'), app: this.options.app, type: this.type });
 			this.viewE = new EventListDetailView({ collection: this.model.get('events'), app: this.options.app, type: this.type });
-			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.type });
+			this.viewA = new ArticleListView({ collection: this.model.get('articles'), app: this.options.app, type: this.type, adverts: json.adverts });
 
 			switch(this.type){
 				case 'list':
@@ -902,11 +902,13 @@ TweetView			- individual tweet comment
 
 			this.app.set({selectedArticleList:this.viewA.collection});
 
-			this.$el.find('.contentWrapper > .scroller > #pullDown') 
-				.after(this.viewA.el)
-				.after(this.viewE.el)
-				.after(this.viewC.el);
+			// add html to view
+			this.$el.find('.contentWrapper > .scroller > #pullUp')
+				.before(this.viewC.el)
+				.before(this.viewE.el)
+				.before(this.viewA.el);
 			
+			// update branding
 			var hex = this.model.get('author').branding;
 			if(hex){
 				hex = hex.split(',');
@@ -1121,7 +1123,9 @@ TweetView			- individual tweet comment
 	var ArticleListView = _ListView.extend({
 		tagName: 'section',
 		className: 'content articleList',
-		onInit: function(){},
+		onInit: function(){
+			this.adverts = this.options.adverts;
+		},
 		itemView: function(article){ 
 			var view = false,
 				json = article.toJSON(),
@@ -1159,6 +1163,20 @@ TweetView			- individual tweet comment
 					break;
 			};
 			return name;
+		},
+		updateView: function(){
+			// runs after all articles are added
+			if(!this.adverts || !this.adverts.advert) return;
+			
+			var articles = this.$('article.articleItem'),
+				count = -1;
+
+			$.each(this.adverts.advert,  function(i,v){
+				var ad = '<article class="articleItem advert" style="background-color:'+v.bgColour+'"><a href="'+v.link+'"><img src="'+v.image+'" alt="'+v.text+'" /></a></article>';
+				count += 3;
+				$( articles[count] ).after( $(ad) );
+			});
+			
 		}
 	});
 

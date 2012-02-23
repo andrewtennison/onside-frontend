@@ -1,9 +1,10 @@
 /*
  * GET home page.
  */
-var rest 		= require('restler'),
-	Config 		= require('../lib/conf'),
-	conf 		= new Config(),
+var rest		= require('restler'),
+	Config		= require('../lib/conf'),
+	conf		= new Config(),
+	Adverts		= require('../lib/adverts'),
 	twitter		= require('ntwitter');
 
 
@@ -200,8 +201,6 @@ function callApi(req, res, action, authReq, userReq, callback){
 		user = req.user,
 		UID = false;
 
-	console.log('req.session.bpa = ' + req.session.bypassAuth)
-
 	// bypass authentication - here for load testing secure pages.
 	if(req.session.bypassAuth && !loggedIn){
 		loggedIn = true;
@@ -296,9 +295,10 @@ exports.getDetailApi = function(req,res){
 			channels	: false,
 			events 		: false,
 			articles 	: false,
-			channelArticles: false
+			channelArticles: false,
+			adverts		: (Adverts[id])? Adverts[id] : false 
 		};
-
+		
 	switch(action){
 		case 'list':
 			console.log('detail = list')
