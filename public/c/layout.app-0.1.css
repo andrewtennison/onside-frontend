@@ -115,8 +115,8 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 
 
 /* ==|== primary styles ===================================================== */
-html {background:#282a2c}
-body {}
+html,
+body {background:#282a2c}
 
 /* pos absolute */
 body,
