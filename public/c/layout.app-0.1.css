@@ -190,7 +190,7 @@ body,
 #listGroups .navListItem a {position:relative; display:table; padding:4px 2px 4px 4px}
 	#listGroups .navListItem h1, #listGroups article img,  
 	#listGroups .navListItem span {display:table-cell; vertical-align: middle}
-		#listGroups .navListItem h1 {width:267px;}
+		#listGroups .navListItem h1 {width:267px; line-height: 1.2em; padding:5px 0}
 		#listGroups .navListItem span {width:58px;}
 		#listGroups .navListItem img {margin-right:10px; width:43px; opacity:0.5}
 		#listGroups .navListItem.active img {opacity:1}
@@ -200,6 +200,10 @@ body,
 
 #listGroups #navGlobal a.active, #listGroups #navGlobal a.active:hover,
 #listGroups .navListItem.active a, #listGroups .navListItem.active a:hover {background:#393b3d}
+
+#listGroups .eventList .navListItem h1 {padding-left:0px}
+#listGroups .eventList .navListItem span {width:auto; display:inline}
+#listGroups .eventList .navListItem time {float: left; margin-right: 20px; text-align: right; width: 40px;}
 
 
 /* ==|== appNav styles ===================================================== */

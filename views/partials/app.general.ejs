@@ -11,9 +11,25 @@
 </script>
 
 <script id="eventItemTemplate" class="tmpl" type="text/template">
+	<@ var time = prettyDate( stime ); @>
+	<@ var typeName = type; if(type === 'match'){ typeName = (participantsObj[0].score)? 'RESULT' : 'FIXTURE'; } @>
+
 	<a href="#">
-		<img src="/i/placeholder/listIcon2.png" />
-		<h1><@= name @></h1>
+		<h1>
+			<time><@= time @></time>
+			<@ if(participantsObj.length == 2) { @>
+				<@= participantsObj[0].name @>
+				<@ if(participantsObj[0].score) { @><span class="score"><@= participantsObj[0].score @></span><@ } @>
+				<span>v</span>
+				<@ if(participantsObj[1].score) { @><span class="score"><@= participantsObj[1].score @></span><@ } @>
+				<@= participantsObj[1].name @>
+			<@ } else { @>
+				<@= name @>
+			<@ } @>
+			<br>
+			<@ if(location) { @>@ <@= location @><@ } @>
+			
+		</h1>
 	</a>
 </script>
 
