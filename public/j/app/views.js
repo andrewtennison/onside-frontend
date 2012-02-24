@@ -458,7 +458,6 @@ TweetView			- individual tweet comment
 			this.updateView('channels')
 			
 		},
-		
 		updateScroll: function(){
 			var self = this;
 			setTimeout(function () {
@@ -496,8 +495,6 @@ TweetView			- individual tweet comment
 				block.slideUp(100)
 				el.removeClass('active');
 			}
-			
-
 		},
 		
 		changeGroup: function(e){
@@ -539,6 +536,7 @@ TweetView			- individual tweet comment
 					on.helper.log('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'), 'error')
 					break;
 			}
+			this.updateScroll();
 		},
 		
 		expandContainer: function(){
@@ -604,7 +602,13 @@ TweetView			- individual tweet comment
 	});
 	var EventView 		= _ListItemView.extend({
 		className:'bb navListItem',
-		template: _.template( $('#eventItemTemplate').html() )
+		template: _.template( $('#eventItemTemplate').html() ),
+		render: function(){
+			var json = this.model.toJSON();
+			json.participantsObj = $().convertToObject(json.participants);
+			this.$el.html(this.template( json ));
+		    return this;
+		}
 	});
 	var SaveSearchView 	= _ListItemView.extend({
 		className:'bb navListItem',
@@ -1291,14 +1295,18 @@ TweetView			- individual tweet comment
 		},
 		updateView: function(app, id){
 			var oldId = this.app.previous('selectedArticle');
+			
+			console.log(oldId, id);
 
 			if(id === oldId || ( !id && !oldId )){
 				// no change do nothing
 				return;
-			} else if(oldId && !id){
-				// was article, no more - hide
+			} else if(oldId && this.view){
+				// hide old article
 				this.hide();
-			} else {
+			};
+			
+			if(id){
 				if( (/feedback/gi).test(id) ){
 					var data = { hash: document.location.hash, url: document.location, user: this.app.get('user'), useragent: window.navigator.userAgent };
 					this.view = new ADIV_feedback();
@@ -1309,6 +1317,7 @@ TweetView			- individual tweet comment
 					this.getModel(id);
 				}
 			}
+
 		},
 		getModel: function(id){
 			var self = this,
@@ -1383,6 +1392,7 @@ TweetView			- individual tweet comment
 			this.$el.removeClass('on');
 			setTimeout(function () {
 				self.view.close();
+				self.view = false;
 			}, 1000);
 			//if( this.app.get('selectedArticle') ) this.app.set({selectedArticle:false});
 		}

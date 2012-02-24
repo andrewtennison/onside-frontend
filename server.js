@@ -54,7 +54,9 @@ var app = module.exports = express.createServer();
 app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.cookieParser());
-	app.use(express.static(__dirname + '/public'));
+	
+	var oneYear = 0; //31557600000;
+	app.use(express.static(__dirname + '/public', { maxAge: oneYear }));
 	app.use(express.logger());
 	app.use(logging.requestLogger);
 	app.use(express.session({store: new MemcachedStore({ hosts: ['127.0.0.1:11211'] }), secret: 'changeSecret' }));
