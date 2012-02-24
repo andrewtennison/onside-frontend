@@ -128,17 +128,8 @@
 		<@ } else { @>
 			<p><@= name @></p>
 		<@ } @>
-		<!--@ } else { @>
-			<@ for(var i=0; i<participants.length; i++) { @>
-				<a href="/channe/<@= participants[i].channel @>">
-					<@= participants[i].name @>
-					<@ if(participants[i].score) { @><span><@= participants[i].score @></span><@ } @>
-				</a>
-			<@ } @>
-		<@ } @-->		
 
 		<p class="location"><@ if(location) { @>@ <@= location @><@ } @></p>
-		<!--@ if(parent) { @><p> <@= parent @> </p><@ } @-->
 	</section>
 </script>
 
