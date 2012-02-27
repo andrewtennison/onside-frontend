@@ -29,6 +29,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		defaultOptions: {
 			id			: {type:'text', editable:false},
+			avatar		: {type:'text'},
 			name		: {type:'text'},
 			email		: {type:'email'},
 			admin		: {type:'select', values:[0,1]},

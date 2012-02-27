@@ -143,12 +143,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			_.each(arr,function(key,i){
 				var opts = defaults[key],
 					v = json[key];
-		
+						
 				if(v === 'null' || v ===  null) v = '';
 				var existsString = (v && v.length >= 1 && v !== '0' )? 'hasValue' : 'noValue';				
 				
 				if(key === 'show'){
 					//
+				} else if(key === 'avatar' && (/.jpg|.gif|.png/gi).test(v)){
+					html += '<td class="key_'+key+'"><img src="'+v+'" /></td>';					
 				} else if(opts && opts.expand){
 					html += '<td class="key_'+key+'"><span class="expand" data-key="'+key+'">expand '+key+'</span></td>';
 				}else{
@@ -270,6 +272,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		deleteItem: function(){ alert('delete not available') },
 		updateItem: function(e){
+			e.preventDefault();
 			this.$('a.save').button('loading');
 			if(this.$form){
 				var self = this,
@@ -281,6 +284,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					};
 
 				$.each(data, function(i,val){
+					if(val.value.length == 0 || !val.value) val.value = null;
 					obj[val.name] = val.value;
 				});
 				this.model.save(obj, hash);
@@ -312,7 +316,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		populateForm: function(){
 			var type = this.$('.populateDefaults').val() || 'defaultVal';
-			console.log(type)
 			for(var key in this.model.defaultOptions){
 				var defaultVal = this.model.defaultOptions[key][type];
 				if(defaultVal){
@@ -334,10 +337,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					};
 
 				$.each(data, function(i,val){
+					if(val.value.length == 0 || !val.value) val.value = null;
 					obj[val.name] = val.value;
 				});
-
 				this.collection.create(obj, hash);
+				return false;
 			};
 		}
 	});
