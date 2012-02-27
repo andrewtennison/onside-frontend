@@ -1037,7 +1037,8 @@ TweetView			- individual tweet comment
 		toggleDisplay: function(){
 			var self = this;
 			if(this.model.get('selected')) {
-				this.app.set({selectedArticleList:this.viewA.collection});
+				var collection = this.viewA.collection || false;
+				this.app.set({selectedArticleList: collection});
 				this.$el.fadeIn(200,function(){
 					var eh = self.$('.eventList').height(),
 						$a = self.$('.articleList');					
@@ -1640,7 +1641,7 @@ TweetView			- individual tweet comment
 			if(this.collection) {
 				this.collection.on('add', this.addOne);
 				this.collection.on('reset', this.addAll);
-			}
+			};
 			this.onInit();
 		},
 		onInit: function(){},
@@ -1654,7 +1655,6 @@ TweetView			- individual tweet comment
 			// empty + if present
 			this.$form.show();
 			this.$inner.empty().show();
-			console.log(this.$help);
 			if(this.$help) this.$help.remove();
 		},
 		checkContent: function(model, val){
@@ -1698,6 +1698,12 @@ TweetView			- individual tweet comment
 			var view = new CommentView({model:comment, app:this.options.app})
 			this.$inner.append(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
+		},
+		setupComments: function(val){
+			var s = val.split('|');
+//			this.collection.reset();
+			this.collection.urlParams = '?' + s[0] +'='+ s[1];
+			this.collection.fetch();
 		}
 	});	
 	var TwitterCommentListView = _genericCommentListView.extend({

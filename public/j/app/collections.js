@@ -186,8 +186,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		initialize: function(models,app){
 			on.helper.log('# Collection.CommentList.initialize','info');
 			this.app = app;
-			_.bindAll(this, 'updateCollection');
-			this.app.bind('change:selectedItemUID', this.updateCollection);
+			//_.bindAll(this, 'updateCollection');
+			//this.app.bind('change:selectedItemUID', this.updateCollection);
 		},
 		updateCollection: function(){
 			var s = this.app.get('selectedItemUID').split('|');

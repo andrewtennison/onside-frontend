@@ -71,7 +71,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		service: 'channel',
 		initialize: function(){
-			console.info('# Model.Channel.initialize');
 			this.setImage();
 		},
 		setImage: function(){
@@ -376,20 +375,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var Tweet = Backbone.Model.extend({
 		url: '/tweet'
-		/*
-		methodToURL: {
-			'read': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
-			'update': 'http://search.twitter.com/search.json?q=%23' + this.hash + '&callback=?',
-			'create': '/tweet'
-		},
-
-		sync: function(method, model, options) {
-//			if(method === 'read' && !this.hash) return;
-			options = options || {};
-			options.url = model.methodToURL[method.toLowerCase()];
-			Backbone.sync(method, model, options);
-		}
-		*/
 	});
 	
 	

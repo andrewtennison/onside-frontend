@@ -30,23 +30,9 @@ on.settings = {
 console.log('1. namespace - ' + on.env.v)
 
 on.logger = [];
-on.helper = {
-	// escape HTML (prevent script insertion)
-	esc : function(string) {return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');}
-	, log : function(msg, type){
-		if (window.console === undefined || on.env.server !== 'development'){
-			on.logger.push(type +' = '+ msg);
-		} else {
-			try {
-				if(type === undefined) type = 'log';
-				console[type](msg);
-			} catch(err){
-				console.error(err)
-				console.log(msg)
-			};
-		}
-	}
-}
+on.helper = {};
+on.helper.esc = function(string) {return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');}
+on.helper.log = (window.console)? console.log : function(){ on.logger.push(type +' = '+ msg)};
 
 on.path = {
 	js: '/j/',

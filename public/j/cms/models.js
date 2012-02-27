@@ -14,6 +14,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.events = new BB.Events();
 			this.sources = new BB.Sources();
 			this.articles = new BB.Articles();
+			this.emails = new BB.Emails();
 
 			//_.bindAll(this, );
 		}
@@ -94,21 +95,21 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			id			: {type:'text', editable:false},
 			status		: {type:'text', editable:false},
 			lastfetched	: {type:'text', editable:false},
-			url			: {type:'text'},
+			url			: {type:'text', rss:'', twitter:'http://search.twitter.com/search.json?q=@'},
 			channels	: {type:'text', help:'comma separated list of channel IDs', lookup: 'channels'},
-			frequency	: {type:'text', help:'seconds, 86400 = 24hours'},
-			map_type	: {type:'select', values:['', 'rss', 'youtube', 'twitter'], tableHide:true},
-			map_article	: {type:'text', help:'->channel->item', tableHide:true},
-			map_title	: {type:'text', help:'->title', tableHide:true},
-			map_content	: {type:'text', help:'->description', tableHide:true},
-			map_images	: {type:'text', tableHide:true},
-			map_videos	: {type:'text', tableHide:true},
-			map_author	: {type:'text', tableHide:true},
-			map_source	: {type:'text', tableHide:true},
-			map_link	: {type:'text', help:'->link|->guid', tableHide:true},
-			map_extended: {type:'text', tableHide:true},
-			map_publish	: {type:'text', help:'->pubDate', tableHide:true},
-			map_keywords: {type:'text', tableHide:true}
+			frequency	: {type:'text', rss:86400, twitter:60, help:'seconds, 86400 = 24hours' },
+			map_type	: {type:'select', values:['', 'rss', 'youtube', 'twitter'], tableHide:true, populateDefaults:true},
+			map_article	: {type:'text', help:'->channel->item', tableHide:true, rss:'->channel->item', twitter:'->results'},
+			map_title	: {type:'text', help:'->title', tableHide:true, rss:'->title', twitter:'->source'},
+			map_content	: {type:'text', help:'->description', tableHide:true, rss:'->description', twitter:'->text'},
+			map_images	: {type:'text', tableHide:true, rss:'', twitter:'->profile_image_url'},
+			map_videos	: {type:'text', tableHide:true, rss:'', twitter:''},
+			map_author	: {type:'text', tableHide:true, rss:'', twitter:'->from_user_name'},
+			map_source	: {type:'text', tableHide:true, rss:'', twitter:'twitter'},
+			map_link	: {type:'text', help:'->link|->guid', tableHide:true, rss:'->link|->guid', twitter:'->id'},
+			map_extended: {type:'text', tableHide:true, rss:'', twitter:''},
+			map_publish	: {type:'text', help:'->pubDate', tableHide:true, rss:'->pubDate', twitter:'->created_at'},
+			map_keywords: {type:'text', tableHide:true, rss:'', twitter:''}
 		}
 	});
 	var Article = Backbone.Model.extend({
@@ -131,11 +132,29 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 	});
 
+	var Email = Backbone.Model.extend({
+		parse: function(resp, xhr) {
+			return resp.resultset.articles[0];
+		},
+		defaultOptions: {
+			id			: {type:'text', editable:false},
+			name		: {type:'text'},
+			to			: {type:'text', editable:false, tableHide:true},
+			cc			: {type:'text', editable:false, tableHide:true},
+			bcc			: {type:'text', editable:false, tableHide:true},
+			subject		: {type:'text', help:'To input variables include |password| / |name|'},
+			text		: {type:'textarea', help:'To input variables include |password| / |name|'},
+			html		: {type:'textarea'},
+			added		: {type:'text', editable:false, tableHide:true}
+		}
+	});
+
 	BB.CMS = CMS;
 	BB.User = User;
 	BB.Channel = Channel;
 	BB.Event = Event;
 	BB.Source = Source;
 	BB.Article = Article;
+	BB.Email = Email;
 
 })(this.BB);

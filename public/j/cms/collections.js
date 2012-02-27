@@ -45,10 +45,16 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		params: 'limit=20',
 	});
 
+	var Emails = _default.extend({
+		model : BB.Email,
+		path : 'email'
+	});
+
 	BB.Users = Users;
 	BB.Channels = Channels;
 	BB.Events = Events;
 	BB.Sources = Sources;
 	BB.Articles = Articles;
+	BB.Emails = Emails;
 
 })(this.BB);

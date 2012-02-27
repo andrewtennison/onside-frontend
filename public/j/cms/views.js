@@ -21,7 +21,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		title: 'Unknown',
 		initialize: function(){
-			_.bindAll(this, 'createModel', 'submitFilters', 'submitRefine', 'addOne', 'addAll', 'setupTable' );
+			_.bindAll(this, 'toggleView', 'createModel', 'submitFilters', 'submitRefine', 'addOne', 'addAll', 'setupTable' );
 			this.cms = this.options.cms;
 			this.overlay = this.options.overlay;
 
@@ -37,6 +37,19 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				console.error('error on collection');
 				console.log(xhr);
 			});
+
+			this.cms.bind('change:selectedPage', this.toggleView);
+			//this.cms.on('change:selectedItem', this.toggleView);
+		},
+		toggleView: function(model,val){
+			var $item = $('#' + val),
+				prev = this.cms.previous("selectedPage"),
+				$prevItem = $('#' + prev);
+			
+			if( $item.length ){
+				$item.addClass('active');
+				if(prev) $prevItem.removeClass('active');
+			};
 		},
 		createModel: function(){
 			var self = this,
@@ -187,7 +200,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			'click .delete' : 'deleteItem',
 			'click .save' 	: 'updateItem',
 			'click .lookup'	: 'lookup',
-			'click .hiddenLookup a' : 'addLookupItem'
+			'click .hiddenLookup a' : 'addLookupItem',
+			'change .populateDefaults' : 'populateForm'
 		},
 		initialize: function(){
 			_.bindAll(this, 'error', 'success', 'render', 'closeItem', 'deleteItem', 'updateItem', 'lookup', 'addLookupItem');
@@ -201,15 +215,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			if(title) this.$('h3').text(title);
 			if(json) this.$('.modal-body').append( this.buildForm(json) );
 			if(content) this.$('.modal-body').append( $(content) );
+			
+			this.populateForm();
 		    return this;
 		},
 		buildForm: function(json){
 			console.info('build form')
 			var inner = '';
 			for(var key in this.model.defaultOptions){
-				console.info('key - ' + key)
-				console.info(this.model.defaultOptions[key])
-				
 				var opts = this.model.defaultOptions[key] || {type:false},
 					disabledString = (opts.editable === undefined || opts.editable !== false)? '' : 'disabled="true"',
 					setValue = json[key] || '';
@@ -219,11 +232,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					case 'text':
 						inner 	+= '<input '+disabledString+' type="text" size="30" name="'+key+'" id="'+key+'" class="xlarge" value="'+setValue+'">';
 						break;
+					case 'textarea':
+						inner 	+= '<textarea '+disabledString+' name="'+key+'" id="'+key+'" class="xlarge">'+setValue+'</textarea>';
+						break;
 					case 'email':
 						inner 	+= '<input '+disabledString+' type="email" size="30" name="'+key+'" id="'+key+'" class="xlarge" value="'+setValue+'">';
 						break;
 					case 'select':
-						inner += '<select id="'+key+'" name="'+key+'">';
+						var popString = (this.model.defaultOptions[key].populateDefaults)? ' populateDefaults' : '';
+						inner += '<select id="'+key+'" name="'+key+'" class="'+popString+'">';
 						$.each(opts.values, function(i,val){
 							var selectedString = (val.toString() === setValue)? 'selected="true"' : '';
 							inner += '<option '+selectedString+' value="'+val+'">'+val+'</option>';
@@ -247,7 +264,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.$form = $('<form class="form-horizontal"><fieldset>'+inner+'</fieldset></form>');
 			return this.$form;
 		},
-		closeItem: function(){
+		closeItem: function(e){
+			if(e) e.preventDefault();
 			this.overlay.hide();
 		},
 		deleteItem: function(){ alert('delete not available') },
@@ -291,6 +309,17 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				json = el.attr('data-json');
 
 			input.val(v + ',' + json);
+		},
+		populateForm: function(){
+			var type = this.$('.populateDefaults').val() || 'defaultVal';
+			console.log(type)
+			for(var key in this.model.defaultOptions){
+				var defaultVal = this.model.defaultOptions[key][type];
+				if(defaultVal){
+					var $el = this.$('#'+key);
+					if(!$el.val()) $el.val(defaultVal);
+				}
+			};
 		}
 	});
 	var _createView = _editView.extend({
@@ -335,7 +364,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var cmsView = Backbone.View.extend({
 		el : $('#OnsideCMS'),
 		events: {
-			'click #primaryNav a' : 'updateNav',
 			'focus .dynamicSelect' : 'buildSelect'
 		},
 		initialize: function(){
@@ -351,6 +379,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.sources 	= new sourcePageView(	{cms: this.options.cms, collection: this.options.cms.sources, overlay:overlay});
 			this.articles 	= new articlePageView(	{cms: this.options.cms, collection: this.options.cms.articles, overlay:overlay});
 			this.relations	= new relationsPageView({cms: this.options.cms, overlay:overlay});
+			this.emails 	= new emailPageView(	{cms: this.options.cms, collection: this.options.cms.emails, overlay:overlay});
 			this.$('#primaryNav a:first').click();
 			
 			this.users.collection.fetch();
@@ -358,24 +387,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.events.collection.fetch();
 			this.sources.collection.fetch();
 			this.articles.collection.fetch();
+			this.emails.collection.fetch();
 
+			this.cms.bind('change:selectedPage', this.updateNav);
+			//this.cms.on('change:selectedItem', this.updateNav);
 		},
-		updateNav: function(e){
-			e.preventDefault();
+		updateNav: function(model,val){
+			var $navItem = $('#nav_' + val),
+				prev = this.cms.previous("selectedPage"),
+				$prevNavItem = $('#nav_' + prev)
 			
-			if(this.activeLink) this.activeLink.removeClass('active');
-			if(this.activeTab) this.activeTab.removeClass('active');
-			
-			var $el = $(e.target),
-				$li = $el.parent('li'),
-				$id = $( $el.attr('href') );
-			
-			this.activeID = $el.attr('href').replace('#','');
-			$li.addClass('active');
-			$id.addClass('active');
-			
-			this.activeLink = $li;
-			this.activeTab = $id;
+			if( $navItem.length ){
+				$navItem.addClass('active');
+				if(prev) $prevNavItem.removeClass('active');
+			};
 		},
 		buildSelect: function(e){
 			var self = this,
@@ -555,7 +580,12 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				$().button('loading');
 			});
 		}
-	})
+	});
+
+	var emailPageView = _pageView.extend({
+		el : $('#emails'),
+		title: 'Email'
+	});
 
 	// var channelContentView = _contentView.extend({
 		// el : $('#channelDetail'),

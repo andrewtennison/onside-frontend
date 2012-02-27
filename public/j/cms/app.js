@@ -5,25 +5,34 @@ BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
 		'/user/:id'						: 'getUser',
+		'/:action'						: 'openPage',
+		'/:action/:id'					: 'openOverlay',
 
 		'*path'							: 'home'
 	},
 	
 	initialize: function(){
-		console.info('# appRoutes.initialize');
-		
-		/*
-		 look for local.session storage - saved preferences to load
-		 */
-		
 		// App model	
 		on.m.cms = new BB.CMS(this);
 		var cmsView = new BB.cmsView({ cms:on.m.cms });
-
 	},
 	
 	home: function(){
 		console.log('// Routes = "/"  (index)');
+		on.m.cms.set({ selectedPage:'dashboard'});
+	},
+
+	openPage: function(action){
+		console.log('// Routes = "/"  (index)');
+		on.m.cms.set({selectedPage:action});
+	},
+
+	openOverlay: function(action,id){
+		console.log('// Routes = "/"  (index)');
+		on.m.cms.set({
+			selectedPage:action,
+			selectedItem:id
+		});
 	}
 });
 
