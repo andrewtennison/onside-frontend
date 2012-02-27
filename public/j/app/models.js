@@ -63,7 +63,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var Channel = Backbone.Model.extend({
 		url: function(){
-			return on.path.api + '/channel/' + ( this.id || '' );
+			if(this.id){
+				return on.path.api + '/channel/' + this.id;
+			}else{
+				return on.path.api + '/channel';
+			}
 		},
 		service: 'channel',
 		initialize: function(){

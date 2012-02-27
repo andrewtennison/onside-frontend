@@ -788,30 +788,22 @@ TweetView			- individual tweet comment
 		formError: function(){},
 		submit: function(e){
 			e.preventDefault();
-			var $form = this.$('form'),
+			var self = this,
+				$form = this.$('form'),
 				hash = $form.serializeObject();
 				
-			var hash2 = {
-				"name":"athletics",
-				"keywords":"athletics",
-				"search_term":"athletics",
-				"description":"athletics",
-				"sport":"athletics",
-				"type":"organisation",
-				"hash":"","image":"","level":"","branding":"","geolat":"","geolng":"","status":"active"
-			};
+			var baseHash = {name:"", keywords:"", search_term:"", description:"", sport:"", type:"", hash:"", image:"", level:"", branding:"", geolat:"", geolng:"", status:"active", user:null};
+			_.extend(baseHash, hash); 
 			
 			// this.child.set(hash2);
-			// this.child.save({
-				// success:function(){}, error:function(){}
-			// });
-
-			//this.collection.create(this.child);
-			this.collection.create(hash2, {
-				wait: true,
-				success: function(res){ console.log(res) },
-				error: function(err){ console.error(err) }
-			})
+			this.child.save(baseHash, {
+				success:function(res){
+					console.log(res.resultset[0]);
+					self.collection.add(self.child)
+				}, error:function(err){
+					console.error(err)
+				}
+			});
 			
 		},
 		buildForm: function(){
@@ -830,7 +822,6 @@ TweetView			- individual tweet comment
 						el = this.$('select[name='+key+']');
 						
 					$.each(opts[key].values, function(i,val){
-						console.log(val +' / '+i);
 						string += '<option value="'+val+'">'+val+'</option>'
 					})
 					el.append( $(string) );
