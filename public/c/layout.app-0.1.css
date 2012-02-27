@@ -255,9 +255,9 @@ body,
 .staticItem {}
 .staticItem .contentWrapper {}
 .staticItem .contentWrapper .scroller {}
-.staticItem .contentWrapper h2 {padding:20px; font-size:2em; color:#fff}
+.staticItem .contentWrapper h2 {padding:20px 0 10px 20px; font-size:2em; color:#ddd; text-shadow: 1px 1px 1px #222222; font-weight:400}
 .staticItem .contentWrapper h3 {padding:20px 20px 10px 20px; font-size:1.6em; color:#fff}
-.staticItem .contentWrapper p {padding:0 20px 10px 20px; font-size:1.4em; color:#ccc}
+.staticItem .contentWrapper p {padding:0 20px 20px 20px; font-size:1.4em; color:#ccc}
 .staticItem .contentWrapper p a {text-decoration: underline}
 
 /* Channel Lists */
@@ -407,7 +407,7 @@ form.inlineForm {position:relative}
 
 .inlineForm .formActions {background:rgba(0,0,0,0.2); padding:20px;}
 .inlineForm .formActions button:first-child {margin-left:30%}
-button.btn { background: none repeat scroll 0 0 #006DCC; border: 0px none; border-radius: 4px; color: #FFFFFF; font-size: 1.2em; padding: 8px 14px; text-transform: uppercase; box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 -1px 0 0 #000000 inset; margin-right:10px}
+.btn { background: none repeat scroll 0 0 #006DCC; border: 0px none; border-radius: 4px; color: #FFFFFF; font-size: 1.2em; padding: 8px 14px; text-transform: uppercase; box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 -1px 0 0 #000000 inset; margin-right:10px}
 button.cancel {background:#333; color:#ddd}
 
 button.btn:hover {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -1px 1px 0 rgba(255, 255, 255, 0.8) inset, 0 1px 1px 0 #000000 inset;}
@@ -416,7 +416,12 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 #listDetail form.inlineForm {margin-right:-9px}
 #listArticle form.inlineForm {background:url("/i/sprites/noise3.png") repeat scroll 0 0 #3E4144}
 
-
+.tagList {list-style: none;}
+.tagList:after {content:""; display:block; clear:both; height:10px}
+.tagList li {display:inline-block; margin:0 2px 5px; vertical-align: top}
+.tagList a {position:relative; display:block; background:#ccc; color:#222; padding:4px 8px; border-radius:4px; font-size:1.4em; box-shadow: 1px 1px 2px rgba(0,0,0,0.6), 0 -25px 25px -20px rgba(0,0,0,0.6) inset; }
+.tagList a:hover {background:#fff;}
+.tagList a.on {background:#FFF668; box-shadow: -1px -1px 2px rgba(255, 255, 255, 0.5) inset, 1px 1px 1px rgba(0, 0, 0, 0.9) inset; padding:5px 7px 3px 9px}
 
 /* ==|== media querys ===================================================== */
 

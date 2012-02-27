@@ -436,19 +436,19 @@ TweetView			- individual tweet comment
 						
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
 			var myChannels = new ChannelListView({ collection: this.options.app.channels, app: this.options.app }),
-				myEvents = new EventListView({ collection: this.app.events, app: this.options.app }),
-				mySearches = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
+				myEvents = new EventListView({ collection: this.app.events, app: this.options.app });
+				//mySearches = new SavedSearchListView({ collection: this.app.searches, app: this.options.app });
 	
 			// commonly
 			this.$channels = $(myChannels.el);
 			this.$events = $(myEvents.el);
-			this.$searches = $(mySearches.el);
+			//this.$searches = $(mySearches.el);
 			this.$content = this.$('.content');
 
 			// // first fetch of users content
 			myChannels.collection.fetch();
 			myEvents.collection.fetch();
-			mySearches.collection.fetch();
+			//mySearches.collection.fetch();
 			
 			ev.on('update:scroll:nav', this.updateScroll, this);
 			ev.trigger('update:scroll:nav');
@@ -461,7 +461,7 @@ TweetView			- individual tweet comment
 		updateScroll: function(){
 			var self = this;
 			setTimeout(function () {
-				var el = this.$('input[type=text], input[type=search], textarea, select'),
+				var el = this.$('input[type=text], input[type=password], input[type=search], textarea, select'),
 					needsScroll = (self.$('#groupContentWrap').height() >= self.$('#groupContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
 				
@@ -718,7 +718,8 @@ TweetView			- individual tweet comment
 		templates: {
 			error			: _.template( $('#detail404Template').html() ),
 			help			: _.template( $('#static_helpTemplate').html() ),
-			channelCreate	: _.template( $('#static_channelCreateTemplate').html() )
+			channelCreate	: _.template( $('#static_channelCreateTemplate').html() ),
+			welcome			: _.template( $('#static_welcomeTemplate').html() ),
 		},
 		initialize: function(){
 			_.bindAll(this, 'render', 'toggleDisplay', 'formError', 'submit', 'buildForm');
@@ -736,14 +737,19 @@ TweetView			- individual tweet comment
 		},
 		render: function(){
 			var val = this.model.get('val'),
+				json = this.model.toJSON(),
 				tpl;
-				
+			
 			if(this.model.get('form')){
 				var tplName = this.model.get('type') + (val.charAt(0).toUpperCase() + val.slice(1));
 				val = 'form';
 			};
 			
 			switch(val){
+				case 'welcome':
+					tpl = this.templates.welcome;
+					json.sports = on.settings.sports;
+					break;
 				case 'help':
 					tpl = this.templates.help;
 					break;
@@ -758,19 +764,22 @@ TweetView			- individual tweet comment
 					break;
 			};
 			
-			this.$el.html( tpl( this.model.toJSON() ) );
+			this.$el.html( tpl( json ) );
 			this.$('.contentWrapper').attr({id: this.baseID});
 			if(this.templates[tplName]) this.buildForm();
 		    return this;
 		},
 		toggleDisplay: function(){
 			var self = this,
-				el = this.$('input[type=text], textarea, select');
+				el = this.$('input[type=text], input[type=password], input[type=search], textarea, select');
+				
 				
 			if(this.model.get('selected')) {
 				this.$el.fadeIn(200,function(){
 					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
-					self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
+					setTimeout(function () {
+						self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
+					},100);
 				});
 			}else if(this.errorView){
 				this.close();
@@ -980,7 +989,7 @@ TweetView			- individual tweet comment
 		createScroll: function(){
 			var self = this;
 
-			var el = this.$('input[type=text], textarea, select');
+			var el = this.$('input[type=text], input[type=password], input[type=search], textarea, select');
 			el.each(function(i){
 				el[i].addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
 				el[i].addEventListener('touchstart', function(e) { e.stopPropagation() }, false);			
@@ -1421,7 +1430,7 @@ TweetView			- individual tweet comment
 			if(contentLength < pageLength) {
 				return
 			}else if(contentLength > pageLength){
-				var el = this.$('input[type=text], textarea, select');
+				var el = this.$('input[type=text], input[type=password], input[type=search], textarea, select');
 				el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() })
 
 				setTimeout(function () {
@@ -1575,7 +1584,7 @@ TweetView			- individual tweet comment
 		updateScroll: function(){
 			var self = this;
 			setTimeout(function () {
-				var el = this.$('input[type=text], textarea, select'),
+				var el = this.$('input[type=text], input[type=password], input[type=search], textarea, select'),
 					needsScroll = (self.$('#chatContentWrap').height() >= self.$('#chatContentWrap > .scroller').height())? false : true,
 					scroll = (self.scroll === null)? false : true;
 

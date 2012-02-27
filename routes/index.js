@@ -318,8 +318,12 @@ exports.getDetailApi = function(req,res){
 
 				singleList(req, res, 'channels', '/channel?user='+uid, function(c){
 					console.log('channels loaded');
+					console.log(c);
 					if(!c) {
 						content.error = true;
+					} else if( c.length == 0 ){
+						content.channels = c;
+						content.channelArticles = true;
 					} else {
 						var total = 0;
 						content.channels = c;

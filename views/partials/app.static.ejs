@@ -1,35 +1,6 @@
 <!-- // STATIC TEMPLATES /////////////////////////////////////////// -->
 
 <!-- // DETAIL ITEM TEMPLATES // -->
-<script id="static_helpTemplate" class="tmpl" type="text/template">
-	<header class="detailHead bb shadows">
-		<h1>Help</h1>
-	</header>
-	<div class="contentWrapper">
-		<div class="scroller">
-			<h2>Welcome to Onside</h2>
-			<p>Onside brings together all the sports news and events from your favourite competitions, organisations, teams and players from accross the web into one place.</p>
-			
-			<h3>Channels</h3>
-			<p>Onside Channels bring together all news on specific teams and players, it makes it simple for you to find and follow the news you want</p>
-			<p>Follow Channels: by following a channel it will appear in your on your home page so you get the latest news every time you come back.</p>
-			
-			<h3>Search</h3>
-			<p>You can find channels by <a href="#">searching</a> for what ever you love. <a href="#">Try it now</a></p>
-			
-			<h3>Browse</h3>
-			<p>Want inspirations, you can browse <a href="#">featured</a>, <a href="#">new</a> and <a href="#">popular channels</a>.</p>
-			
-			<h3>Have your say</h3>
-			<p>Get involved, comment your opinion your way, you can do it onside, on twitter or facebook</p>
-			
-			<h3>Share</h3>
-			<p>Find some news you love... or hate, share it with the world. You can share to facebook or twitter.</p>
-			
-		</div><!-- /.scroller -->
-	</div>
-</script>
-
 <script id="detail404Template" class="tmpl" type="text/template">
 	<header class="detailHead bb">
 		<h1>404: Channel not found</h1>
@@ -38,3 +9,99 @@
 	
 	<div class="contentWrapper"></div>
 </script>
+
+<script id="static_helpTemplate" class="tmpl" type="text/template">
+	<header class="detailHead bb shadows">
+		<h1>Help</h1>
+	</header>
+	<div class="contentWrapper">
+		<div class="scroller">
+			<div class="bb">
+				<h2>Help with Onside</h2>
+				<p>Onside brings together all the sports news and events from your favourite competitions, organisations, teams and players from accross the web into one place.</p>
+			</div>
+			<div class="bb">
+				<h2>Channels</h2>
+				<p>Onside Channels bring together all news on specific teams and players, it makes it simple for you to find and follow the news you want</p>
+				<p>Follow Channels: by following a channel it will appear in your on your home page so you get the latest news every time you come back.</p>
+			</div>
+			<div class="bb">
+				<h2>Search</h2>
+				<p>You can find channels by <a class="triggerSearch" href="#navSearch">searching</a> for what ever you love. <a class="triggerSearch" href="#navSearch">Try it now</a></p>
+			</div>
+			<div class="bb">
+				<h2>Browse</h2>
+				<p>Want inspirations, you can browse <a href="#list/popular">featured</a>, <a href="#list/popular">new</a> and <a href="#list/popular">popular channels</a>.</p>
+			</div>
+			<div class="bb">
+				<h2>Have your say</h2>
+				<p>Get involved, comment your opinion your way, you can do it onside, on twitter or facebook</p>
+			</div>
+			<div class="bb">
+				<h2>Share</h2>
+				<p>Find some news you love... or hate, share it with the world. You can share to facebook or twitter.</p>
+			</div>
+			<div class="bb">
+				<h2>Contact Us</h2>
+				<p>If you have a problem, find a bug or even have a great idea we can add.. let us know, just fill out the <a href="#" class="triggerFeedback">feedback form</a> any time.</p>
+			</div>
+		</div><!-- /.scroller -->
+	</div>
+</script>
+
+<script id="static_welcomeTemplate" class="tmpl" type="text/template">
+	<header class="detailHead bb shadows">
+		<h1>Welcome to Onside</h1>
+	</header>
+	<div class="contentWrapper">
+		<div class="scroller">
+			<div class="block bb inlineForm">
+				<h2>1. Add you social networks</h2>
+				<p>By connecting your social accounts you can login faster, comment and share information news with your friends.</p>
+				<div class="formActions">
+					<a class="triggerFacebook btn" href="#">add facebook</a>
+					<a class="triggerTwitter btn" href="#">add twitter</a>
+				</div>
+			</div>
+			<div class="block bb">
+				<h2>2. Check your details</h2>
+				<form method="post" action="/api/channel" class="inlineForm" id="channelCreate">
+					<fieldset>
+						<div class="">
+							<label for="name">Your Name</label>
+							<input class="formEl" name="name" type="text" value="" placeholder="Your Name" />
+						</div>
+						<div class="">
+							<label for="name">New password</label>
+							<input class="formEl" name="password" type="password" value="" placeholder="6-10 characters inlcuding a number" />
+						</div>
+						<div class="">
+							<label for="name">Confirm password</label>
+							<input class="formEl" name="confirmPassword" type="password" value="" />
+						</div>
+						<input type="hidden" name="user" value="<%= user.id %>" />
+						
+						<div class="formActions">
+							<button class="btn" type="submit">save</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+			<div class="block bb inlineForm">
+				<h2>3. Lets find you some content</h2>
+				<p>Start by choosing the sports you like:</p>
+				<ul class="tagList">
+					<@ var i=0, l=sports.length; sports.sort() @>
+					<@ for(i; i < l; i++){ @>
+						<li><a href="#"><@= sports[i] @></a></li>
+					<@ } @>
+				</ul>
+				<div class="formActions">
+					<a class="btn" href="#">find channels</a>
+				</div>
+			</div>
+			
+		</div><!-- /.scroller -->
+	</div>
+</script>
+
