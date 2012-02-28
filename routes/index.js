@@ -261,9 +261,14 @@ function callApi(req, res, action, authReq, userReq, callback){
 		console.log('# call api: action='+action + ' & url=' + url.replace(token,'token123'))
 
 		rest[action](url,obj).on('complete', function(data) {
+			console.log('API Call complete');
+		}).on('success', function(data){
+			if( (/\/user\//gi).test(url) && req.session.user && data.resultset.users[0] ){
+				req.session.user = data.resultset.users[0] 
+			}
 			data.auth = loggedIn;
 			response.success = data;
-			callback(response);
+			callback(response);			
 		}).on('error', function(err){
 			response.error = 'error calling API';
 			callback(response);

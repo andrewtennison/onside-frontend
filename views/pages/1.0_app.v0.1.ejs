@@ -16,7 +16,7 @@
 
 				<div id="navGlobal">
 					<% if (everyauth.loggedIn) { %>
-					<a class="toggleBlock bb" href="#navUser"><span class="icon user"></span><%= user.name %></a>
+					<a class="toggleBlock bb user" href="#navUser"><span class="icon user"></span><%= user.name %></a>
 					<div id="navUser" class="block">
 						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
 						<% if (user.admin === '1') { %>

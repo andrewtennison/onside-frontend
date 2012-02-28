@@ -90,7 +90,7 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 
 .loadingMask:after,
 .loading:after {content:'loading'; background:url(/i/sprites/loader.gif) no-repeat center center; width:100px; height:100px; margin:-50px 0 0 -50px; left:50%; top:40%; position:absolute; font-size:1.2em; color:#fff; text-align: center}
-.loadingMask:after {background-color:rgba(0,0,0,0.7); width:100%; height:100%; top:0; left:0; margin:0}
+.loadingMask:after {background-color:rgba(0,0,0,0.5); width:100%; height:100%; line-height:500%; top:0; left:0; margin:0}
 .onComplete {background: rgba(0,0,0,0.85); color: #FFF; height: 100%; width: 100%; padding: 50px 10px; position: absolute; z-index:1; display:none; top:0}
 	.onComplete h1 {font-size:1.6em; color:#ddd; padding-bottom:10px; text-align: center}
 	.onComplete p {font-size:1.4em; text-align: center}
@@ -108,8 +108,7 @@ header.bb {box-shadow:0 -1px 0 0px #393B3D inset, 0px -2px 0px 0px #18191A inset
 #listChat .help h2, #listChat .help p {padding-right:40px}
 
 /* ==|== animation styles ===================================================== */
-#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea,
-.articleIframe .contentWrapper
+#listGroups, #listDetail, #listArticle, #main, #navSearch input, #listChat .content form input, #listChat .content form textarea
 {-webkit-transition: all 0.4s ease-in-out; -moz-transition: all 0.4s ease-in-out;}
 
 
@@ -407,10 +406,15 @@ form.inlineForm {position:relative}
 
 .inlineForm .formActions {background:rgba(0,0,0,0.2); padding:20px;}
 .inlineForm .formActions button:first-child {margin-left:30%}
-.btn { background: none repeat scroll 0 0 #006DCC; border: 0px none; border-radius: 4px; color: #FFFFFF; font-size: 1.2em; padding: 8px 14px; text-transform: uppercase; box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 -1px 0 0 #000000 inset; margin-right:10px}
-button.cancel {background:#333; color:#ddd}
+.inlineForm .formActions span {color:#fff; font-size:1.4em; padding:20px 10px;}
 
-button.btn:hover {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -1px 1px 0 rgba(255, 255, 255, 0.8) inset, 0 1px 1px 0 #000000 inset;}
+form.complete fieldset,
+form.complete .formActions {position:relative; display:block; overflow:hidden; height:0; padding-top:0; padding-bottom:0 }
+
+.btn {display:inline-block; vertical-align:top;  background:#006DCC; border:0px; border-radius: 4px; color: #FFF; font-size: 1.2em; padding: 8px 14px; text-transform: uppercase; box-shadow: 0 -16px 15px -4px rgba(0, 0, 0, 0.4) inset, 0 1px 0 0 rgba(255, 255, 255, 0.3) inset, 0 -1px 0 0 #000000 inset; margin-right:10px}
+.cancel {background:#333; color:#ddd}
+
+button.btn:hover {box-shadow: 0 16px 15px -4px rgba(0, 0, 0, 0.4) inset, 0px 0px 0px 0 rgba(255, 255, 255, 0.5) inset, 0 1px 0px 0 #000000 inset; padding:9px 14px 7px}
 button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 1px 0 rgba(255, 255, 255, 0.5) inset, 0 2px 1px 0 #000000 inset;}
 
 #listDetail form.inlineForm {margin-right:-9px}

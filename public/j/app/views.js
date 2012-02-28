@@ -308,9 +308,6 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'render', 'hide');
 		},	
 		render: function(name){
-			// console.info(name)
-			// console.info(this.templates)
-			// console.info(this.templates[name])
 			if(this.templates[name]){
 				this.$el.html(this.templates[name]());
 			}else{
@@ -424,7 +421,6 @@ TweetView			- individual tweet comment
 			'click .toggleSize'		: 'expandContainer',
 			'click .toggleBlock'	: 'toggleBlocks'
 		},
-
 		initialize: function(){
 			on.helper.log('# View.Nav.initialize', 'info');
 			
@@ -432,7 +428,7 @@ TweetView			- individual tweet comment
 			this.$eventButton = this.$('nav .events');
 			this.$channelButton = this.$('nav .channels');
 			
-			_.bindAll(this, 'updateView', 'changeGroup', 'toggleBlocks', 'updateScroll');
+			_.bindAll(this, 'updateUser', 'updateView', 'changeGroup', 'toggleBlocks', 'updateScroll');
 						
 			// create initial channel + event lists. Order > in dom / local storage / ajax / websocket
 			var myChannels = new ChannelListView({ collection: this.options.app.channels, app: this.options.app }),
@@ -454,9 +450,12 @@ TweetView			- individual tweet comment
 			ev.trigger('update:scroll:nav');
 
 			// BIND: if model.app.selectedServiceName changes this view will get updated
-			//this.app.on('change:selectedServiceName', this.updateView);
+			this.app.on('change:user', this.updateUser);
 			this.updateView('channels')
 			
+		},
+		updateUser: function(){
+			this.$('.user').html( '<span class="icon user"></span>'+ this.app.get('user').name );
 		},
 		updateScroll: function(){
 			var self = this;
@@ -643,7 +642,7 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
-			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne');
+			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne', 'selectStaticView');
 			
 			// BIND Collection
 			this.collection.on('add', this.addOne);
@@ -685,11 +684,15 @@ TweetView			- individual tweet comment
 			
 			var type = ( model.get('form') )? 'form' : model.get('type'),
 				view;
-				
+
 			switch(type){
 				case 'form':
+					view = new Form_StaticView({model:model, app:this.options.app});
+					break;
 				case 'static':
-					view = new StaticView({model:model, app:this.options.app});
+					var getView = this.selectStaticView( model );
+					view = new getView({model:model, app:this.options.app});
+//					view = new StaticView({model:model, app:this.options.app});
 					break;
 				default:
 					model.setSaved(this.app);
@@ -704,82 +707,76 @@ TweetView			- individual tweet comment
 		},
 		removeOne: function(){
 			console.error('View.DetailList.removeOne');
+		},
+		selectStaticView: function(model){
+			console.info('selectStaticView');
+			var view = StaticView,
+				type = model.get('type'),
+				val = model.get('val');
+			
+			switch(val){
+				case 'welcome':
+					view = Welcome_StaticView;
+					break;
+				case 'create':
+					view = Form_StaticView;
+					break;
+				case 'help':
+				default:
+					view = StaticView;
+					break;
+			};
+			console.info(view)
+			return view;
 		}
 	});
-	
 	
 	var StaticView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'detailItem staticItem',
 		baseID: 'detailContentWrap',
-		events: {
-			'submit form' : 'submit'
-		},
+		errorTemplate: _.template( $('#detail404Template').html() ),
 		templates: {
-			error			: _.template( $('#detail404Template').html() ),
-			help			: _.template( $('#static_helpTemplate').html() ),
-			channelCreate	: _.template( $('#static_channelCreateTemplate').html() ),
-			welcome			: _.template( $('#static_welcomeTemplate').html() ),
+			help: _.template( $('#static_helpTemplate').html() )
 		},
 		initialize: function(){
-			_.bindAll(this, 'render', 'toggleDisplay', 'formError', 'submit', 'buildForm');
+			_.bindAll(this, 'onInit', 'render', 'afterRender', 'toggleDisplay');
 			this.app = this.options.app;
 			this.baseID += '_' + this.model.get('val');
 			this.model.on('change:selected', this.toggleDisplay);
-			
-			switch(this.model.get('type')){
-				case 'channel': 
-					this.collection = this.app.channels;
-					this.child = new this.collection.model;
-					this.child.on('error', this.formError)
-					break;
-			}
+			this.onInit();
+		},
+		onInit: function(){},
+		selectTemplate: function(){
+			return this.model.get('val');
 		},
 		render: function(){
-			var val = this.model.get('val'),
+			var view,
 				json = this.model.toJSON(),
-				tpl;
-			
-			if(this.model.get('form')){
-				var tplName = this.model.get('type') + (val.charAt(0).toUpperCase() + val.slice(1));
-				val = 'form';
+				tplName = this.selectTemplate();
+
+			if(this.templates[tplName]){
+				view = this.templates[tplName];
+			}else{
+				this.errorView = true;
+				view = this.errorTemplate;
 			};
-			
-			switch(val){
-				case 'welcome':
-					tpl = this.templates.welcome;
-					json.sports = on.settings.sports;
-					break;
-				case 'help':
-					tpl = this.templates.help;
-					break;
-				case 'form':
-					if(this.templates[tplName]){
-						tpl = this.templates[tplName];
-						break;
-					}
-				default:
-					this.errorView = true;
-					tpl = this.templates.error;
-					break;
-			};
-			
-			this.$el.html( tpl( json ) );
+			this.$el.html( view( json ) );
 			this.$('.contentWrapper').attr({id: this.baseID});
-			if(this.templates[tplName]) this.buildForm();
+			this.afterRender();
 		    return this;
 		},
+		afterRender: function(){},
 		toggleDisplay: function(){
 			var self = this,
 				el = this.$('input[type=text], input[type=password], input[type=search], textarea, select');
-				
 				
 			if(this.model.get('selected')) {
 				this.$el.fadeIn(200,function(){
 					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
 					setTimeout(function () {
 						self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
-					},100);
+					},400);
 				});
 			}else if(this.errorView){
 				this.close();
@@ -792,6 +789,32 @@ TweetView			- individual tweet comment
 						self.scroll = null;
 					}
 				});
+			}
+		}
+	});
+	
+	var Form_StaticView = StaticView.extend({
+		templates: {
+			channelCreate : _.template( $('#static_channelCreateTemplate').html() ),
+		},
+		events: {
+			'submit form' : 'submit'
+		},
+		afterRender: function(){
+			this.buildForm();
+		},
+		selectTemplate: function(val){
+			var val = this.model.get('val').toLowerCase();
+			return this.model.get('type').toLowerCase() + (val.charAt(0).toUpperCase() + val.slice(1));
+		},
+		onInit: function(){
+			_.bindAll(this, 'formError', 'submit', 'buildForm');
+			switch(this.model.get('type')){
+				case 'channel': 
+					this.collection = this.app.channels;
+					this.child = new this.collection.model;
+					this.child.on('error', this.formError)
+					break;
 			}
 		},
 		formError: function(){},
@@ -813,7 +836,6 @@ TweetView			- individual tweet comment
 					console.error(err)
 				}
 			});
-			
 		},
 		buildForm: function(){
 			var opts = this.child.defaultOptions,
@@ -836,6 +858,62 @@ TweetView			- individual tweet comment
 					el.append( $(string) );
 				}
 			};
+		}
+	});
+	
+	var Welcome_StaticView = StaticView.extend({
+		sportsString: '',
+		templates: {
+			welcome: _.template( $('#static_welcomeTemplate').html() )
+		},
+		events: {
+			'submit #userUpdate'	: 'updateUser',
+			'submit #userInterests'	: 'sportsSearch',
+			'click .tagList a'		: 'toggleSports'
+		},
+		onInit: function(){
+			_.bindAll(this, 'updateUser', 'sportsSearch', 'toggleSports');
+			this.model.set({sports:on.settings.sports});
+		},
+		updateUser: function(){
+			var self = this,
+				$form = this.$('#userUpdate'),
+				data = $form.serializeArray(),
+				url = '/api/user/' + this.app.get('user').id;
+				
+			$form.addClass('loadingMask');
+			$.post(url, data).success(function(res){
+				$form.removeClass('loadingMask');
+				$('h2', $form).text('2. Details saved');
+				$('fieldset', $form).hide(0);
+				$('.formActions', $form).hide(0);
+				
+				self.app.set({user:res.resultset.users[0]});
+				self.scroll.refresh();
+			}).error(function(res){
+				console.error(res)
+			});
+			return false;
+		},
+		toggleSports: function(e){
+			e.preventDefault();
+			var $el = $(e.target),
+				string = ' AND ' + $el.text();
+			
+			if($el.hasClass('on')){
+				$el.removeClass('on');
+				this.sportsString = this.sportsString.replace(string, '');				
+			}else{
+				$el.addClass('on');
+				this.sportsString += string;
+			}
+		},
+		sportsSearch: function(){
+			alert(this.sportsString)
+			this.app.set({
+				selectedItemUID: 'search|' + this.sportsString
+			});
+			return false;
 		}
 	});
 

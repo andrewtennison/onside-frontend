@@ -408,15 +408,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		buildSelect: function(e){
 			var self = this,
+				id = this.cms.get('selectedPage'),
 				$el = $(e.target),
 				d = $el.attr('data-content'),
 				html ='';
 				
 			if(d === 'table'){
-				var id = this.activeID,
-					collection = this.cms[id],
+				var collection = this.cms[id],
 					json = collection.models[0].toJSON();
-					
+				
 				for(var key in json){ html += '<option value="'+key+'">'+key+'</option>' }
 				$el.html(html);
 				$el.change(function(){

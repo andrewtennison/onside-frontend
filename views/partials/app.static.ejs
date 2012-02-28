@@ -56,20 +56,36 @@
 	<div class="contentWrapper">
 		<div class="scroller">
 			<div class="block bb inlineForm">
+				<% if( user.facebook && user.twitter ) { %>
+				<h2>1. Well done, social networks added</h2>
+				<p>You can now login, share news and comment using your favourite social networks</p>
+
+				<% } else { %>
 				<h2>1. Add you social networks</h2>
 				<p>By connecting your social accounts you can login faster, comment and share information news with your friends.</p>
+
+				<% } %>
+				
 				<div class="formActions">
-					<a class="triggerFacebook btn" href="#">add facebook</a>
-					<a class="triggerTwitter btn" href="#">add twitter</a>
+					<% if( !user.facebook ) { %>
+						<a class="triggerFacebook btn" href="#">add facebook</a>
+					<% } else { %>
+						<span>Facebook added</span>
+					<% } %>
+					<% if( !user.twitter ) { %>
+						<a class="triggerTwitter btn" href="#">add twitter</a>
+					<% } else { %>
+						<span>Twitter added</span>
+					<% } %>
 				</div>
 			</div>
 			<div class="block bb">
-				<h2>2. Check your details</h2>
-				<form method="post" action="/api/channel" class="inlineForm" id="channelCreate">
+				<form method="post" action="/api/user" class="inlineForm" id="userUpdate">
+					<h2>2. Check your details</h2>
 					<fieldset>
 						<div class="">
 							<label for="name">Your Name</label>
-							<input class="formEl" name="name" type="text" value="" placeholder="Your Name" />
+							<input class="formEl" name="name" type="text" placeholder="Your Name" value="<%= user.name %>" />
 						</div>
 						<div class="">
 							<label for="name">New password</label>
@@ -79,26 +95,27 @@
 							<label for="name">Confirm password</label>
 							<input class="formEl" name="confirmPassword" type="password" value="" />
 						</div>
-						<input type="hidden" name="user" value="<%= user.id %>" />
-						
-						<div class="formActions">
-							<button class="btn" type="submit">save</button>
-						</div>
+						<input type="hidden" name="user" value="<%= user.id %>" />						
 					</fieldset>
+					<div class="formActions">
+						<button class="btn" type="submit">save</button>
+					</div>
 				</form>
 			</div>
-			<div class="block bb inlineForm">
+			<div class="block">
 				<h2>3. Lets find you some content</h2>
-				<p>Start by choosing the sports you like:</p>
-				<ul class="tagList">
-					<@ var i=0, l=sports.length; sports.sort() @>
-					<@ for(i; i < l; i++){ @>
-						<li><a href="#"><@= sports[i] @></a></li>
-					<@ } @>
-				</ul>
-				<div class="formActions">
-					<a class="btn" href="#">find channels</a>
-				</div>
+				<form method="post" action="/api/user" class="inlineForm" id="userInterests">
+					<p>Start by choosing the sports you like:</p>
+					<ul class="tagList">
+						<@ var i=0, l=sports.length; sports.sort() @>
+						<@ for(i; i < l; i++){ @>
+							<li><a href="#"><@= sports[i] @></a></li>
+						<@ } @>
+					</ul>
+					<div class="formActions">
+						<button class="btn" type="submit">find channels</button>
+					</div>
+				</form>
 			</div>
 			
 		</div><!-- /.scroller -->
