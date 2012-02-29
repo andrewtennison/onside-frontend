@@ -55,33 +55,36 @@
 	</header>
 	<div class="contentWrapper">
 		<div class="scroller">
-			<div class="block bb inlineForm">
+			<div class="block bb inlineForm on">
 				<% if( user.facebook && user.twitter ) { %>
 				<h2>1. Well done, social networks added</h2>
-				<p>You can now login, share news and comment using your favourite social networks</p>
+				<form>
+					<p>You can now login, share news and comment using your favourite social networks</p>
 
 				<% } else { %>
-				<h2>1. Add you social networks</h2>
-				<p>By connecting your social accounts you can login faster, comment and share information news with your friends.</p>
+				<h2>1. Add you social networks <span></span></h2>
+				<form>
+					<p>By connecting your social accounts you can login faster, comment and share information news with your friends.</p>
 
 				<% } %>
-				
-				<div class="formActions">
-					<% if( !user.facebook ) { %>
-						<a class="triggerFacebook btn" href="#">add facebook</a>
-					<% } else { %>
-						<span>Facebook added</span>
-					<% } %>
-					<% if( !user.twitter ) { %>
-						<a class="triggerTwitter btn" href="#">add twitter</a>
-					<% } else { %>
-						<span>Twitter added</span>
-					<% } %>
-				</div>
+					<div class="formActions">
+						<% if( !user.facebook ) { %>
+							<a class="triggerFacebook btn" href="#">add facebook</a>
+						<% } else { %>
+							<span>Facebook added</span>
+						<% } %>
+						<% if( !user.twitter ) { %>
+							<a class="triggerTwitter btn" href="#">add twitter</a>
+						<% } else { %>
+							<span>Twitter added</span>
+						<% } %>
+						<a href="#" class="btn next">next</a>
+					</div>
+				</form>
 			</div>
-			<div class="block bb">
-				<form method="post" action="/api/user" class="inlineForm" id="userUpdate">
-					<h2>2. Check your details</h2>
+			<div class="block bb" id="userUpdate">
+				<h2>2. Check your details</h2>
+				<form method="post" action="/api/user" class="inlineForm">
 					<fieldset>
 						<div class="">
 							<label for="name">Your Name</label>
@@ -99,12 +102,17 @@
 					</fieldset>
 					<div class="formActions">
 						<button class="btn" type="submit">save</button>
+						<a href="#" class="btn next">next</a>
 					</div>
 				</form>
 			</div>
-			<div class="block">
+			<!--div class="block bb" id="userLocation">
+				<h2>3. Your location</h2>
+				<p>Getting your location: <span class="status">.. loading</span></p>
+			</div-->
+			<div class="block bb">
 				<h2>3. Lets find you some content</h2>
-				<form method="post" action="/api/user" class="inlineForm" id="userInterests">
+				<form method="post" action="" class="inlineForm" id="userInterests">
 					<p>Start by choosing the sports you like:</p>
 					<ul class="tagList">
 						<@ var i=0, l=sports.length; sports.sort() @>
@@ -112,8 +120,10 @@
 							<li><a href="#"><@= sports[i] @></a></li>
 						<@ } @>
 					</ul>
+					<ul class="channelList"></ul>
 					<div class="formActions">
-						<button class="btn" type="submit">find channels</button>
+						<!--button class="btn" type="submit">find channels</button-->
+						<a href="#list/home" class="btn finish">finish</a>
 					</div>
 				</form>
 			</div>

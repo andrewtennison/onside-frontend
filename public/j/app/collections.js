@@ -96,7 +96,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		selected: false,
 		initialize: function(){
-			on.helper.log('# Collection.DetailList.initialize','info');
 			_.bindAll(this, 'createModel', 'fetchModel');
 		},
 		fetchModel: function(selectedItemUID, detailUID){

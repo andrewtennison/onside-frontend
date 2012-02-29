@@ -862,51 +862,107 @@ TweetView			- individual tweet comment
 	});
 	
 	var Welcome_StaticView = StaticView.extend({
+		stage:0,
+		blocks:false,
+		currentToggle:false,
 		sportsString: '',
+		location: false,
 		templates: {
 			welcome: _.template( $('#static_welcomeTemplate').html() )
 		},
 		events: {
 			'submit #userUpdate'	: 'updateUser',
 			'submit #userInterests'	: 'sportsSearch',
-			'click .tagList a'		: 'toggleSports'
+			'click .tagList a'		: 'toggleSports',
+			'click .next'			: 'getNext',
+			'click h2'				: 'getThis',
+			'click .triggerFacebook': 'addFacebook',
+			'click .triggerTwitter'	: 'addTwitter',
+			'click .quickFollowChannel': 'followChannel'
 		},
 		onInit: function(){
-			_.bindAll(this, 'updateUser', 'sportsSearch', 'toggleSports');
+			_.bindAll(this, 'updateUser', 'sportsSearch', 'toggleSports', 'getLocation', 'getNext', 'getThis', 'addFacebook', 'addTwitter', 'followChannel');
 			this.model.set({sports:on.settings.sports});
+			this.selectedBlock = this.$('.block.on');
+			//this.getLocation();
+		},
+		postUser: function(data, success, error){
+			var self = this,
+				url = '/api/user/' + this.app.get('user').id;
+				
+			$.post(url, data).success(function(res){
+				var updatedUser = res.resultset.users[0];
+				if(updatedUser.password) delete updatedUser.password;
+				self.app.set({ user:res.resultset.users[0] });
+				success(res);
+			}).error(error);
 		},
 		updateUser: function(){
 			var self = this,
-				$form = this.$('#userUpdate'),
-				data = $form.serializeArray(),
-				url = '/api/user/' + this.app.get('user').id;
-				
+				$el = this.$('#userUpdate'),
+				$form = $('form', $el),
+				data = $form.serializeArray();
+			
+			if(data.password !== data.confirmPassword) {
+				$('h2 span',$el).text('passwords do not match');
+				return;
+			}
+			
 			$form.addClass('loadingMask');
-			$.post(url, data).success(function(res){
+			function success(res){
 				$form.removeClass('loadingMask');
-				$('h2', $form).text('2. Details saved');
-				$('fieldset', $form).hide(0);
-				$('.formActions', $form).hide(0);
-				
-				self.app.set({user:res.resultset.users[0]});
+				$('h2', $el).text('2. Details saved');
+				$('a.next', $el).click();
 				self.scroll.refresh();
-			}).error(function(res){
+			};
+			function error(res){
 				console.error(res)
-			});
+			};
+
+			this.postUser(data, success, error);
 			return false;
 		},
 		toggleSports: function(e){
 			e.preventDefault();
 			var $el = $(e.target),
-				string = ' AND ' + $el.text();
+				$ch = this.$('.channelList');
 			
-			if($el.hasClass('on')){
+			if(this.currentToggle === $el){
 				$el.removeClass('on');
-				this.sportsString = this.sportsString.replace(string, '');				
-			}else{
-				$el.addClass('on');
-				this.sportsString += string;
-			}
+				this.currentToggle = false;
+				return;
+			};
+			
+			if(this.currentToggle) this.currentToggle.removeClass('on');			
+			$el.addClass('on');
+			this.currentToggle = $el;
+			var val = $el.text();
+			
+			$.get('/api/search?q='+val, function(res){
+				$ch.empty();
+				var channels = res.resultset.channels,
+					string = '';
+				
+				$.each(channels, function(i, channel){
+					string += '<li><a class="quickFollowChannel" href="#channel/'+channel.id+'" data-id="'+channel.id+'">'+channel.name+'</a></li>';
+				});
+				$ch.append( $(string) );
+			});			
+		},
+		followChannel: function(e){
+			e.preventDefault();
+			var $el = $(e.target),
+				id = $el.attr('data-id'),
+				name = $el.text();
+			
+			$.post(on.path.api + '/channel/follow', {channel:id})
+			.success(function(res){
+				console.log(res);
+				$el.after( $('<span>following '+name+'</span>') )
+				$el.remove();
+			})
+			.error(function(err){console.error(err)})
+			
 		},
 		sportsSearch: function(){
 			alert(this.sportsString)
@@ -914,6 +970,121 @@ TweetView			- individual tweet comment
 				selectedItemUID: 'search|' + this.sportsString
 			});
 			return false;
+		},
+		getLocation: function(){
+			var self = this,
+				$el = $('#userLocation');
+			
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(success, error);
+			} else {
+				error('not supported');
+			};
+			
+			function success(position){
+				if (this.location) return;
+				self.location = position.coords;
+			};
+			function error(msg){
+				alert(msg)
+			};
+		},
+		getNext: function(e){
+			var self = this,
+				button = $(e.target),
+				parent = button.closest('.block'),
+				next = parent.next('.block');
+
+			if(next.length){
+				parent.removeClass('on');
+				next.addClass('on');
+				this.selectedBlock = next;
+				setTimeout(function(){
+					self.scroll.refresh();
+				},300);
+				return false;
+			}
+		},
+		getThis: function(e){
+			var title = $(e.target),
+				parent = title.closest('.block');
+			if(parent.hasClass('on')) {
+				parent.removeClass('on');
+				parent = false;
+			} else {
+				parent.addClass('on');
+				this.selectedBlock.removeClass('on');
+				this.selectedBlock = parent;
+			};
+		},
+		addFacebook: function(e){
+			e.preventDefault();
+			var self = this,
+				button = $(e.target);
+			
+			if(button.hasClass('laoding')) return;
+			
+			button.addClass('loading');
+			FB.login(function(response) {
+				if (response.authResponse) {
+					FB.api('/me', function(res) {
+						console.log(res);
+						var data = self.app.get('user');
+						if(!data.name || data.name.length == 0) data.name = res.name; 
+						if(!data.facebook || data.facebook.length == 0) data.facebook = res.id; 
+						if(!data.avatar || data.avatar.length == 0) data.avatar = 'http://graph.facebook.com/'+res.username+'/picture'; 
+						//response.favorite_teams
+						
+						self.postUser(data, function(res){
+							button.after( $('<span>Facebook added</span>') )
+							button.remove();
+						}, function(res){
+							console.error(res)
+							button.removeClass('loading');
+						});
+					});
+				} else {
+					console.log('User cancelled login or did not fully authorize.');
+				};
+			});
+		},
+		addTwitter: function(e){
+			e.preventDefault();
+			var self = this,
+				button = $(e.target);
+			
+			if(button.hasClass('laoding')) return;
+			
+			button.addClass('loading');
+
+			function upDateUser(user){
+				var data = self.app.get('user');
+				if(!data.name || data.name.length == 0) data.name = user.name; 
+				if(!data.twitter || data.twitter.length == 0) data.twitter = user.id;
+				if(!data.avatar || data.avatar.length == 0) data.avatar = user.profileImageUrl;
+				
+				self.postUser(data, function(res){
+					button.after( $('<span>Twitter added</span>') )
+					button.remove();
+				}, function(res){
+					console.error(res)
+					button.removeClass('loading');
+				});
+			}
+			
+			twttr.anywhere(function (T) {
+				T.bind("authComplete", function (e, user) {
+					console.log(T.currentUser)
+					upDateUser(T.currentUser)
+				});
+			    if (T.isConnected()) {
+					console.log('auth complete')
+					console.log(T.currentUser)
+					upDateUser(T.currentUser)
+			    } else {
+					T.signIn();
+			    };
+			});			
 		}
 	});
 

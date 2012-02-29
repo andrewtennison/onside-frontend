@@ -5,7 +5,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	
 	var App	= Backbone.Model.extend({
 		initialize: function(route){
-			on.helper.log('# Model.App.initialize','info');
+			//on.helper.log('# Model.App.initialize','info');
 			var app = this;
 			this.route = route;
 			
@@ -29,6 +29,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.bind('change:selectedArticle', this.updateService);
 		},
 		defaults: {
+			user: null,
 			selectedServiceName: null,
 			selectedItemUID: null,
 			selectedItemTitle: null,
@@ -54,7 +55,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		updateService: function(model,val){
 			var article = this.get('selectedArticle'),
-				url = '/' + this.get('selectedItemUID').replace(/\|/g,'/').replace('static|','') + ((article)? '/article-' + article : '');
+				url = '/' + this.get('selectedItemUID').replace(/\|/g,'/').replace('static','') + ((article)? '/article-' + article : '');
 				
 			this.route.navigate(url);
 			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
