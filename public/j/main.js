@@ -32,8 +32,10 @@ console.log('1. namespace - ' + on.env.v)
 on.logger = [];
 on.helper = {};
 on.helper.esc = function(string) {return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');}
-on.helper.log = (window.console)? console.log : function(){ on.logger.push(type +' = '+ msg)};
-
+//on.helper.log = (window.console)? console.log : function(){ on.logger.push(type +' = '+ msg)};
+on.helper.log = function(msg,type){
+	console.log(msg)
+};
 on.path = {
 	js: '/j/',
 	api:'/api',
@@ -53,7 +55,7 @@ window.fbAsyncInit = function() {
 $LAB
 .script( 
 	// put in head, use instead of lib.js & user modernizr.load() - libs/modernizr-custom.js
-	//'http://platform.twitter.com/anywhere.js?id=' + on.env.twitterKey + '&v=1',
+	'http://platform.twitter.com/anywhere.js?id=' + on.env.twitterKey + '&v=1',
 	'http://connect.facebook.net/en_US/all.js',
 	on.path.js + 'lib/json2.js', 
 	//on.path.js + 'lib/jquery-1.7.1.min.js',
