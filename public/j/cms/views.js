@@ -65,6 +65,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		submitFilters: function(e){
 			e.preventDefault();
 			this.collection.params = this.$('.filter form').serialize();
+			//this.collection.reset();
 			this.collection.fetch();
 		},
 		resetRefine: function(e){

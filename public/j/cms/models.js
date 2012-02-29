@@ -135,7 +135,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 
 	var Email = Backbone.Model.extend({
 		parse: function(resp, xhr) {
-			return resp.resultset.articles[0];
+			return resp.resultset.emails[0];
 		},
 		defaultOptions: {
 			id			: {type:'text', editable:false},

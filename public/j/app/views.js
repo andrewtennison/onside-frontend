@@ -1389,6 +1389,8 @@ TweetView			- individual tweet comment
 				json = article.toJSON(),
 				type = json.type;
 
+			if( type.length == 0 && (/espn/gi).test(json.source) ) type = 'espn';
+
 			switch(type){
 				case 'twitter':
 					view = new ArticleView_twitter({model:article, app:this.app});
@@ -1398,6 +1400,7 @@ TweetView			- individual tweet comment
 					article.set({videoId:vidId}) ;
 					view = new ArticleView_youtube({model:article, app:this.app});
 					break;
+				case 'espn':
 				case 'rss':
 					view = new ArticleView_rss({model:article, app:this.app});
 					break;
