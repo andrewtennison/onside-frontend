@@ -20,7 +20,7 @@ on.settings = {
 	sports 			: ['', 'football', 'rugby union', 'rugby league', 'cricket', 'tennis', 'golf', 'badminton', 'cycling', 'archery'],
 	channelType		: ['', 'team', 'player', 'competition', 'sponsor', 'organisation'],
 	eventType		: ['', 'match', 'league', 'tournament'],
-	articleTypes	: ['', 'rss', 'youtube', 'twitter'],
+	articleTypes	: ['', 'rss', 'youtube', 'twitter', 'espn'],
 	channelStatus	: ['active', 'hidden']
 };
 
