@@ -268,6 +268,10 @@ body,
 .staticItem .contentWrapper p a {text-decoration: underline}
 
 #userInterests .formActions {text-align:right}
+.channelsQuickFollow {list-style:none; margin:10px; padding:10px 0; border-top: 1px solid #444}
+.channelsQuickFollow li {color:#fff; font-size:1.4em; display:inline-block; margin:2px; border-radius:2px}
+.channelsQuickFollow li a {background:#444; padding:5px 8px; }
+.channelsQuickFollow li span {background:none; padding:5px 8px; }
 
 /* Channel Lists */
 .channelListItem {position:relative; padding:0 0 2px 0; margin:4px 2px; background:#ccc}
@@ -429,10 +433,10 @@ form.complete .formActions {position:relative; display:block; overflow:hidden; h
 button.btn:hover {box-shadow: 0 16px 15px -4px rgba(0, 0, 0, 0.4) inset, 0px 0px 0px 0 rgba(255, 255, 255, 0.5) inset, 0 1px 0px 0 #000000 inset; padding:9px 14px 7px}
 button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 1px 0 rgba(255, 255, 255, 0.5) inset, 0 2px 1px 0 #000000 inset;}
 
-#listDetail form.inlineForm {margin-right:-9px}
+#listDetail form.inlineForm {}
 #listArticle form.inlineForm {background:url("/i/sprites/noise3.png") repeat scroll 0 0 #3E4144}
 
-.tagList {list-style: none;}
+.tagList {list-style: none; padding:0 20px}
 .tagList:after {content:""; display:block; clear:both; height:10px}
 .tagList li {display:inline-block; margin:0 2px 5px; vertical-align: top}
 .tagList a {position:relative; display:block; background:#ccc; color:#222; padding:4px 8px; border-radius:4px; font-size:1.4em; box-shadow: 1px 1px 2px rgba(0,0,0,0.6), 0 -25px 25px -20px rgba(0,0,0,0.6) inset; }

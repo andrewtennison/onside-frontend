@@ -925,7 +925,7 @@ TweetView			- individual tweet comment
 		toggleSports: function(e){
 			e.preventDefault();
 			var $el = $(e.target),
-				$ch = this.$('.channelList');
+				$ch = this.$('.channelsQuickFollow');
 			
 			if(this.currentToggle === $el){
 				$el.removeClass('on');
@@ -942,6 +942,10 @@ TweetView			- individual tweet comment
 				$ch.empty();
 				var channels = res.resultset.channels,
 					string = '';
+				
+				if(channels.length == 0){
+					string += '<p>No channels for this sport yet.. </p>'
+				}
 				
 				$.each(channels, function(i, channel){
 					string += '<li><a class="quickFollowChannel" href="#channel/'+channel.id+'" data-id="'+channel.id+'">'+channel.name+'</a></li>';

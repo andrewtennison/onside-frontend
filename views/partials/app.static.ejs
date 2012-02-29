@@ -117,10 +117,12 @@
 					<ul class="tagList">
 						<@ var i=0, l=sports.length; sports.sort() @>
 						<@ for(i; i < l; i++){ @>
+							<@ if(sports[i] !== 'other') { @>
 							<li><a href="#"><@= sports[i] @></a></li>
+							<@ } @>
 						<@ } @>
 					</ul>
-					<ul class="channelList"></ul>
+					<ul class="channelsQuickFollow"></ul>
 					<div class="formActions">
 						<!--button class="btn" type="submit">find channels</button-->
 						<a href="#list/home" class="btn finish">finish</a>
