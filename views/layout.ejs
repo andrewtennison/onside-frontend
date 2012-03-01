@@ -39,16 +39,16 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 	<!-- 320x460 for iPhone 3GS -->
-	<!-- <link rel="apple-touch-startup-image" media="(max-device-width: 480px) and not (-webkit-min-device-pixel-ratio: 2)" href="i/icons/startup.png"> -->
+	<link rel="apple-touch-startup-image" media="(max-device-width: 480px) and not (-webkit-min-device-pixel-ratio: 2)" href="i/icons/startup.png">
 	<!-- 640x920 for retina display -->
-	<!-- <link rel="apple-touch-startup-image" media="(max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" href="i/icons/startup-retina.png"> -->
+	<link rel="apple-touch-startup-image" media="(max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" href="i/icons/startup-retina.png">
 	<!-- iPad Portrait 768x1004 -->
-	<!-- <link rel="apple-touch-startup-image" media="(min-device-width: 768px) and (orientation: portrait)" href="i/icons/startup-tablet-portrait.png"> -->
+	<link rel="apple-touch-startup-image" media="(min-device-width: 768px) and (orientation: portrait)" href="i/icons/startup-tablet-portrait.png">
 	<!-- iPad Landscape 1024x748 -->
-	<!-- <link rel="apple-touch-startup-image" media="(min-device-width: 768px) and (orientation: landscape)" href="i/icons/startup-tablet-landscape.png"> -->
+	<link rel="apple-touch-startup-image" media="(min-device-width: 768px) and (orientation: landscape)" href="i/icons/startup-tablet-landscape.png">
 	
 	<!-- The script prevents links from opening in mobile safari. https://gist.github.com/1042026 -->
-	<!-- <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script> -->
+	<script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
 	
 	<!-- Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading -->
 	<meta http-equiv="cleartype" content="on">
@@ -67,14 +67,6 @@
 
 <body>
 	<%- body %>
-
-
-	<script>
-		// var _gaq=[["_setAccount","UA-27180824-1"],['_setDomainName', 'onside.me'],["_trackPageview"]];
-		// (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
-		// g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-		// s.parentNode.insertBefore(g,s)}(document,"script"));
-	</script>
 
 	<!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6. chromium.org/developers/how-tos/chrome-frame-getting-started -->
 	<!--[if lt IE 7 ]>

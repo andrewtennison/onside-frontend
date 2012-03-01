@@ -25,8 +25,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.comments = new BB.CommentList(false,app);
 			this.tweets = new BB.TweetList(false,app);
 			
-			this.bind('change:selectedItemUID', this.updateService);
-			this.bind('change:selectedArticle', this.updateService);
+			this.bind('change:selectedItemUID change:selectedArticle', this.updateService);
 		},
 		defaults: {
 			user: null,
@@ -58,7 +57,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				url = '/' + this.get('selectedItemUID').replace(/\|/g,'/').replace('static','') + ((article)? '/article-' + article : '');
 				
 			this.route.navigate(url);
-			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] }) 
+			this.set({ selectedServiceName : this.get('selectedItemUID').split('|')[0] });
+			
+			//var url = document.location.href.replace(/\/?#!/, '/');
+			if(typeof _gaq !== 'undefined' && this.saveUrl !== url) _gaq.push(['_trackPageview', url]);
+			this.saveUrl = url;
 		}
 	});
 

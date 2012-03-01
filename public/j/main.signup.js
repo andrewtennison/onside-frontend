@@ -9,8 +9,12 @@ on.path = {
 	js: '/j/'
 };
 
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-27180824-1'],['_setDomainName', 'onside.me'],['_trackPageview']);
+
 $LAB
 .script( 
+	'http://www.google-analytics.com/ga.js',
 	'http://code.jquery.com/jquery-1.7.1.min.js'
 )
 .wait(function(){

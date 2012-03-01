@@ -43,6 +43,9 @@ on.path = {
 	facebookCss: '//dev.onside.me:3000/c/facebook.css?1'
 };
 
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-27180824-1'],['_setDomainName', 'onside.me'],['_trackPageview']);
+
 window.fbAsyncInit = function() {
 	FB.init({
 		appId		: '266299360074356',
@@ -56,11 +59,12 @@ window.fbAsyncInit = function() {
 $LAB
 .script( 
 	// put in head, use instead of lib.js & user modernizr.load() - libs/modernizr-custom.js
+	
+	'http://www.google-analytics.com/ga.js',
 	'http://platform.twitter.com/anywhere.js?id=' + on.env.twitterKey + '&v=1',
 	'http://connect.facebook.net/en_US/all.js',
+	'http://code.jquery.com/jquery-1.7.1.min.js',  	//on.path.js + 'lib/jquery-1.7.1.min.js',
 	on.path.js + 'lib/json2.js', 
-	//on.path.js + 'lib/jquery-1.7.1.min.js',
-	'http://code.jquery.com/jquery-1.7.1.min.js',
 	on.path.js + 'lib/underscore-1.3.1.min.js'
 )
 .wait(function(){
@@ -73,6 +77,7 @@ $LAB
 )
 .wait()
 .script(
+	//on.path.js + 'lib/backbone.analytics.js?' + on.env.v,
 	on.path.js + 'lib/backbone_extentions.js?' + on.env.v,
 	on.path.js + 'app/models.js?' + on.env.v,
 	on.path.js + 'app/collections.js?' + on.env.v
