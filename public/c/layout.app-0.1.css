@@ -317,7 +317,7 @@ body,
 .articleItem.rss:hover {cursor:pointer}
 .articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
 .articleItem.rss .inner {padding:20px;}
-.articleItem.rss img {float:left; margin:10px 10px 10px 0}
+.articleItem.rss img {float:left; margin:10px 10px 10px 0; max-width:100%}
 .articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:4.2em; overflow: hidden; }
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}

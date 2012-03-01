@@ -6,6 +6,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	var sortObject = function(obj){
 		var key, a = [];
 		for(key in obj){
+			//console.log(key);
 			if(key !== 'id') a.push(key);
 		}
 		a = _.union(['id'], a); 

@@ -878,10 +878,11 @@ TweetView			- individual tweet comment
 			'click h2'				: 'getThis',
 			'click .triggerFacebook': 'addFacebook',
 			'click .triggerTwitter'	: 'addTwitter',
-			'click .quickFollowChannel': 'followChannel'
+			'click .quickFollowChannel': 'followChannel',
+			'click .finish'			: 'updateUserStatus'
 		},
 		onInit: function(){
-			_.bindAll(this, 'updateUser', 'sportsSearch', 'toggleSports', 'getLocation', 'getNext', 'getThis', 'addFacebook', 'addTwitter', 'followChannel');
+			_.bindAll(this, 'updateUser', 'sportsSearch', 'toggleSports', 'getLocation', 'getNext', 'getThis', 'addFacebook', 'addTwitter', 'followChannel', 'updateUserStatus');
 			this.model.set({sports:on.settings.sports});
 			this.selectedBlock = this.$('.block.on');
 			//this.getLocation();
@@ -965,8 +966,7 @@ TweetView			- individual tweet comment
 				$el.after( $('<span>following '+name+'</span>') )
 				$el.remove();
 			})
-			.error(function(err){console.error(err)})
-			
+			.error(function(err){console.error(err)});
 		},
 		sportsSearch: function(){
 			alert(this.sportsString)
@@ -1089,6 +1089,11 @@ TweetView			- individual tweet comment
 					T.signIn();
 			    };
 			});			
+		},
+		updateUserStatus: function(){
+			var data = this.app.get('user');
+			data.status = 2;
+			this.postUser(data, function(){}, function(){});
 		}
 	});
 
@@ -1389,7 +1394,7 @@ TweetView			- individual tweet comment
 				json = article.toJSON(),
 				type = json.type;
 
-			if( type.length == 0 && (/espn/gi).test(json.source) ) type = 'espn';
+			if( type.length == 0 && (/ESPN/gi).test(json.source) ) type = 'espn';
 
 			switch(type){
 				case 'twitter':
@@ -1613,12 +1618,14 @@ TweetView			- individual tweet comment
 			switch(type){
 				case 'twitter':
 					return new ADIV_twitter({model:model});
-					break;
 				case 'youtube':
 					return new ADIV_youtube({model:model});
-					break;
 				case 'rss':
 					return (model.get('iframe') || !model.get('extended'))? new ADIV_iframe({model:model}) : new ADIV({model:model});
+				case 'espn':
+				default:
+					console.error('opening article, type not recognised: '+type)
+					break;
 			};
 		},
 		close: function(){

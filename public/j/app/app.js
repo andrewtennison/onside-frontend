@@ -77,8 +77,7 @@ BB.appRoutes = Backbone.Router.extend({
 	},
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		
-		if(on.m.app.get('user').status == 0){
+		if(on.m.app.get('user').status == 1){
 			on.m.app.set({ selectedItemUID : 'static|welcome', selectedArticle: false });
 		}else{
 			on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });

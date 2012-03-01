@@ -263,8 +263,11 @@ function callApi(req, res, action, authReq, userReq, callback){
 		rest[action](url,obj).on('complete', function(data) {
 			console.log('API Call complete');
 		}).on('success', function(data){
-			if( (/\/user\//gi).test(url) && req.session.user && data.resultset.users[0] ){
-				req.session.user = data.resultset.users[0] 
+			if(data.resultset && data.resultset.users){
+				console.log('update session')
+				console.log(data.resultset.users[0] )
+			//if( (/\/user\//gi).test(url) && req.session.user && data.resultset.users[0] ){
+				req.session.user = data.resultset.users[0];
 			}
 			data.auth = loggedIn;
 			response.success = data;
