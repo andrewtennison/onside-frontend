@@ -722,6 +722,7 @@ TweetView			- individual tweet comment
 					view = Form_StaticView;
 					break;
 				case 'help':
+				case 'settings':
 				default:
 					view = StaticView;
 					break;
@@ -737,7 +738,8 @@ TweetView			- individual tweet comment
 		baseID: 'detailContentWrap',
 		errorTemplate: _.template( $('#detail404Template').html() ),
 		templates: {
-			help: _.template( $('#static_helpTemplate').html() )
+			help: _.template( $('#static_helpTemplate').html() ),
+			settings: _.template( $('#static_settingsTemplate').html() )
 		},
 		initialize: function(){
 			_.bindAll(this, 'onInit', 'render', 'afterRender', 'toggleDisplay');
