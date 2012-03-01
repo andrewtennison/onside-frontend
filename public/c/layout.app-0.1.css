@@ -448,6 +448,8 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 .block.on {background:rgba(255,255,255,0.1)}
 .block.on .formActions {background:rgba(0,0,0,0.1);}
 
+.articleFeedback .detailHead h1 {margin:0 50px 0 10px	}
+
 /* ==|== media querys ===================================================== */
 
 .csstransforms #listArticle	{display:block; opacity:0.5; -moz-transform: translate(0, -100%); -webkit-transform: translate(0, -100%); -o-transform: translate(0, -100%); -ms-transform: translate(0, -100%); transform: translate(0, -100%);}
@@ -474,7 +476,9 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 	#listArticle > article {left:5px; right:5px; top:0px; bottom:5px; }
 	
 	.inlineForm label {width:100%; margin-right:0%; text-align:left; padding:0 0 5px 0}
-	.inlineForm .formEl {max-width:100%; min-width:30%}
+	.inlineForm .formEl {width:100%; max-width:100%}
+	.detailHead h1 {font-size:1.6em}
+	.inlineForm .formActions button:first-child {margin-left:0}
 }
 @media only screen and (min-width: 480px) {
 	#main {left:45px}
