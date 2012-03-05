@@ -39,6 +39,8 @@ p {font-size:1.3em; line-height:1.6em; color:#808080; padding-bottom:10px}
 .ie6 .forIE6 {display:block}
 .ie6 .notForIE6 {display:none}
 
+/* clearfix*/
+#signupOpts article:after {content:''; position:relative; display:block; clear:both; height:1px; overflow:hidden}
 
 /* ==|== top navigation ====================================================== */
 nav {border-bottom: 1px solid #2B2B2B; text-align:right;}
@@ -67,22 +69,33 @@ header article {position:relative; display:inline-block;}
 	#signupOpts hgroup p {font-size:1.8em; color:#88B208; margin-bottom:20px}
 
 #signupOpts article {position:relative; display:block; border-radius:5px; background:#323232; width:auto}
-
+	.notForIE6 {padding:10px}
+	
 	#signupOpts article h1 {padding:8px 25px; font-size:2.3em; color:#9FD300; box-shadow:0 1px 0 #222, 0 2px #414141}
 	#signupOpts article p {padding:10px 25px;}
 	
-	#signupOpts article a {position:relative; display:inline-block; height:48px; line-height:48px; border-radius:5px; padding-right:10px; font-size:1.2em; text-transform: uppercase; margin:0 0 1% 1%; width:46%}
+	#signupOpts article a.social {position:relative; display:inline-block; height:48px; line-height:48px; border-radius:5px; padding-right:10px; font-size:1.2em; text-transform: uppercase; margin:0 0 1% 1%; width:46%}
 		#signupOpts article a.joinF {background: #49628e; /* Old browsers */background: -moz-linear-gradient(top,  #49628e 0%, #49628e 50%, #345081 50%, #345081 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#49628e), color-stop(50%,#49628e), color-stop(50%,#345081), color-stop(100%,#345081)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* IE10+ */background: linear-gradient(top,  #49628e 0%,#49628e 50%,#345081 50%,#345081 100%); /* W3C */}
 		#signupOpts article a.joinT {background: #36cef0; /* Old browsers */background: -moz-linear-gradient(top,  #36cef0 0%, #36cef0 50%, #04c2ec 51%, #04c2ec 100%); /* FF3.6+ */background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#36cef0), color-stop(50%,#36cef0), color-stop(51%,#04c2ec), color-stop(100%,#04c2ec)); /* Chrome,Safari4+ */background: -webkit-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* Chrome10+,Safari5.1+ */background: -o-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* Opera 11.10+ */background: -ms-linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* IE10+ */background: linear-gradient(top,  #36cef0 0%,#36cef0 50%,#04c2ec 51%,#04c2ec 100%); /* W3C */}
 		
-	#signupOpts article a:before {content:""; position:relative; display:inline-block; width:40px; height:48px; background:url(/i/sprites/signup/icons.png) 0 0 no-repeat; vertical-align:top; margin-right:10px}
+	#signupOpts article a.social:before {content:""; position:relative; display:inline-block; width:40px; height:48px; background:url(/i/sprites/signup/icons.png) 0 0 no-repeat; vertical-align:top; margin-right:10px}
 		#signupOpts article a.joinF:before {background-position:-606px 0; box-shadow:1px 0 0 rgba(0,0,0,0.7), 2px 0 0 rgba(255,255,255,0.3);}
 		#signupOpts article a.joinT:before {background-position:-653px 0; box-shadow:1px 0 0 rgba(0,0,0,0.5), 2px 0 0 rgba(255,255,255,0.5);}
 
-	#signupOpts form {position:relative}
-	#signupOpts input.txt {position:relative; margin:0 2%; width:96%; text-indent:2%; height:40px; font-size:1.6em; border-radius:5px 7px 7px 5px; border:0px none; z-index:2; margin:0 0 5px 5px; box-shadow:0px 0px 3px 1px rgba(0, 0, 0, 0.5) inset, 0 -21px 6px #EEEEEE inset}
-	#signupOpts input.submit {position:absolute; background: #777; border: 0 none; border-radius: 0 5px 5px 0; color: #9FD300; font-size: 1.6em; height: 42px; right: 1.6%; top:0; padding: 0 4%; z-index: 3; box-shadow:-1px 0 0 #555; }
+	#signupOpts form {position:relative; display:block; margin:0 0 10px}
+	#signupOpts form fieldset {position:relative; display:block}
+	#signupOpts input.txt {width:100%; padding:8px 0 6px 0; text-indent:15px; font-size:1.6em; background:#eee}
+	
+	#signup input[type=email] {border-radius:8px}
+	
+	#signin input[type=email] {border-radius:6px 6px 0 0}
+	#signin input[type=password] {border-radius:0 0 6px 6px}
+	
+/*	#signupOpts input.txt {position:relative; margin:0 2%; width:96%; text-indent:2%; height:40px; font-size:1.6em; border-radius:5px 7px 7px 5px; border:0px none; z-index:2; margin:0 0 5px 5px; box-shadow:0px 0px 3px 1px rgba(0, 0, 0, 0.5) inset, 0 -21px 6px #EEEEEE inset}*/
+	#signupOpts input.submit {position:absolute; top:0; bottom:0; right:0; background: #9FD300; border: 0 none; border-radius: 0 5px 5px 0; color: #333; font-size: 1.6em; padding: 0 20px; z-index: 3; box-shadow:0 -40px 20px -20px rgba(0, 0, 0, 0.3) inset, -2px 0 5px -3px #000000; text-transform:uppercase }
 
+	#errors {list-style:square inside; margin:0; padding:10px 5px}
+	#errors .error {font-size:1.4em; color:#ec3d26}
 
 /* ==|== #reasons ====================================================== */
 #reasons {background:#191919;}

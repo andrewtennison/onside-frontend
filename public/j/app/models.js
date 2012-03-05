@@ -65,6 +65,30 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		}
 	});
 
+	var User = Backbone.Model.extend({
+		url: function(){
+			return on.path.api + '/user/' + this.id;
+		},
+		parse: function(resp, xhr) {
+			return resp.resultset.users[0];
+		},
+		defaultOpts: {
+			id			: {type:'text', editable:false},
+			avatar		: {type:'text'},
+			name		: {type:'text'},
+			email		: {type:'email'},
+			admin		: {type:'select', values:[0,1]},
+			enabled		: {type:'select', values:[0,1]},
+			status		: {type:'select', values:[0,1,2,3,4,5,6,7,8,9]},
+			password	: {type:'text'},
+			twitter		: {type:'text'},
+			facebook	: {type:'text'},
+			google		: {type:'text'},
+			language	: {type:'text'},
+			added		: {type:'text'},
+		}
+	});
+
 	var Channel = Backbone.Model.extend({
 		url: function(){
 			if(this.id){
@@ -349,6 +373,18 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				resp.vid = resp.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
 			}
 			return resp;
+		}
+	});
+	
+	var Article_eson = Article.extend({
+		url: function(){
+			return 'http://api.espn.com/v1/sports/news/'+ this.espnId +'?apikey=r9pdcgqrv7cskwch8g59s955'
+		},
+		parse: function(resp){
+			var obj = {};
+			obj.published = resp.timestamp
+			
+			return obj;
 		}
 	});
 	

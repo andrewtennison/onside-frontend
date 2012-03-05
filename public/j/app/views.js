@@ -200,7 +200,8 @@ TweetView			- individual tweet comment
 		tagName: 'article',
 		
 		events: {
-			'click .open'			: 'select',
+			'click'					: 'select',
+//			'click .open'			: 'select',
 			'mouseenter'			: 'hoverOver',
 			'mouseleave'			: 'hoverOut',
 			'click .filter'			: 'toggleFilters',
@@ -1396,6 +1397,7 @@ TweetView			- individual tweet comment
 				json = article.toJSON(),
 				type = json.type;
 
+			console.log(json)
 			if( type.length == 0 && (/ESPN/gi).test(json.source) ) type = 'espn';
 
 			switch(type){
@@ -1407,9 +1409,11 @@ TweetView			- individual tweet comment
 					article.set({videoId:vidId}) ;
 					view = new ArticleView_youtube({model:article, app:this.app});
 					break;
-				case 'espn':
 				case 'rss':
 					view = new ArticleView_rss({model:article, app:this.app});
+					break;
+				case 'espn':
+					view = new ArticleView_espn({model:article, app:this.app});
 					break;
 				default:
 					console.error('View.ArticleList.addOne - type not recognised = ' + type)
@@ -1500,14 +1504,7 @@ TweetView			- individual tweet comment
 
 	var ArticleView_twitter = _ArticleView.extend({
 		className: 'twitter articleItem',
-		template: _.template( $('#articleTemplate-twitter').html() ),
-		render: function(){
-			var json = this.model.toJSON();
-			console.log(json)
-			if(!json.filtered) this.$el.addClass('hidden');
-			this.$el.html(this.template(json));
-		    return this;
-		}
+		template: _.template( $('#articleTemplate-twitter').html() )
 	});
 	var ArticleView_youtube = _ArticleView.extend({
 		className: 'youtube articleItem',
@@ -1516,7 +1513,6 @@ TweetView			- individual tweet comment
 			var json = this.model.toJSON();
 			json.vid = json.videos.replace('http://gdata.youtube.com/feeds/base/videos/','');
 			this.model.set({vid:json.vid});
-			console.log(json)
 			if(!json.filtered) this.$el.addClass('hidden');
 			this.$el.html(this.template(json));
 		    return this;
@@ -1527,14 +1523,16 @@ TweetView			- individual tweet comment
 		template: _.template( $('#articleTemplate').html() ),
 		preSelect: function(e){
 			var json = this.model.toJSON();
-			console.log(json)
-			console.log(json.extended + ' / ' + json.link)
 			if(json.extended === null && (/http:\/\//gi).test(json.link)){
 				this.model.set({ iframe : true});
 			} else if (this.model.get('expand')){
 				// if we need to have other types of rss articles we can modify the data on the api and pick it up here
 			}
 		}
+	});
+	var ArticleView_espn = _ArticleView.extend({
+		className: 'rss espn articleItem',
+		template: _.template( $('#articleTemplate-espn').html() )
 	});
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1588,6 +1586,7 @@ TweetView			- individual tweet comment
 				list = this.app.get('selectedArticleList'),
 				model;
 			
+			console.log('getModel')
 			function loadModel(){
 				model = new BB.Article({ id:id });
 				model.fetch({
@@ -1603,15 +1602,18 @@ TweetView			- individual tweet comment
 				});
 			}
 			if(list){
-				model = list.id;
+				model = list.get(id);
 				if(model){
 					this.view = this.selectView(model);
+					console.log('view')
+					console.log(this.view)
 					this.$el.append(this.view.render().el);
 					this.show();
 				}else{
 					loadModel();
 				}
 			}else{
+				console.log('loadModel')
 				loadModel();
 			}
 		},
@@ -1623,8 +1625,9 @@ TweetView			- individual tweet comment
 				case 'youtube':
 					return new ADIV_youtube({model:model});
 				case 'rss':
-					return (model.get('iframe') || !model.get('extended'))? new ADIV_iframe({model:model}) : new ADIV({model:model});
+					return (model.get('iframe') || !model.get('extended'))? new ADIV_iframe({model:model}) : new ADIV_rss({model:model});
 				case 'espn':
+					return new ADIV_espn({model:model});
 				default:
 					console.error('opening article, type not recognised: '+type)
 					break;
@@ -1646,7 +1649,7 @@ TweetView			- individual tweet comment
 				this.$el.addClass('on');
 				setTimeout(function () {
 					iframe.css({opacity:1});
-					this.view.setScroll();
+					//this.view.setScroll();
 				}, 1500);
 			}else{
 				this.$el.addClass('on');
@@ -1669,7 +1672,7 @@ TweetView			- individual tweet comment
 		tagName: 'article',
 		baseId: 'articleContentWrap',
 		className:'articleDetail',
-		template: _.template( $('#static_feedbackTemplate').html() ),
+		template: _.template( $('#articleDetail_rss').html() ),
 		initialize: function(){
 			_.bindAll(this, 'render', 'setScroll');
 		},
@@ -1731,6 +1734,11 @@ TweetView			- individual tweet comment
 		}
 	});
 	
+	var ADIV_rss = ADIV.extend({
+		className:'articleRSS narrowArticle',
+		template: _.template( $('#articleDetail_rss').html() )
+	});
+
 	var ADIV_iframe = ADIV.extend({
 		className:'articleIframe',
 		template: _.template( $('#articleDetail_iframe').html() )
@@ -1744,6 +1752,11 @@ TweetView			- individual tweet comment
 	var ADIV_twitter = ADIV.extend({
 		className:'articleTwitter',
 		template: _.template( $('#articleDetail_twitter').html() )
+	});
+
+	var ADIV_espn = ADIV.extend({
+		className:'articleESPN narrowArticle',
+		template: _.template( $('#articleDetail_rss').html() )
 	});
 
 	
@@ -1832,13 +1845,17 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'checkView', 'changeTab', 'updateScroll');
 			
 				// comment lists views
-			var onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments}),
+			var //onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments}),
 				twitterComments = new TwitterCommentListView({app: this.options.app, collection:this.app.tweets}),
-				facebookComments = new FacebookCommentListView({app: this.options.app}),			
+				facebookComments = new FacebookCommentListView({app: this.options.app});			
 				// Post Comment view
-				onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
+				//onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
 			
-			this.changeTab(false, this.$('nav a.onside') );
+			if( this.app.get('user').twitter ){
+				this.changeTab(false, this.$('nav a.twitter') );				
+			}else{
+				this.changeTab(false, this.$('nav a.facebook') );
+			}
 			
 			ev.on('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
@@ -1989,7 +2006,6 @@ TweetView			- individual tweet comment
 		helpAuth: 'commentTwitter',
 		onInit: function(){
 			this.postView = new TweetPostView({ app: this.options.app, collection: this.options.collection });
-			this.auth = this.app.get('twitter');
 		},
 		addOne: function(tweet, index){
 			var view = new TweetView({model:tweet, app:this.options.app});
@@ -2006,11 +2022,12 @@ TweetView			- individual tweet comment
 	var FacebookCommentListView = _genericCommentListView.extend({
 		el : $('#facebookComments'),
 		helpAuth: 'commentFacebook',
-		onInit: function(){
-			this.auth = this.app.get('facebook');
+		auth: function(){
+			var u = this.app.get('user');
+			return (u.facebook && u.facebook.length >= 2)? true : false;
 		},
 		setupComments: function(val){
-			var url = document.location.href.replace('#',''),
+			var url = document.location.href,//.replace('#',''),
 				width = '265px', //this.$inner.width(),
 				comments = '<input type="hidden" value="'+url+'" /><div class="fb-comments" data-href="'+url+'" data-num-posts="2" data-width="'+width+'" data-colorscheme="dark" css=" '+on.path.facebookCss+' " simple="false"></div>';
 

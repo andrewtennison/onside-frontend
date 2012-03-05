@@ -7,6 +7,7 @@ BB.appRoutes = Backbone.Router.extend({
 		'/:static'						: 'static',
 		'channel/create/:id2'			: 'createChannel',
 		':service/:id/:id2'				: 'getArticle',
+		':service/:id/'					: 'getDetail',
 		':service/:id'					: 'getDetail',
 		'search?q=:id'					: 'getSearch',
 		'*path'							: 'home'
@@ -15,13 +16,10 @@ BB.appRoutes = Backbone.Router.extend({
 	initialize: function(){
 		console.info('# appRoutes.initialize');
 		
-		// if( (/iphone|ipad/gi).test(window.navigator.userAgent) ){
-			// $('body').css({bottom:'-60px'});
-			// $('body').scrollTop(1);
-		// }
-		/*
-		 look for local.session storage - saved preferences to load
-		 */
+		if( on.env.appleMob ){
+			$('body').css({bottom:'-60px'});
+			$('body').scrollTop(1);
+		}
 		
 		// App model	
 		on.m.app = new BB.App(this);
@@ -77,7 +75,8 @@ BB.appRoutes = Backbone.Router.extend({
 	},
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		if(on.m.app.get('user').status == 1){
+		var status = on.m.app.get('user').status;
+		if(status === 1 || status === 0){
 			on.m.app.set({ selectedItemUID : 'static|welcome', selectedArticle: false });
 		}else{
 			on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });

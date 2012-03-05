@@ -5,6 +5,7 @@
 	<@ var time = prettyDate( publish ); @>
 	<@ var imageClass = (images)? 'hasImage' : ''; @>
 	<div class="inner <@= imageClass @>">		
+		<@ if(publish) { @><time><@= time @></time><@ } @>
 		<h1><@= title @></h1>
 		<@ if(images) { @>
 			<img src='<@= images @>' />
@@ -12,7 +13,6 @@
 		<@ if(content){ @><div class="content"><@= content @></div><@ } @>
 		<footer>
 			<cite>from: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
-			<@ if(publish) { @>  / <time><@= time @></time><@ } @>
 			<nav> 
 				<a class="filter" href="#">filter results</a> 
 				<@ if(extended) { @>
@@ -30,8 +30,6 @@
 		<a class="f_keywords" href="#">about <span><@= keywords @></span></a>
 		<a class="f_author" href="#">by <span><@= author @></span></a>
 	</section>
-
-		
 </script>
 
 <script id="articleTemplate-twitter" class="tmpl" type="text/template">
@@ -54,3 +52,17 @@
 		<img src="http://img.youtube.com/vi/<@= vid @>/hqdefault.jpg" width="100%" alt="[Video title]" />
 	</a>
 </script>
+
+<script id="articleTemplate-espn" class="tmpl" type="text/template">
+	<@ var time = prettyDate( publish ); @>
+	<@ var imageClass = (images)? 'hasImage' : ''; @>
+	<div class="inner <@= imageClass @>">		
+		<h1>espn:<@= title @></h1>
+		<@ if(images) { @>
+			<img src='<@= images @>' />
+		<@ } @>
+		<@ if(content){ @><div class="content"><@= content @></div><@ } @>
+		<time><@= time @></time>
+	</div>
+</script>
+

@@ -1,23 +1,26 @@
 <!-- // ARTICLE TEMPLATES /////////////////////////////////////////// -->
 
 
-<script id="articleDetail" class="tmpl" type="text/template">
-	<header>
+<script id="articleDetail_rss" class="tmpl" type="text/template">
+	<header class="detailHead">
 		<h1><@= title @></h1>
+		<nav>
+			<a class="icon share" href="#">share</a>
+			<a class="icon save" href="#">save</a>
+			<a class="icon close" href="#">close</a>
+		</nav>
 	</header>
-	<nav>
-		<a class="close button" href="#">close</a>
-		<span class="buttonGroup">
-			<a class="share" href="#">share</a>
-			<a class="save" href="#">save</a>
-		</span>
-	</nav>
+
+	<div class="contentWrapper">
+		<@ if(images) { @>
+			<img src='<@= images @>' />
+		<@ } @>
+		
+		<@= extended @>
+		
+		<footer><a href="<@= link >" target="_blank">See original article</a></footer>
+	</div>
 	
-	<@ if(images) { @>
-		<img src='<@= images @>' />
-	<@ } @>
-	
-	<div><@= extended @></div>
 </script>
 
 <script id="articleDetail_youtube" class="tmpl" type="text/template">
@@ -37,21 +40,6 @@
 	<div class="contentWrapper">
 		<iframe class="youtube-player" type="text/html" width="<@= width @>" height="<@= height @>" src="http://www.youtube.com/embed/<@= vid @>" frameborder="0"></iframe>
 	</div>
-
-	<!--video id="videoPlayer" class="projekktor" title="<@= title @>" poster="http://img.youtube.com/vi/<@= vid @>/0.jpg" src="http://www.youtube.com/watch?v=<@= vid @>" type="video/youtube" width="<@= width @>" height="<@= height @>" controls>
-	</video-->
-
-<!-- 	<div class="contentWrapper">
-		<object type="application/x-shockwave-flash" data="http://www.youtube.com/v/<@= vid @>" width="<@= width @>" height="<@= height @>">
-			<param name="movie" value="http://www.youtube.com/v/<@= vid @>" />
-			<param name="quality" value="high" />
-			<param name="allowFullScreen" value="true" />
-			<a href="http://www.youtube.com/watch?v=<@= vid @>">
-				<img src="http://img.youtube.com/vi/<@= vid @>/0.jpg" width="<@= width @>" height="<@= height @>" alt="[Video title]" />
-			</a>
-		</object>
-	</div> -->
-
 </script>
 
 <script id="articleDetail_iframe" class="tmpl overlay" type="text/template">
@@ -93,6 +81,24 @@
 	</div>
 </script>
 
+<script id="articleDetail_espn" class="tmpl" type="text/template">
+	<header>
+		<h1><@= title @></h1>
+	</header>
+	<nav>
+		<a class="close button" href="#">close</a>
+		<span class="buttonGroup">
+			<a class="share" href="#">share</a>
+			<a class="save" href="#">save</a>
+		</span>
+	</nav>
+	
+	<@ if(images) { @>
+		<img src='<@= images @>' />
+	<@ } @>
+	
+	<div><@= extended @></div>
+</script>
 
 
 

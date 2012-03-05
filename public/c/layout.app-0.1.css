@@ -315,6 +315,7 @@ body,
 .articleItem nav a:hover {color:#333; background:#ddd}
 
 .articleItem.rss:hover {cursor:pointer}
+.articleItem.rss time {}
 .articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
 .articleItem.rss .inner {padding:20px;}
 .articleItem.rss img {float:left; margin:10px 10px 10px 0; max-width:100%}
@@ -322,10 +323,9 @@ body,
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}
 
-.articleItem.rss footer {font-size:1.2em; color:#666;}
-	.articleItem.rss footer cite {font-style:normal}
-	.articleItem.rss footer time {}
-	.articleItem.rss nav {display:inline-block; float:right;}
+.articleItem.rss footer {position:absolute; bottom:0; left:0; right:0; padding:0; background:#ccc; font-size:1.2em; color:#666;}
+	.articleItem.rss footer cite {display: block; float:left; font-style: normal; max-width: 200px; overflow: hidden; position: relative; text-overflow: ellipsis; white-space: nowrap; padding:5px 0 5px 10px}
+	.articleItem.rss nav {display:block; float:right;}
 		.articleItem.rss nav a {background:#999}
 		.articleItem.rss nav a:hover {background:#ddd}
 
@@ -359,7 +359,9 @@ body,
 	.articleTwitter .original cite {}
 .articleTwitter .older {}
 
-
+#listArticle .articleRSS .contentWrapper {background:#fff; padding:20px; font-size:1.4em}
+#listArticle .articleRSS footer {background:#eee; padding:5px 10px; margin:10px 0}
+#listArticle .articleRSS a {color:#000; text-decoration: underline}
 
 /* ==|== listChat styles ===================================================== */
 #listChat header h1 {display:block; color:#fff; font-size:1.4em; font-weight:normal; line-height: 40px; padding:15px 6px 0 10px; text-align:right}
@@ -507,6 +509,8 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 @media only screen and (min-width: 780px) {
 	.detailItem .eventList {position:absolute; left:0; width:280px; padding-top:2px}
 	.detailItem .articleList {padding:2px 2px 0 280px}
+	
+	#listArticle .narrowArticle {width:700px; left:50%; right:auto; margin:0 0 0 -350px}
 }
 
 @media only screen and (min-width: 1000px) {

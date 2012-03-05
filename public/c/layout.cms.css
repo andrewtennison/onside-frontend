@@ -94,4 +94,5 @@ table .headerSortUp span:after, table .headerSortDown span:after {visibility: vi
 table .headerSortUp, table .headerSortDown { background-color: #ADE6FE; color:#049CDB}
 table .header { cursor: pointer; }
 
+table td.key_url span {max-width: 400px}
 

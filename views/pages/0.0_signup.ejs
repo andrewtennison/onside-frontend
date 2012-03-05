@@ -28,11 +28,11 @@
 			</article>
 			<% } else { %>
 			<article>
-				<h1>Sign up now</h1>
+				<h1>Register now</h1>
 				<p>Join our invite list  to be the first to experience the future of sports news.</p>
 
 				<div class="notForIE6">
-					<form action="/signup" method="post">
+					<form action="/signup" method="post" id="signup">
 					    <% if('undefined' !== typeof errors && errors.length) { %>
                             <ul id="errors">
                                 <% errors.forEach(function(error) { %>
@@ -43,9 +43,7 @@
 						<input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="" placeholder="enter your email" />
 						<input type="submit" class="submit" value="sign up" />
 					</form>
-					<!--p>or</p>
-					<a class="joinF" href="/auth/facebook">Sign up with facebook</a>
-					<a class="joinT" href="/auth/twitter">Signup with twitter</a-->
+					<p>already have an account - <a href="/enter">sign in here</a></p>
 				</div>
 
 				<div class="forIE6">

@@ -24,7 +24,7 @@
 				<h1>Login to Onside</h1>
 
 				<div class="notForIE6">
-					<form action="/enter" method="post">
+					<form action="/enter" method="post" id="signin">
 					    <% if('undefined' !== typeof errors && errors.length) { %>
 					        <ul id="errors">
 					            <% errors.forEach(function(error) { %>
@@ -32,13 +32,15 @@
 					            <% }); %>
 					        </ul>
 					    <% } %>
-					    <input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="<%=locals[everyauth.password.loginFormFieldName] || ''%>" placeholder="enter your email" />
-						<input type="password" class="txt" name="<%=everyauth.password.passwordFormFieldName%>" value="" placeholder="enter your password" />
-						<input type="submit" class="submit" value="sign up" />
+					    <fieldset>
+						    <input type="email" class="txt" name="<%=everyauth.password.loginFormFieldName%>" value="<%=locals[everyauth.password.loginFormFieldName] || ''%>" placeholder="enter your email" />
+							<input type="password" class="txt" name="<%=everyauth.password.passwordFormFieldName%>" value="" placeholder="enter your password" />
+							<input type="submit" class="submit" value="enter" />
+						</fieldset>
 					</form>
-					<p>or</p>
-					<a class="joinF" href="/auth/facebook">Sign up with facebook</a>
-					<a class="joinT" href="/auth/twitter">Signup with twitter</a>
+					<p>if you have already associated your social networks you can login with:</p>
+					<a class="joinF social" href="/auth/facebook">facebook</a>
+					<a class="joinT social" href="/auth/twitter">twitter</a>
 				</div>
 
 				<div class="forIE6">
