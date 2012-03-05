@@ -16,10 +16,10 @@ BB.appRoutes = Backbone.Router.extend({
 	initialize: function(){
 		console.info('# appRoutes.initialize');
 		
-		if( on.env.appleMob ){
-			$('body').css({bottom:'-60px'});
-			$('body').scrollTop(1);
-		}
+		// if( on.env.appleMob ){
+			// $('body').css({bottom:'-60px'});
+			// $('body').scrollTop(1);
+		// }
 		
 		// App model	
 		on.m.app = new BB.App(this);

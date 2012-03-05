@@ -309,6 +309,7 @@ body,
 	
 /* Articles */
 .articleItem {position:relative; display:inline-block; background:#fff; margin:1px; width:100%}
+.articleItem:after {content:''; display:block; clear:both; height:1px;}
 .articleItem .inner {display:block}
 .articleItem .filters {display:none}
 .articleItem nav a {color:#fff; background: #555; border-radius: 2px; font-family: 'Open Sans',serif; padding: 2px 6px; text-transform: uppercase;}
@@ -319,7 +320,7 @@ body,
 .articleItem.rss h1 {color:#333; font-size:1.6em; line-height:1.3em }
 .articleItem.rss .inner {padding:20px;}
 .articleItem.rss img {float:left; margin:10px 10px 10px 0; max-width:100%}
-.articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:4.2em; overflow: hidden; }
+.articleItem.rss .content {color:#333; font-size:1.2em; margin:10px 0; line-height: 1.4em; height:auto; overflow: hidden; }
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}
 
@@ -537,5 +538,7 @@ button.btn:focus {box-shadow: 0 -16px 4px -2px rgba(0, 0, 0, 0.4) inset, 0 -2px 
 }
 
 @media only screen and (min-width: 1300px) {
-	.articleItem {width:49.5%; vertical-align: top; min-height:200px;}
+	.articleItem {width:49.5%; vertical-align: top; min-height:200px;
+	.articleItem.rss .content {height:4.2em}
+}
 }
