@@ -82,6 +82,9 @@ textarea {position:relative; display:block; font-size:1.4em; padding:4px 2px; bo
 
 input[type=text]:focus, input[type=search]:focus, input[type=password]:focus, input[type=email]:focus {background-color:#fff}
 
+::-webkit-input-placeholder,
+:-moz-placeholder { color:#556655; }
+
 .button, .buttonGroup, .toggleButton {position:relative; display:inline-block; border:1px solid #acafb4; border-radius:2px; margin:10px 0 0 0}
 
 .button, .buttonGroup a, .toggleButton span {
