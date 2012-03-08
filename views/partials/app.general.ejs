@@ -4,7 +4,7 @@
 <!-- // NAVIGATION TEMPLATES // -->
 
 <script id="channelItemTemplate" class="tmpl" type="text/template">
-	<a href="#">
+	<a href="#/channel/<@= id @>">
 		<img src="<@= image @>" />
 		<h1><@= name @></h1>
 	</a>
@@ -14,7 +14,7 @@
 	<@ var time = prettyDate( stime ); @>
 	<@ var typeName = type; if(type === 'match'){ typeName = (participantsObj[0].score)? 'RESULT' : 'FIXTURE'; } @>
 
-	<a href="#">
+	<a href="#/event/<@= id @>">
 		<h1>
 			<time><@= time @></time>
 			<@ if(participantsObj.length == 2) { @>

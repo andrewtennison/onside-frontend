@@ -79,7 +79,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				search = this.$('#tableSearch').val();
 
 			this.collection.each(function(model){
-				if(clear || model.get(key) === val || model.get(key).match(search) ){
+				var k = model.get(key).toLowerCase();
+				if(clear || k === val.toLowerCase() || k.indexOf( search.toLowerCase() ) > 0 ){
 					model.set({show:true})
 				}else{
 					model.set({show:false})
