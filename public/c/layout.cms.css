@@ -40,6 +40,7 @@ th.key_map_type, td.key_map_type {display:table-cell}
 
 span.expand,
 td.edit span,
+td.delete span,
 td.key_admin span,
 td.key_enabled span,
 td.key_google span,
@@ -64,6 +65,7 @@ td.key_twitter span {width:30px; height:30px; position:relative; display:block; 
 
 span.expand {background:url(/i/cms/add.png) center center no-repeat; cursor: pointer}
 td.edit span {background:url(/i/cms/edit.png) center center no-repeat; cursor: pointer}
+td.delete span {background:url(/i/cms/delete.png) center center no-repeat; cursor: pointer}
 
 .well {padding:0; position:relative}
 .well header {padding:10px 20px; border-bottom:1px solid #ccc}

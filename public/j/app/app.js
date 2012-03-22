@@ -4,7 +4,7 @@ on.preload = window.on.preload || {};
 BB.appRoutes = Backbone.Router.extend({
 	routes: {
 		''								: 'home',
-		'/:static'						: 'static',
+		'/:name'						: 'staticPage',
 		'channel/create/:id2'			: 'createChannel',
 		':service/:id/:id2'				: 'getArticle',
 		':service/:id/'					: 'getDetail',
@@ -75,16 +75,14 @@ BB.appRoutes = Backbone.Router.extend({
 	},
 	home: function(){
 		console.log('// Routes = "/"  (index)');
-		var status = on.m.app.get('user').status;
-		if(status === 1 || status === 0){
-			on.m.app.set({ selectedItemUID : 'static|welcome', selectedArticle: false });
-		}else{
-			on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });
-		}
+		var status = parseFloat(on.m.app.get('user').status);
+		(status === 1 || status === 0)
+			? on.m.app.set({ selectedItemUID : 'static|welcome', selectedArticle: false })
+			: on.m.app.set({ selectedItemUID : 'list|home', selectedArticle: false });
 	},
-	static: function( static ){
-		console.log('// Routes = "/"  (static):' + static);
-		on.m.app.set({ selectedItemUID : 'static|'+static, selectedArticle: false });
+	staticPage: function( name ){
+		console.log('// Routes = "/"  (static):' + name);
+		on.m.app.set({ selectedItemUID : 'static|'+name, selectedArticle: false });
 	},
 	getDetail: function(service, id){
 		console.log('// Routes = "/'+service+'/'+id+'"');

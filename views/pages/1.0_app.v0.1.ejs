@@ -19,7 +19,6 @@
 					<a class="toggleBlock bb user" href="#navUser">
 						<% if(user.avatar){ %><img class="avatar" src="<%= user.avatar %>" /><% } else { %><span class="icon user"></span><% } %>
 						<% if(user.name){ %><%= user.name %><% } else { %>name required<% } %>
-						
 					</a>
 					<div id="navUser" class="block">
 						<a class="settings bb" href="#/settings"><span class="icon settings"></span>Your settings</a>
@@ -29,6 +28,9 @@
 						<% } %>
 						<a class="logout bb" href="/logout"><span class="icon login"></span>Sign out</a>
 					</div>
+					<% if (user.status === '3') { %>
+						<a class="bb" href="#list/highlights"><span class="icon home"></span>Highlights</a>
+					<% } %>
 					<a class="bb" href="#list/home"><span class="icon home"></span>Home</a>
 					<a class="bb" href="#list/popular"><span class="icon save"></span>Popular channels</a>
 					<!--a class="bb" href="/"><span class="icon events"></span>All Events</a>
