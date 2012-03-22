@@ -177,7 +177,18 @@ body,
 
 
 /* ==|== listGroups styles ===================================================== */
-#listGroups  header h1 {position:relative; display:block; background:url(/i/sprites/d3_logo.png) 10px center no-repeat; width:200px; height:60px; text-indent:-999px; overflow:hidden }
+#listGroups header h1 {position:relative; display:block; width:265px; height:60px; font-size:23px; }
+#listGroups header h1 a {position:relative; display:block; padding:10px 0 10px 5px; line-height: 40px}
+#listGroups header h1 a span {display:none; font-size:17px; font-weight:normal; color:#aaa}
+#listGroups header h1 a:hover span {display:inline-block;}
+
+#listGroups header h1 a i.onsideLogo {
+	position:relative; vertical-align:middle; margin: -5px 5px 0 0;
+	-moz-transform:rotate(0deg);
+	-webkit-transition:all 0.2s ease-in; -moz-transition:all 0.2s ease-in; -o-transition:all 0.2s ease-in; transition:all 0.2s ease-in; 
+	}
+#listGroups header h1 a:hover i.onsideLogo {-moz-transform:rotate(135deg);}
+
 
 #navSearch {position: relative; display: block; padding: 10px 40px 10px 10px; border-top:0px none}
 #navSearch input {width:100%; display:inline}

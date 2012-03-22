@@ -1,5 +1,6 @@
 .icon,
-.toggleBlock:after 		{position:relative; display:inline-block; width:40px; height:40px; text-indent:-999px; overflow:hidden; background:url(/i/sprites/icons.png) 0 0 no-repeat;}
+.toggleBlock:after,
+i.onsideLogo {position:relative; display:inline-block; width:40px; height:40px; text-indent:-999px; overflow:hidden; background:url(/i/sprites/icons.png) 0 0 no-repeat;}
 
 span.icon {vertical-align:middle;}
 
@@ -66,3 +67,10 @@ span.icon {vertical-align:middle;}
 
 .loadingSmall > .pullDown,
 .loadingSmall > .pullUp	{background:url(/i/sprites/loaderSmall.gif) center center no-repeat;}
+
+i.onsideLogo {background-position: 0px -39px}
+i.onsideLogo.home {-moz-transform:rotate(135deg)}
+
+
+
+

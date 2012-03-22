@@ -30,7 +30,8 @@ p, h1, h2, h3, h4, h5, h6 {margin:0; padding:0}
 .inlineForm label,
 .articleTwitter .original p,
 .articleItem.twitter p,
-.articleItem.rss h1 {font-family: 'Glegoo',serif;}
+.articleItem.rss h1,
+#listGroups header h1 {font-family: 'Glegoo',serif;}
 
 input[type=text],input[type=search],
 select,
