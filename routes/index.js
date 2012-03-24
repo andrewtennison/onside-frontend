@@ -33,16 +33,16 @@ exports.exit = function(req, res){
 };
 
 exports.cms = function(req,res){
-  var obj = {
-    req : req,
-    res : res,
-    pass	: function(res, content){ res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms', jsPath:'.cms' })},
-    notAuthenticated	: function(req, res){ req.session.redirectTo = req.url; res.redirect('/enter') },
-    preload:false,
-    admin:true
-  };
-  _.defaults(obj, baseAuthObject);
-  checkAuth( obj );
+	var obj = {
+		req: req,
+		res: res,
+		pass: function(res, content){ res.render('pages/cms.ejs', { title: 'CMS', cssPath: '.cms', jsPath:'.cms' })},
+		notAuthenticated: function(req, res){ req.session.redirectTo = req.url; res.redirect('/enter') },
+		preload:false,
+		admin:true
+	};
+	_.defaults(obj, baseAuthObject);
+	checkAuth( obj );
 };
 
 
@@ -77,7 +77,7 @@ exports.postApi = function(req,res){
 
 exports.delApi = function(req,res){
 	req.log.startTimer('ApiDel');
-	callApi(req, res, 'del', true, false, function(){
+	callApi(req, res, 'del', true, false, function(r){
 		req.log.endApiDel('API.del Complete, url='+req.url);
 		(r.error)? res.send(r.error) : res.json(r.success);
 	});
@@ -308,49 +308,6 @@ exports.getDetailApi = function(req,res){
 		};
 		
 	switch(action){
-		case 'list':
-			console.log('detail = list')
-			required = ['channels', 'channelArticles'];
-
-			if(id === 'home' && !req.loggedIn) {
-				content.error = false;
-			} else {
-				// load channels, then loop through and append aticles
-				var uid;
-				if(id === 'home')
-					uid = req.user.id;
-				else if(id === 'popular')
-					uid = '1';
-				else
-					content.error = true;
-
-				singleList(req, res, 'channels', '/channel?user='+uid, function(c){
-					console.log('channels loaded');
-					console.log(c);
-					if(!c) {
-						content.error = true;
-					} else if( c.length == 0 ){
-						content.channels = c;
-						content.channelArticles = true;
-					} else {
-						var total = 0;
-						content.channels = c;
-						content.channels.forEach(function(channel,index){
-							singleList(req, res, 'articles', '/article?limit=1&channel='+channel.id, function(d){
-								if(!d) {
-									content.error = true;
-								} else {
-									channel.defaultArticle = d[0] || false;
-									total += 1;
-									if(total === content.channels.length) content.channelArticles = true;
-								}
-							});
-						})
-					}// end if
-				});// end singleList
-			}
-			content.title = id;
-			break;
 		case 'search':
 			console.log('detail = search');
 			required = ['events', 'channels', 'articles'];
@@ -403,6 +360,93 @@ exports.getDetailApi = function(req,res){
 				if(!c) content.error = true; else content.articles = c;
 			});
 			break;
+			
+		case 'list':
+			console.log('detail = list')
+			required = ['channels', 'channelArticles'];
+			
+			var uid, url, articleCount;
+			
+			switch(id){
+				case 'home':
+					if(!req.loggedIn) {
+						content.error = true;
+						break;
+					}
+					totalArticles = (req.query.grouped)? req.query.grouped : -1;
+					uid = req.user.id;
+					break;
+				case 'popular':
+					uid = '1';
+					break;
+				case 'highlights':
+					totalArticles = (req.query.grouped)? req.query.grouped : 20;
+					break;
+				default:
+					content.error = true;
+					break;
+			};
+
+			singleList(req, res, 'channels', '/channel?user='+uid, function(c){
+				console.log('channels loaded');
+
+				if(!c) {
+					content.error = true;
+				} else if( c.length == 0 ){
+					content.channels = c;
+					content.channelArticles = true;
+				} else {
+					var total = 0;
+					content.channels = c;
+					content.channels.forEach(function(channel,index){
+						var count = (totalArticles == -1)? 1 : Math.ceil(totalArticles / content.channels.length);
+						
+						if(id == 'highlights'){
+							content.articles = [];
+							singleList(req, res, 'articles', '/article?limit='+count+'&channel='+channel.id, function(d){
+								if(!d) {
+									content.error = true;
+								} else {
+									d.forEach(function(article, index){
+										article.channel = channel;
+										content.articles.push( article );
+									});
+									channel.defaultArticle = false;										
+									total += 1;
+									if(total === content.channels.length) content.channelArticles = true;
+								}
+							});
+						}else {
+							channel.defaultArticle = [];
+							singleList(req, res, 'articles', '/article?limit='+count+'&channel='+channel.id, function(d){
+								if(!d) {
+									content.error = true;
+								} else {
+									d.forEach(function(article, index){
+										if(index == 0) channel.latestArticleDate = article.publish;
+										channel.defaultArticle.push( article );
+									});
+									total += 1;
+									if(total === content.channels.length) content.channelArticles = true;
+								}
+							});
+						}
+						// singleList(req, res, 'articles', '/article?limit=1&channel='+channel.id, function(d){
+							// if(!d) {
+								// content.error = true;
+							// } else {
+								// channel.defaultArticle = d[0] || false;
+								// channel.latestArticleDate = (d[0])? d[0].publish : false;
+								// total += 1;
+								// if(total === content.channels.length) content.channelArticles = true;
+							// }
+						// });
+					})// end  forEach
+				};// end singleList
+			});
+
+			content.title = id;
+			break;
 		default:
 			break;
 	}
@@ -422,7 +466,7 @@ exports.getDetailApi = function(req,res){
 			clearInterval( timer );
 			req.log.endDetailGet('Detail.get Complete, id='+content.id);
 			res.json(content)
-		} else if(i === 9000){
+		} else if(i === 19000){
 			clearInterval( timer );
 			req.log.endDetailGet('Detail.get Failed, id='+content.id);
 			res.json({ error: 'api timed out'});

@@ -80,6 +80,7 @@ $LAB
 })
 .script(
 	on.path.js + 'lib/backbone-0.9.1.min.js',
+	on.path.js + 'lib/backbone.localStorage.js',
 	on.path.js + 'lib/pretty.js',
 	on.path.js + 'lib/iscroll.js'
 )

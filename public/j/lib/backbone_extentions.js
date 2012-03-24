@@ -5,36 +5,6 @@ _.templateSettings = {
 };
 
 
-_.extend(Backbone.Collection.prototype, Backbone.Events, {
-	checkFetch : function(options){
-		var collection = this;
-		var local = sessionStorage.getItem(collection.name);
-		if(local === null || !options.local ) {
-			collection.saveFetch(options);
-		}else{
-			on.helper.log('load local')
-			collection.reset(JSON.parse(local));
-		}
-	},
-	saveFetch : function(options) {
-		on.helper.log('saveFetch')
-		options || (options = {});
-		var collection = this;
-		var success = options.success;
-		options.success = function(resp, status, xhr) {
-			collection[options.add ? 'add' : 'reset'](collection.parse(resp, xhr), options);
-			if (options.save) {collection.saveLocal(collection.name,resp)}
-			if (success) success(collection, resp);
-		};
-//			options.error = wrapError(options.error, collection, options);
-		return (this.sync || Backbone.sync).call(this, 'read', this, options); 
-	},
-	saveLocal : function(name,data){
-		on.helper.log('save local')
-		sessionStorage.setItem(name,JSON.stringify(data))
-	}
-});
-
 // Cached regex to split keys for `delegate`.
 var eventSplitter = /^(\S+)\s*(.*)$/;
 
@@ -134,4 +104,139 @@ MBP.hideUrlBar = function () {
 		}, false );
 	}
 };
+
+
+///////////////////////////////////////////////
+
+/*
+.fetch
+	- get from local, if exists load
+	- get from server, save to local / update local, update
+	- sync with collection / model
+ 
+ * */
+
+
+_.extend(Backbone.Collection.prototype, Backbone.Events, {
+	checkFetch : function(options){
+		var collection = this;
+		var local = sessionStorage.getItem(collection.name);
+		if(local === null || !options.local ) {
+			collection.saveFetch(options);
+		}else{
+			on.helper.log('load local')
+			collection.reset(JSON.parse(local));
+		}
+	},
+	saveFetch : function(options) {
+		on.helper.log('saveFetch')
+		options || (options = {});
+		var collection = this;
+		var success = options.success;
+		options.success = function(resp, status, xhr) {
+			collection[options.add ? 'add' : 'reset'](collection.parse(resp, xhr), options);
+			if (options.save) {collection.saveLocal(collection.name,resp)}
+			if (success) success(collection, resp);
+		};
+//			options.error = wrapError(options.error, collection, options);
+		return (this.sync || Backbone.sync).call(this, 'read', this, options); 
+	},
+	saveLocal : function(name,data){
+		on.helper.log('save local')
+		sessionStorage.setItem(name,JSON.stringify(data))
+	}
+});
+
+
+
+
+
+
+
+
+
+// Backbone.sync
+// -------------
+// Backbone.ajaxSync;
+// Backbone.LocalStorage.sync;
+
+/*
+Backbone.sync = function(method, model, options) {
+	
+//	console.log(options.success)
+//	Backbone.ajaxSync(method, model, options);
+	
+Backbone.LocalStorage.sync(method, model, options);
+  // if (resp) {
+    // options.success(resp);
+  // } else {
+    // options.error("Record not found");
+  // }
+
+};
+
+get
+- get local > return
+- get ajax > save local
+- ajax > return / update
+
+
+
+
+Backbone.sync = function Sync() {
+	console.log(arguments[0]);
+	console.log(this);
+	
+	var localArguments = _.clone(arguments);
+	
+	switch(arguments[0]){
+		case 'read':
+		break;
+		case 'create':
+		return Backbone.ajaxSync.apply(this, arguments);
+
+		case 'update':
+		return Backbone.ajaxSync.apply(this, arguments);
+		
+		case 'delete':
+		return Backbone.ajaxSync.apply(this, arguments);
+	}	
+
+    var success = arguments[2].success;
+    
+    localArguments.success = function( data ){
+    	console.info('Local success')
+    	console.log(data)
+    	if( data.length ) success(data);
+    }
+
+    arguments[2].success = function( data ){
+    	console.info('AJAX success')
+    	console.log(data)
+		switch(arguments[0]){
+			case 'read':
+			localStorage().setItem(this.name);
+			break;
+		}	
+    	if( typeof data == 'object' ) success(data);
+    }
+
+    
+    
+    return Backbone.ajaxSync.apply(this, arguments);
+//    return Backbone.localSync.apply(this, localArguments);
+};
+*/
+
+Backbone.sync = Backbone.ajaxSync
+
+
+
+
+
+
+
+
+
+
 

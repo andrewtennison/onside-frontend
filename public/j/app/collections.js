@@ -12,9 +12,26 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		params: false,
 		url: function(){
-			return on.path.api + '/' + this.urlPath +'?'+ ( (typeof this.params === 'object')? $.param( this.params ) : this.params );
+			var p;
+			switch(typeof this.params){
+				case 'object':
+					p = $.param( this.params );
+					break;
+				case 'function':
+					p = this.params();
+					break;
+				case 'string':
+					p = this.params;
+					break;
+				default:
+					p = '';
+					break;
+			}
+			
+			return on.path.api + '/' + this.urlPath +'?'+ p;
 		},
 		parse: function(resp, xhr) {
+			if(!resp || resp.length == 0) return resp;
 			if(this.parsePath) return resp.resultset[ this.parsePath() ];
 		},
 		initialize:function(){
@@ -24,17 +41,38 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var ChannelList = _Lists.extend({
+		localStorage: new Backbone.LocalStorage("onside.channels"),
 		a: 'channelList',
 		urlPath: 'channel',
 		model : BB.Channel,
 		comparator : function(channel) {
-			return channel.get("name");
+			//return channel.get("name");
+			console.log(channel)
+			var date = channel.get('latestArticleDate');
+			return (date)? -date : channel.get("name");
 		}
     });
 
 	var EventList = _Lists.extend({
+		localStorage: new Backbone.LocalStorage("onside.events"),
 		a: 'eventList',
 		urlPath: 'event',
+		// params: function(opts){
+			// var days = (opts.days)? opts.days : 7;
+// 			
+			// var today = new Date();
+			// today.setDate(today.getDate() - days);
+			// var nd = new Date(newdate),
+				// date = nd.getYear() +'-'+ nd.getMonth() +'-'+ nd.getDay();
+// 
+			// return 'channel='+ opts.channel +'&stime=>'+date+'&sort=stime+desc&limit[0]=10&limit[1]=0';
+// 			
+			// //?channel=13&stime=<2012-03-09sort=stime+desc&limit[0]=10&limit[1]=0
+			// var o = {
+				// channel:'',
+// 				
+			// };
+		// },
 		model : BB.Event,
 		comparator : function(model) {
 			var P = model.get("stime"),
@@ -84,6 +122,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 
 	var DetailList = Backbone.Collection.extend({
+		localStorage: new Backbone.LocalStorage("onside.detailed"),
 		a: 'detailList',
 		model: BB.Detail,
 		parsePath: false,
@@ -136,6 +175,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					model = new BB.Detail(hash);
 					break;
 			}
+			console.info(model)
 			model.fetch({
 				success:function(data){
 					console.log('success');
@@ -169,6 +209,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var CommentList = Backbone.Collection.extend({
+		localStorage: new Backbone.LocalStorage("onside.comments"),
 		model : BB.Comment,
 	
 		url : function(){
@@ -202,6 +243,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 	});
 	var TweetList = Backbone.Collection.extend({
+		localStorage: new Backbone.LocalStorage("onside.tweets"),
 		model : BB.tweet,
 		hash: false,
 

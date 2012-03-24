@@ -12,6 +12,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			_.bindAll(this, 'updateService', 'setTitle');
 			
 			// create + init collections for channels + events
+			// this.user = new BB.User();
+			
 			this.channels = new BB.ChannelList();
 			this.channels.params = {user:'me'};
 			
@@ -71,6 +73,9 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		},
 		parse: function(resp, xhr) {
 			return resp.resultset.users[0];
+		},
+		validate: function(){
+			// on post - check ID == this.users id + if confirmPassword = password
 		},
 		defaultOpts: {
 			id			: {type:'text', editable:false},
@@ -256,8 +261,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Detail = Backbone.Model.extend({
+		localStorage: new Backbone.LocalStorage("onside.detail"),
 		url: function(){
 			return '/' + this.id.replace(/\|/g,'/');
+			//return '/' + this.id.replace(/\|/g,'/') + '?grouped=20';
 		},
 		defaults: {
 			selected 	: true,

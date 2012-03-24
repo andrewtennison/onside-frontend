@@ -83,22 +83,23 @@
 </script>
 	
 <script id="channelDetailHomeItemTemplate" class="tmpl" type="text/template">
-	<@ var time = prettyDate( defaultArticle.publish ); @>
+	<@ var time = prettyDate( defaultArticle[0].publish ); @>
 	<header class="shadows">
 		<img class="badge" src="<@= image @>" />
 		<h1><@= name @></h1>
-		<p class="stats">[[ 120 followers / 20 articles since last visit ]]</p>
+		<!--p class="stats">[[ 120 followers / 20 articles since last visit ]]</p-->
 		<@ if(time) { @><p class="detail">Latest news from: <time><@= time @></time></p><@ } @>
 	</header>
 	<div class="inner">
-		<div class="wrapArticle <@= defaultArticle.type @>">
-			<@ if( defaultArticle.type === 'rss' ) { @>
-				<h2>RSS: <@= defaultArticle.title @></h2>
-			<@ } else if(defaultArticle.type === 'twitter') { @>
-				<h2>twitter: <@= defaultArticle.content @></h2>
-				<cite>@<@= defaultArticle.author @> on twitter</cite>
-			<@ } else if(defaultArticle.type === 'youtube') { @>
-				<h2>Youtube: <@= defaultArticle.title @></h2>
+		<@ var DA = defaultArticle[0]; @>
+		<div class="wrapArticle <@= DA.type @>">
+			<@ if( DA.type === 'rss' ) { @>
+				<h2>RSS: <@= DA.title @></h2>
+			<@ } else if(DA.type === 'twitter') { @>
+				<h2>twitter: <@= DA.content @></h2>
+				<cite>@<@= DA.author @> on twitter</cite>
+			<@ } else if(DA.type === 'youtube') { @>
+				<h2>Youtube: <@= DA.title @></h2>
 			<@ } else { @>
 				<h2>no new articles to display</h2>
 			<@ } @>
@@ -108,6 +109,19 @@
 		</div-->
 	</div>
 </script>
+
+<script id="channelDetailHomeItemTemplateEmpty" class="tmpl" type="text/template">
+	<header class="shadows">
+		<img class="badge" src="<@= image @>" />
+		<h1><@= name @></h1>
+	</header>
+	<div class="inner">
+		<div class="wrapArticle">
+			<h2>no articles</h2>
+		</div>
+	</div>
+</script>
+
 
 <script id="eventDetailItemTemplate" class="tmpl" type="text/template">
 	<@ var time = prettyDate( stime ); @>

@@ -121,10 +121,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		tagName : 'tr',
 		events: {
 			'click .edit' 	: 'showItem',
+			'click .delete'	: 'deleteItem',
 			'click .expand'	: 'showContent'
 		},
 		initialize: function(){
-			_.bindAll(this, 'render', 'buildRow', 'updateRow', 'showItem', 'showContent');
+			_.bindAll(this, 'render', 'buildRow', 'updateRow', 'showItem', 'deleteItem', 'showContent');
 			this.cms = this.options.cms;
 			this.overlay = this.options.overlay;
 			this.title = this.options.title;
@@ -142,7 +143,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				arr = sortObject(json),
 				defaults = this.model.defaultOptions;
 				
-			html += '<td class="edit"><span>edit</span></td>'
+			html += '<td class="edit"><span>edit</span></td>' //<td class="delete"><span>delete</span></td>
 			_.each(arr,function(key,i){
 				var opts = defaults[key],
 					v = json[key];
@@ -182,6 +183,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			this.overlay.updateContent(html, function(){
 				self.overlay.show();
 			});
+		},
+		deleteItem: function(){
+			//console.log(this)
+			this.model.destroy();
 		},
 		showContent: function(e){
 			var self = this,
