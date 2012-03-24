@@ -62,7 +62,6 @@ TweetView			- individual tweet comment
 		var el = $('input[type=text]')
 			// selectField.addEventListener(on.env.touchClick, function(e) { e.stopPropagation() }, false);
 			// selectField.addEventListener('touchstart', function(e) { e.stopPropagation() }, false);	
-
 	};
 	
 	var ev = {};
@@ -99,7 +98,7 @@ TweetView			- individual tweet comment
 			this.search(escVal);
 		},
 		search: function(value){
-		}		
+		}
 	});
 	
 	var _ListView = Backbone.View.extend({
@@ -108,6 +107,7 @@ TweetView			- individual tweet comment
 		itemView: function(item){
 			return new ChannelView({model:item, app:this.options.app}); 
 		},
+		helpCount: false,
 		helpViewTemplate: 'navChannel',
 		initialize: function(){
 			this.app = this.options.app;
@@ -127,9 +127,11 @@ TweetView			- individual tweet comment
 			this.$el.append(view.render().el);
 			if(index === this.collection.length - 1) this.updateView() ;
 		},
-		addHelp: function(){
-			var name = (typeof this.helpViewTemplate === 'string')? this.helpViewTemplate : this.helpViewTemplate();
-			if( !name ) return;
+		addHelp: function( index ){
+			var helpString = index? 'helpViewTemplate' + index : 'helpViewTemplate';
+			if(typeof this[helpString] === 'undefined') return;
+			var name = (typeof this[helpString] === 'string')? this[helpString] : this[helpString]();
+
 			var view = new _HelpView();
 			this.activeViews.push(view);
 			this.$el.append(view.render(name).el);
@@ -144,11 +146,10 @@ TweetView			- individual tweet comment
 
 			if(this.title) this.$el.prepend('<h2 class="groupTitle">'+this.title+'</h2>');
 
-			if(this.collection.length === 0){
-				this.addHelp();
-			}else{
-				this.collection.each(this.addOne);
-			}
+			if(this.collection.length === 0) this.addHelp();
+			else if(this.helpCount && this.collection.length <= this.helpCount) this.addHelp( 1 );
+			
+			this.collection.each(this.addOne);
 		},
 		activeViews : [],
 		destroyViews : function(){
@@ -280,6 +281,7 @@ TweetView			- individual tweet comment
 		templates: {
 			// left nav helpers
 			navChannel				: _.template( $('#help_navChannelTemplate').html() ),
+			navChannel1				: _.template( $('#help_navChannelTemplate1').html() ),
 			navEvent				: _.template( $('#help_navEventTemplate').html() ),
 			navSearch				: _.template( $('#help_navSearchTemplate').html() ),
 			
@@ -552,7 +554,7 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			_.bindAll(this, 'submit', 'search');
 
-			scrollFixOnInputs();
+			//scrollFixOnInputs();
 		},
 		search: function(value){
 			this.$el.focus();
@@ -785,9 +787,8 @@ TweetView			- individual tweet comment
 				this.close();
 			}else{
 				this.$el.fadeOut(200,function(){
-					el.off('ontouchstart mousedown touchstart');
-
 					if(self.scroll) {
+						el.off('ontouchstart mousedown touchstart');
 						self.scroll.destroy();
 						self.scroll = null;
 					}
@@ -834,7 +835,9 @@ TweetView			- individual tweet comment
 			this.child.save(baseHash, {
 				success:function(res){
 					console.log(res.resultset[0]);
-					self.collection.add(self.child)
+					self.collection.add(self.child);
+					console.log('create channel: navigate to page -> channel/'+baseHash.id);
+					this.app.route.navigate('channel/'+baseHash.id);
 				}, error:function(err){
 					console.error(err)
 				}
@@ -895,6 +898,7 @@ TweetView			- individual tweet comment
 				url = '/api/user/' + this.app.get('user').id;
 				
 			$.post(url, data).success(function(res){
+				console.info(res)
 				var updatedUser = res.resultset.users[0];
 				if(updatedUser.password) delete updatedUser.password;
 				self.app.set({ user:res.resultset.users[0] });
@@ -1197,6 +1201,7 @@ TweetView			- individual tweet comment
 		pullDownAction: function(){
 			//self.channel.fetch({add: true});
 			console.log(this);
+			
 			var self = this,
 				id = this.model.id.split('|'),
 				params = id[1] +'='+id[2] + '&' + this.viewA.collection.paginationParams(true);
@@ -1313,7 +1318,6 @@ TweetView			- individual tweet comment
 					var eh = self.$('.eventList').height(),
 						$a = self.$('.articleList');					
 					if(eh > $a.height()) $a.height( eh );
-					
 					self.updateScroll();
 				});
 			}else{
@@ -1340,6 +1344,8 @@ TweetView			- individual tweet comment
 	// List views for related items in detail view
 	var ChannelListDetailView = _ListView.extend({
 		tagName: 'section',
+		helpCount: 20,
+		helpViewTemplate1: 'navChannel1',
 		className: 'content channelList clearfix',
 		title: false, // set when creating view
 		itemView: function(item){ 
@@ -1475,8 +1481,14 @@ TweetView			- individual tweet comment
 	var ChannelDetailHomeView = ChannelView.extend({
 		className:'channelListItem',
 		template: _.template( $('#channelDetailHomeItemTemplate').html() ),
+		emptyTemplate: _.template( $('#channelDetailHomeItemTemplateEmpty').html() ),
 		render: function(){
-			this.$el.html(this.template(this.model.toJSON()));
+			var json = this.model.toJSON();
+			if( json.defaultArticle.length == 0){
+				this.$el.html(this.emptyTemplate(this.model.toJSON()));
+			}else{
+				this.$el.html(this.template(this.model.toJSON()));
+			};
 			var hex = this.model.get('branding');
 			if(hex){
 				hex = hex.split(',');
@@ -1833,7 +1845,7 @@ TweetView			- individual tweet comment
 		activeTab: false,
 		activeBlock: false,
 		
-		$el: {
+		$els: {
 			on_block		: this.$('#onsideComments'),
 			fb_block		: this.$('#facebookComments'),
 			tw_block		: this.$('#twitterComments'),
@@ -1901,7 +1913,7 @@ TweetView			- individual tweet comment
 			$(this.activeTab).addClass('active');
 			$(this.activeBlock).addClass('active');
 			
-			if(newBlock === '#facebookComments' && this.$el.fb_block.is(':empty')){
+			if(newBlock === '#facebookComments' && this.$els.fb_block.is(':empty')){
 				this.facebookComments();
 			}
 			ev.trigger('update:scroll:comments');
