@@ -1583,7 +1583,7 @@ TweetView			- individual tweet comment
 			
 			if(id){
 				if( (/feedback/gi).test(id) ){
-					var data = { hash: document.location.hash, url: document.location, user: this.app.get('user'), useragent: window.navigator.userAgent };
+					var data = { hash: document.location.hash, url: document.location, user: this.app.get('user'), useragent: window.navigator.userAgent, logs: on.logger.toString() };
 					this.view = new ADIV_feedback();
 					this.$el.append( this.view.render(data).el );
 					this.show();

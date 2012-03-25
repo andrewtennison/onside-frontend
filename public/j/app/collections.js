@@ -47,7 +47,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		model : BB.Channel,
 		comparator : function(channel) {
 			//return channel.get("name");
-			console.log(channel)
 			var date = channel.get('latestArticleDate');
 			return (date)? -date : channel.get("name");
 		}
