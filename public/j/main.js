@@ -44,6 +44,12 @@ on.helper = {};
 on.helper.esc = function(string) {return string.replace(/&(?!\w+;|#\d+;|#x[\da-f]+;)/gi, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;').replace(/\//g,'&#x2F;');}
 on.helper.log = function(msg,type){ console.log(msg) };
 
+if( !( /dev.onside.me/gi ).test(document.location.href) || window.console === undefined ) {
+	var addToLog = function( msg ){ on.logger.push( msg ) };
+	window.console = {};
+	console.log = console.info = console.dir = console.error = addToLog;
+}
+
 on.path = {
 	js: '/j/',
 	api:'/api',

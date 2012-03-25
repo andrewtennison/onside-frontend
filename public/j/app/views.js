@@ -129,8 +129,9 @@ TweetView			- individual tweet comment
 		},
 		addHelp: function( index ){
 			var helpString = index? 'helpViewTemplate' + index : 'helpViewTemplate';
-			if(typeof this[helpString] === 'undefined') return;
+			if(typeof this[helpString] === undefined) return;
 			var name = (typeof this[helpString] === 'string')? this[helpString] : this[helpString]();
+			if( !name ) return;
 
 			var view = new _HelpView();
 			this.activeViews.push(view);
