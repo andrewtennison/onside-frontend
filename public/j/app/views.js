@@ -1345,7 +1345,7 @@ TweetView			- individual tweet comment
 	// List views for related items in detail view
 	var ChannelListDetailView = _ListView.extend({
 		tagName: 'section',
-		helpCount: 20,
+		helpCount: 8,
 		helpViewTemplate1: 'navChannel1',
 		className: 'content channelList clearfix',
 		title: false, // set when creating view
@@ -1640,7 +1640,7 @@ TweetView			- individual tweet comment
 				case 'rss':
 					return (model.get('iframe') || !model.get('extended'))? new ADIV_iframe({model:model}) : new ADIV_rss({model:model});
 				case 'espn':
-					return new ADIV_espn({model:model});
+					return ( (/\d/gi).test(model.get('link')) )? new ADIV_espn({model:model}) : new ADIV_iframe({model:model});
 				default:
 					console.error('opening article, type not recognised: '+type)
 					break;
