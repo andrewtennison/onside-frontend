@@ -267,7 +267,7 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			//return '/' + this.id.replace(/\|/g,'/') + '?grouped=20';
 		},
 		defaults: {
-			selected 	: true,
+			selected 	: false,
 			title		: '',
 			type		: 'default',
 			image		: '/i/placeholder/listIcon2.png',

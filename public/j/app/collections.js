@@ -148,6 +148,22 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				},
 				model;
 			
+			// hide existing model
+			if(this.selected !== false) {
+				this.get(this.selected).set({ selected : false});
+				this.selected = false;
+			};
+
+			// if model exists show it
+			if( this.get( detailUID ) ) {
+				this.get(detailUID).set({selected:true});
+				this.selected = detailUID;
+				this.trigger('change:selected');
+				return;
+			};
+			
+			this.requested = detailUID;
+			
 			if( (/create|edit|delete/gi).test(s[1]) ){
 				hash.form = true;
 				this.add(hash);
@@ -174,10 +190,11 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					model = new BB.Detail(hash);
 					break;
 			}
-			console.info(model)
+			// console.info(model)
+			// collection.tempSelected = id;
+			console.info('/FETCH DETAIL - ' + id)
 			model.fetch({
 				success:function(data){
-					console.log('success');
 					self.createModel(model);
 				}, error:function(err){
 					model.set({
@@ -189,9 +206,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			});
 		},
 		createModel: function(model){
-			console.info('Collection.Detail.createModel')
-			this.selected = model.id;
-			
 			model.set({
 				channelJson	: model.get('channels'),
 				channels	: new BB.ChannelList(this.app),
@@ -202,6 +216,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				articleJson	: model.get('articles'),
 				articles	: new BB.ArticleList(this.app)
 			});
+			
+			if( this.requested == model.id ) {
+				this.selected = model.id;
+				model.set({ selected: true})
+				this.trigger('change:selected');
+
+			} else {
+				model.set({ selected: false})
+			}
 			
 			this.add(model);
 		}

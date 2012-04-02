@@ -646,9 +646,10 @@ TweetView			- individual tweet comment
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
-			_.bindAll(this, 'updateView', 'addOne', 'addAll', 'removeOne', 'selectStaticView');
+			_.bindAll(this, 'hideLoading', 'updateView', 'addOne', 'addAll', 'removeOne', 'selectStaticView');
 			
 			// BIND Collection
+			this.collection.on('change:selected', this.hideLoading);
 			this.collection.on('add', this.addOne);
 			this.collection.on('reset', this.addAll);
 			this.collection.on('remove', this.removeOne);
@@ -665,24 +666,14 @@ TweetView			- individual tweet comment
 				
 			if(s[1] === ('null' || null || 'home' || 'popular')) s[0] = 'list'
 			
-			// if there is a current model hide it
-			if(this.selectedModel !== false) {
-				this.collection.get(this.selectedModel).set({ selected : false});
-			};
-
-			// if model exists show it
-			if( this.collection.get( detailUID ) ) {
-				this.collection.get(detailUID).set({selected:true});
-				this.selectedModel = detailUID;
-				this.$el.removeClass('loading');
-			}else{
-				this.collection.fetchModel(selectedItemUID, detailUID);
-			};
+			this.collection.fetchModel(selectedItemUID, detailUID);
+		},
+		hideLoading: function(){
+			this.$el.removeClass('loading');			
 		},
 		addOne: function(model){
 			console.log('# View.DetailList.addOne');
-
-			this.$el.removeClass('loading');
+						
 			ev.trigger('update:view', 'showDetail');
 			this.selectedModel = model.id;
 			
@@ -704,7 +695,7 @@ TweetView			- individual tweet comment
 					break;
 			};
 			this.$el.append(view.render().el);
-			view.toggleDisplay();
+			view.toggleDisplay( true );
 		},
 		addAll: function(models){
 			console.error('View.DetailList.addAll');
@@ -775,10 +766,11 @@ TweetView			- individual tweet comment
 		afterRender: function(){},
 		toggleDisplay: function(){
 			var self = this,
-				el = this.$('input[type=text], input[type=password], input[type=search], textarea, select');
+				el = this.$('input[type=text], input[type=password], input[type=search], textarea, select'),
+				speed = 200;
 				
 			if(this.model.get('selected')) {
-				this.$el.fadeIn(200,function(){
+				this.$el.fadeIn(speed,function(){
 					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
 					setTimeout(function () {
 						self.scroll = new iScroll(self.baseID, {hScroll:false, zoom: false, scrollbarClass: 'navScrollbar', hideScrollbar:false, fadeScrollbar: true});
@@ -787,7 +779,7 @@ TweetView			- individual tweet comment
 			}else if(this.errorView){
 				this.close();
 			}else{
-				this.$el.fadeOut(200,function(){
+				this.$el.fadeOut(speed,function(){
 					if(self.scroll) {
 						el.off('ontouchstart mousedown touchstart');
 						self.scroll.destroy();
@@ -1142,7 +1134,7 @@ TweetView			- individual tweet comment
 			
 			this.$el.html(this.template(json));
 			this.$('.contentWrapper').attr({id: this.baseID});
-			this.$el.addClass('type-'+this.type)
+			this.$el.addClass('type-'+this.type + ' invisible');
 
 			// scroll
 			this.pullDownEl = this.$('#pullDown')[0];
@@ -1315,19 +1307,30 @@ TweetView			- individual tweet comment
 			if(this.model.get('selected')) {
 				var collection = this.viewA.collection || false;
 				this.app.set({selectedArticleList: collection});
-				this.$el.fadeIn(200,function(){
-					var eh = self.$('.eventList').height(),
-						$a = self.$('.articleList');					
-					if(eh > $a.height()) $a.height( eh );
-					self.updateScroll();
-				});
+				this.$el.removeClass('invisible');
+				var eh = self.$('.eventList').height(),
+					$a = self.$('.articleList');					
+				if(eh > $a.height()) $a.height( eh );
+				self.updateScroll();
+
+				// this.$el.fadeIn(200,function(){
+					// var eh = self.$('.eventList').height(),
+						// $a = self.$('.articleList');					
+					// if(eh > $a.height()) $a.height( eh );
+					// self.updateScroll();
+				// });
 			}else{
-				this.$el.fadeOut(200,function(){
-					if(self.scroll) {
-						self.scroll.destroy();
-						self.scroll = null;
-					}
-				});
+				this.$el.addClass('invisible');
+				if(self.scroll) {
+					self.scroll.destroy();
+					self.scroll = null;
+				}
+				// this.$el.fadeOut(200,function(){
+					// if(self.scroll) {
+						// self.scroll.destroy();
+						// self.scroll = null;
+					// }
+				// });
 			}
 		},
 		createChannel: function(e){
@@ -1404,7 +1407,7 @@ TweetView			- individual tweet comment
 				json = article.toJSON(),
 				type = json.type;
 
-			console.log(json)
+			//console.log(json)
 			if( type.length == 0 && (/ESPN/gi).test(json.source) ) type = 'espn';
 
 			switch(type){
