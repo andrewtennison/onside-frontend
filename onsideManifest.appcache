@@ -1,0 +1,45 @@
+CACHE MANIFEST
+
+# version 0.1
+
+CACHE:
+
+# IMAGES
+public/i/sprites/noise2.png
+public/i/sprites/icons.png
+public/i/sprites/icon_search.png
+public/i/sprites/noise3.png
+public/i/sprites/loader.gif
+public/i/sprites/mask_headLeft.png
+public/i/sprites/mask_headRight.png
+public/i/placeholder/listIcon2.png
+
+# CSS
+public/c/layout.app-0.1.css
+public/c/style.css
+public/c/type.css
+public/c/sprites.css
+
+# JS
+public/j/lib/main.js
+
+public/j/lib/LAB-2.0.3.min.js
+public/j/lib/backbone-0.9.1.min.js
+public/j/lib/backbone_extensions.js
+public/j/lib/iscroll.js
+public/j/lib/jquery-1.7.1.min.js
+public/j/lib/json2.js
+public/j/lib/modernizr.custom.14463.js
+public/j/lib/pretty.js
+public/j/lib/underscore-1.3.1.min.js
+
+public/j/app/app.js
+public/j/app/collections.js
+public/j/app/models.js
+public/j/app/views.js
+
+FALLBACK:
+#/ /offline.html
+
+NETWORK:
+*
