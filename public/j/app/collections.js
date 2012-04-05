@@ -190,9 +190,6 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 					model = new BB.Detail(hash);
 					break;
 			}
-			// console.info(model)
-			// collection.tempSelected = id;
-			console.info('/FETCH DETAIL - ' + id)
 			model.fetch({
 				success:function(data){
 					self.createModel(model);

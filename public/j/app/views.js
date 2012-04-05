@@ -129,6 +129,7 @@ TweetView			- individual tweet comment
 		},
 		addHelp: function( index ){
 			var helpString = index? 'helpViewTemplate' + index : 'helpViewTemplate';
+			
 			if(typeof this[helpString] === undefined) return;
 			var name = (typeof this[helpString] === 'string')? this[helpString] : this[helpString]();
 			if( !name ) return;
@@ -1352,21 +1353,32 @@ TweetView			- individual tweet comment
 		helpViewTemplate1: 'navChannel1',
 		className: 'content channelList clearfix',
 		title: false, // set when creating view
-		itemView: function(item){ 
-			return ( this.type === 'list' )? new ChannelDetailHomeView({model:item, app:this.options.app}) : new ChannelDetailView({model:item, app:this.options.app}); 
+		onInit: function(){
+			switch(this.type){
+				case 'search':
+				case 'channel':
+				case 'event':
+					this.helpCount = false;
+					break;
+				case 'list':
+					break;
+				default:
+					break;
+			};
 		},
+		itemView: function(item){ return ( this.type === 'list' )? new ChannelDetailHomeView({model:item, app:this.options.app}) : new ChannelDetailView({model:item, app:this.options.app}); },
 		helpViewTemplate: function(){
 			var name;
+				
 			switch(this.type){
 				case 'search':
 					name = 'detailSearchChannel';
 					break;
-				case 'channel':
-				case 'event':
-					//name = 'detailDefaultChannel';
-					break;
 				case 'list':
 					name = 'detailHomeChannel';
+					break;
+				case 'channel':
+				case 'event':
 				default:
 					break;
 			};
