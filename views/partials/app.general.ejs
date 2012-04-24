@@ -169,12 +169,12 @@
 </script>
 
 <script id="tweetTemplate" class="tmpl" type="text/template">
-	<@ var time = prettyDate( created_at ); @>
+	<@ var time = prettyDate( created_at, false, true ); @>
 	<img src="<@= profile_image_url @>" />
 	
 	<div class="user">
 		<cite>
-			<a href='https://twitter.com/#!/<@= from_user_name @>' ><@= from_user_name @> </a> - <a class="reply" href="#">reply</a>
+			<a href='https://twitter.com/#!/<@= from_user @>' >@<@= from_user @></a>
 		</cite>
 		<time><@= time @></time>
 	</div>

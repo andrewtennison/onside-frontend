@@ -100,14 +100,16 @@
 					<div class="inner"></div>
 		 		</section>
 		 		<section class="content" id="facebookComments"><div class="inner"></div></section><!-- /#facebookComments -->
-		 		<section class="content" id="twitterComments">
+		 		<section class="content active" id="twitterComments">
 					<form action="/">
 						<% if(!everyauth.loggedIn) { %>
 							<p class="forUnAuth">You need to be logged in and have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
-						<% } else if(everyauth.loggedIn && everyauth.user.twitter) { %>
+						<% } else if(!everyauth.twitter) { %>
+							<p><a class="requireLogin" href="/auth/twitter">Sign in</a> to twitter to post your thoughts</p>
+						<% } else if(everyauth.twitter) { %>
 							<textarea class="forAuth formEl comment" id="tweetAdd" type="text" placeholder="tweet your comment" name="tweet"></textarea>
 							<button type="submit">tweet now</button>
-						<% }%>
+						<% } %>
 					</form>
 					<div class="inner"></div>
 		 		</section>
@@ -117,8 +119,8 @@
 
 		<footer>
 			<nav>
-				<a class="icon facebook" href="#facebookComments">facebook</a>
-				<a class="icon twitter" href="#twitterComments">twitter</a>
+				<!--a class="icon facebook" href="#facebookComments">facebook</a-->
+				<!--a class="icon twitter" href="#twitterComments">twitter</a-->
 				<!--a class="icon google" href="#googleComments">G+</a-->
 				<!--a class="icon onside" href="#onsideComments">onside</a-->
 			</nav>

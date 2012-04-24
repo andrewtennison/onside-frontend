@@ -89,7 +89,14 @@ exports.delApi = function(req,res){
 
 exports.postTweet = function(req,res){
 	req.log.startTimer('TweetPost');
-	if(!req.xhr || !req.session.auth.twitter) return;
+
+	console.log('req.session.auth')
+	console.log(req.session.auth)
+	console.log(req.session)
+	console.log(req)
+
+	if(!req.xhr || !req.session.auth.twitter) return res.json({error:401, msg:'Not authenticated with twitter'});
+	
 	var twit = new twitter({
 		consumer_key: conf.twit.consumerKey,
 		consumer_secret: conf.twit.consumerSecret,
@@ -115,7 +122,7 @@ exports.getTweet = function(req,res){
 		access_token_secret: conf.twit.accessSecret
 	});
 	var hash = '#' + req.url.replace('/tweet/','');
-	twit.search(hash, function(err, data) {
+	twit.search(hash, {lang:'en'}, function(err, data) {
 		req.log.endTweetGet('Teet.get Complete, url='+hash);
 		res.json(data);
     });

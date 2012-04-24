@@ -5,14 +5,14 @@
 	<@ var time = prettyDate( publish ); @>
 	<@ var imageClass = (images)? 'hasImage' : ''; @>
 	<div class="inner <@= imageClass @>">		
-		<@ if(publish) { @><time><@= time @></time><@ } @>
+		
 		<h1><@= title @></h1>
 		<@ if(images) { @>
 			<img src='<@= images @>' />
 		<@ } @>
 		<@ if(content){ @><div class="content"><@= content @></div><@ } @>
 		<footer>
-			<cite>from: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
+			<cite><@ if(publish) { @><time><@= time @></time><@ } @>: <@ if(author && author.length > 2) { @><@= author @> at <@ } @><@= source@></cite>
 			<nav> 
 				<a class="filter" href="#">filter results</a> 
 				<@ if(extended) { @>

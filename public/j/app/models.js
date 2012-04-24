@@ -421,7 +421,15 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 	});
 	
 	var Tweet = Backbone.Model.extend({
-		url: '/tweet'
+///		url: '/tweet',
+		inititalize: function(){
+			console.log('model.tweet.init')
+		},
+		defaults: {
+			created_at: false,
+			profile_image_url : false,
+			source: false
+		}
 	});
 	
 	

@@ -20,7 +20,7 @@ on.c = {};
 on.v = {};
 
 on.env = {
-	v					: 0.19,
+	v					: 0.20,
 	internetConnection	: true,
 	server				: 'development',
 	articleMax			: 20,

@@ -17,13 +17,14 @@ function calcDur(d){
 	}
 };
 
-function prettyDate(time, duration){
-	var date = new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
+	
+function prettyDate(time, duration, twitter){
+	var date = (twitter)? new Date(Date.parse(time)) : new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
 		diff = (((new Date()).getTime() - date.getTime()) / 1000),
 		day_diff = Math.floor(diff / 86400),
 		string = 'unknown',
 		dur = 0;
-		
+	
 	if ( isNaN(day_diff) ) return string;
 
 	if(duration) dur = calcDur(duration);
@@ -34,8 +35,8 @@ function prettyDate(time, duration){
 		// future
 		string = day_diff == 0 && (
 			-diff < 60 && "just starting" ||
-			-diff < 120 && "1 minute to ago" ||
-			-diff < 3600 && -Math.floor( diff / 60 ) + " minutes to ago" ||
+			-diff < 120 && "1 min to ago" ||
+			-diff < 3600 && -Math.floor( diff / 60 ) + " mins to ago" ||
 			-diff < 7200 && "1 hour to ago" ||
 			-diff < 86400 && -Math.floor( diff / 3600 ) + " hours to ago") ||
 		-day_diff == 1 && "Yesterday" ||
@@ -47,8 +48,8 @@ function prettyDate(time, duration){
 		// past
 		string = day_diff == 0 && (
 			diff < 60 && "just now" ||
-			diff < 120 && "1 minute ago" ||
-			diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+			diff < 120 && "1 mon ago" ||
+			diff < 3600 && Math.floor( diff / 60 ) + " mins ago" ||
 			diff < 7200 && "1 hour ago" ||
 			diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
 		day_diff == 1 && "Yesterday" ||

@@ -262,8 +262,8 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		
 	});
 	var TweetList = Backbone.Collection.extend({
-		localStorage: new Backbone.LocalStorage("onside.tweets"),
-		model : BB.tweet,
+		//localStorage: new Backbone.LocalStorage("onside.tweets"),
+		//model : BB.tweet,
 		hash: false,
 
 		url : function(){
@@ -273,7 +273,10 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 		parse: function(resp, xhr){
 			this.refreshUrl = resp.refresh_url;
 			return resp.results;
-		}
+		},
+		comparator : function(tweet) {
+			return tweet.get("created_at");
+		},
 	});
 
 	// Assign to BB namespace

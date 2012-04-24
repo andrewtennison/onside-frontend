@@ -77,9 +77,9 @@ TweetView			- individual tweet comment
 	
 	var _form = Backbone.View.extend({
 		events: {
-			'focus input.formEl' 	: 'focus',
-			'blur input.formEl' 	: 'blur',
-			'submit'				: 'submit'
+			'focus .formEl' : 'focus',
+			'blur .formEl' 	: 'blur',
+			'submit'		: 'submit'
 		},
 		escapeValue: true,
 		initialize : function(){
@@ -970,7 +970,6 @@ TweetView			- individual tweet comment
 			.error(function(err){console.error(err)});
 		},
 		sportsSearch: function(){
-			alert(this.sportsString)
 			this.app.set({
 				selectedItemUID: 'search|' + this.sportsString
 			});
@@ -1524,7 +1523,7 @@ TweetView			- individual tweet comment
 		    return this;
 		},
 	});
-	
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Article item views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1791,36 +1790,14 @@ TweetView			- individual tweet comment
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Comment views ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// 
-	var CommentPostView = _form.extend({
-		el: $('#onsideComments form'),
-		escapeVal: false,
-		initialize : function(){
-			_.bindAll(this, 'submit', 'search');
-			this.app = this.options.app;
-			this.collection = this.options.collection;
-		},
-		search: function(value){
-			console.log(value)
-			
-		    var UID = this.app.get('selectedItemUID').split('|'),
-		    	val = value.split('=')[1];
-		    	postParams = {comment: val};
-		    
-		    if(UID[1] === null) return;
-		    
-		    postParams[UID[0]] = UID[1];
-			this.collection.urlParams = '';
-		    this.collection.create(postParams);
-		    this.$('input[name="comment"]').val('');
-		},
-		focus: function(){
-			ev.trigger('update:view', 'showcomments');
-		}
-	});
 	var TweetPostView = _form.extend({
 		escapeValue: false,
 		el: $('#twitterComments form'),
 		escapeValue: false,
+		// events:{
+			// 'focus #tweetAdd' : 'onFocus',
+			// 'blur #tweetAdd' : 'onBlur'
+		// },
 		initialize : function(){
 			_.bindAll(this, 'submit', 'search', 'updateContent');
 			this.app = this.options.app;
@@ -1844,6 +1821,7 @@ TweetView			- individual tweet comment
 			this.$('textarea').text('#' + this.collection.hash);
 		},
 		focus: function(){
+			this.$el.addClass('on')
 			ev.trigger('update:view', 'showcomments');
 		}
 	});
@@ -1853,37 +1831,15 @@ TweetView			- individual tweet comment
 		scroll: null,
 		
 		events: {
-			'click #chatContentWrap' : 'checkView',
-			'click nav > a'	: 'changeTab'
+//			'click #chatContentWrap' : 'checkView'
 		},
-		
-		defaultTab: false,
-		activeTab: false,
-		activeBlock: false,
-		
-		$els: {
-			on_block		: this.$('#onsideComments'),
-			fb_block		: this.$('#facebookComments'),
-			tw_block		: this.$('#twitterComments'),
-			go_block		: this.$('#googleComments'),
-		},
-		
+				
 		initialize: function(){
 			this.app = this.options.app;
-			_.bindAll(this, 'checkView', 'changeTab', 'updateScroll');
+			_.bindAll(this, 'checkView', 'updateScroll');
 			
 				// comment lists views
-			var //onsideComments = new OnsideCommentListView({app: this.options.app, collection:this.app.comments}),
-				twitterComments = new TwitterCommentListView({app: this.options.app, collection:this.app.tweets}),
-				facebookComments = new FacebookCommentListView({app: this.options.app});			
-				// Post Comment view
-				//onsideCommentsPost = new CommentPostView({ app: this.options.app, collection:this.app.comments });
-			
-			if( this.app.get('user').twitter ){
-				this.changeTab(false, this.$('nav a.twitter') );				
-			}else{
-				this.changeTab(false, this.$('nav a.facebook') );
-			}
+			var twitterComments = new TwitterCommentListView({app: this.options.app, collection:this.app.tweets});
 			
 			ev.on('update:scroll:comments', this.updateScroll, this);
 			ev.trigger('update:scroll:comments');
@@ -1902,37 +1858,13 @@ TweetView			- individual tweet comment
 					self.scroll.refresh();
 				} else if(needsScroll && !scroll){
 					el.on('ontouchstart mousedown touchstart', function(e) { e.stopPropagation() });
-					self.scroll = new iScroll('groupContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'commentScrollbar'});
+					self.scroll = new iScroll('chatContentWrap', {hScroll:false, zoom: false, scrollbarClass: 'commentScrollbar'});
 				} else if (!needsScroll && scroll){
 					el.off('ontouchstart mousedown touchstart');
 					self.scroll.destroy();
 					self.scroll = null;
 				}
 			}, 100);
-		},
-		changeTab: function(e, el){
-			if(e){
-				e.preventDefault();
-				var newTab = $(e.target);
-			}else if(el){
-				newTab = el;
-			}
-			
-			var newBlock = newTab.attr('href');
-			
-			$(this.activeTab).removeClass('active');			
-			$(this.activeBlock).removeClass('active');			
-
-			this.activeTab = newTab;
-			this.activeBlock = newBlock;
-
-			$(this.activeTab).addClass('active');
-			$(this.activeBlock).addClass('active');
-			
-			if(newBlock === '#facebookComments' && this.$els.fb_block.is(':empty')){
-				this.facebookComments();
-			}
-			ev.trigger('update:scroll:comments');
 		}
 	});
 
@@ -1941,6 +1873,8 @@ TweetView			- individual tweet comment
 		helpGeneral: 'commentOnside',
 		helpAuth: 'commentOnside',
 		active: false,
+		val: false,
+		parent: false,
 		initialize: function(){		
 			_.bindAll(this, 'onInit', 'setupComments', 'addOne', 'addAll', 'reset', 'checkContent', 'showHelp', 'createHash');
 			
@@ -1951,24 +1885,38 @@ TweetView			- individual tweet comment
 			this.$help = false;
 			
 			var self = this;
-			this.app.on('change:selectedItemUID', this.checkContent); 
-			this.app.on('change:selectedArticle', function(){
-				var val = self.app.get('selectedItemUID');
-				self.checkContent(false, val);
-			});
+			
+			function check(v){
+				console.log('val = ' + val + ', v = '+v)
+				val = v;
+				self.checkContent(false, val)
+			}
+			
+			// this.app.on('change:selectedItemUID', self.checkContent); 
+			// this.app.on('change:selectedArticle', function(){
+				// self.checkContent(false, self.app.get('selectedItemUID'));
+			// });
 
 			if(this.collection) {
 				this.collection.on('add', this.addOne);
 				this.collection.on('reset', this.addAll);
 			};
+			
+			ev.on('update:view', function(msg){
+				if(msg !== 'showDetail') return;
+				self.checkContent(false, self.app.get('selectedItemUID'));
+			});
+
 			this.onInit();
 		},
 		onInit: function(){},
 		setupComments: function(){},
+		allAdded: function(){},
 		addOne: function(comment, index){},
 		addAll: function(comment){
 			this.$inner.empty();
 			this.collection.each(this.addOne);
+			this.allAdded();
 		},
 		reset: function(){
 			// empty + if present
@@ -1977,16 +1925,21 @@ TweetView			- individual tweet comment
 			if(this.$help) this.$help.remove();
 		},
 		checkContent: function(model, val){
+			if(val === this.val) return;
+			this.val = val;
+			if(model) this.parent = model;
+			
 			this.reset();
 			var s = val.split('|');
-			if( (/list|search|static/gi).test(s[0]) || (/null|create/gi).test(s[1]) ){
+			if( (/list|search|static/gi).test(s[0]) || (/null|create/gi).test(s[1])){
 				// no comments on certain pages - may be simpler to test revers (check for channel/event/article)
 				this.showHelp('general');
 			}else if(!this.auth){
 				// not auth to use this module - login help
 				this.showHelp('auth');
 			}else{
-				this.setupComments(val);
+				console.log('/// checkContent')
+				this.setupComments(s[1]);
 			};
 		},
 		showHelp: function(type){
@@ -2000,31 +1953,18 @@ TweetView			- individual tweet comment
 			ev.trigger('update:scroll:comments');
 		},
 		createHash: function(val){
+			var m = this.app.channels.get(val);
+			
+			/*
 			var s = val.split('|');
 			s[0] = s[0].substring(0,1).toUpperCase();
 			var hash = 'On' + s[0] + s[1];
 			if(s[2]) hash += s[2];
-			return hash;
+			*/
+			if(m) return m.get('keywords') || m.get('name');
 		}
 	});
 	
-	var OnsideCommentListView = _genericCommentListView.extend({
-		el : $('#onsideComments'),
-		onInit: function(){
-			this.auth = true;
-		},
-		addOne: function(comment, index){
-			var view = new CommentView({model:comment, app:this.options.app})
-			this.$inner.append(view.render().el);
-			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
-		},
-		setupComments: function(val){
-			var s = val.split('|');
-//			this.collection.reset();
-			this.collection.urlParams = '?' + s[0] +'='+ s[1];
-			this.collection.fetch();
-		}
-	});	
 	var TwitterCommentListView = _genericCommentListView.extend({
 		el : $('#twitterComments'),
 		auth: function(){
@@ -2040,33 +1980,20 @@ TweetView			- individual tweet comment
 			this.$inner.prepend(view.render().el);
 			if(index === this.collection.length - 1) ev.trigger('update:scroll:comments');
 		},
+		allAdded: function(){
+			twttr.anywhere(function (T) { T.linkifyUsers()});
+		},
 		setupComments: function(val){
+			console.log('setup comments')
 			var hash = this.createHash(val);
+			if(!hash) return;
+			console.log('hash = '+hash)
 			this.collection.hash = hash;
-			this.postView.updateContent(hash);
+			this.postView.updateContent(document.location.href);
 			this.collection.fetch();
 		}
 	});
-	var FacebookCommentListView = _genericCommentListView.extend({
-		el : $('#facebookComments'),
-		helpAuth: 'commentFacebook',
-		auth: function(){
-			var u = this.app.get('user');
-			return (u.facebook && u.facebook.length >= 2)? true : false;
-		},
-		setupComments: function(val){
-			var url = document.location.href,//.replace('#',''),
-				width = '265px', //this.$inner.width(),
-				comments = '<input type="hidden" value="'+url+'" /><div class="fb-comments" data-href="'+url+'" data-num-posts="2" data-width="'+width+'" data-colorscheme="dark" css=" '+on.path.facebookCss+' " simple="false"></div>';
-
-			this.$inner.html(comments);
-			if (typeof FB  != "undefined"){
-			    FB.XFBML.parse(document.getElementById('facebookComments'));
-			    ev.trigger('update:scroll:comments');
-			}
-		}
-	});
-
+	
 	var CommentView = Backbone.View.extend({
 		tagName: 'article',
 		className: 'comment bb',
@@ -2081,6 +2008,7 @@ TweetView			- individual tweet comment
 		    return this;
 		}
 	});
+	
 	var TweetView = CommentView.extend({
 		className: 'tweet bb',
 		template:  _.template( $('#tweetTemplate').html() ),
@@ -2101,7 +2029,6 @@ TweetView			- individual tweet comment
 	BB.SearchView		= SearchView;
 	BB.DetailListView 	= DetailListView;
 	BB.ArticleDetailView = ArticleDetailView;
-	BB.CommentPostView 	= CommentPostView;
 	BB.TweetPostView	= TweetPostView; 
 	BB.CommentListView 	= CommentListView; 
 
