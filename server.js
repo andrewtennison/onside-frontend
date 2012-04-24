@@ -151,6 +151,12 @@ app.get('/tweet/*', routes.getTweet);
 // fake call to proxy multiple calls to API
 app.get('/detail/:action?/:id?', routes.getDetailApi);
 
+// Redirect auth
+app.get('/reAuth', function(req, res){
+	req.session.redirectTo = req.query.redirect;
+	res.redirect('/auth/twitter');
+})
+
 
 //A Route for Creating a 500 Error (Useful to keep around)
 app.get('/500', function(req, res){

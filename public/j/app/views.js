@@ -1794,10 +1794,6 @@ TweetView			- individual tweet comment
 		escapeValue: false,
 		el: $('#twitterComments form'),
 		escapeValue: false,
-		// events:{
-			// 'focus #tweetAdd' : 'onFocus',
-			// 'blur #tweetAdd' : 'onBlur'
-		// },
 		initialize : function(){
 			_.bindAll(this, 'submit', 'search', 'updateContent');
 			this.app = this.options.app;
@@ -1818,7 +1814,7 @@ TweetView			- individual tweet comment
 			//this.collection.create(params)
 		},
 		updateContent: function(){
-			this.$('textarea').text('#' + this.collection.hash);
+			this.$('textarea').text(document.location.href + ' #' + this.collection.hash);
 		},
 		focus: function(){
 			this.$el.addClass('on')
@@ -1991,6 +1987,10 @@ TweetView			- individual tweet comment
 			this.collection.hash = hash;
 			this.postView.updateContent(document.location.href);
 			this.collection.fetch();
+			
+			var link = this.$('.requireLogin'),
+				href = link.attr('href');
+			link.attr('href', href + 'redirect=' + document.location)
 		}
 	});
 	

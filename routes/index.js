@@ -90,11 +90,6 @@ exports.delApi = function(req,res){
 exports.postTweet = function(req,res){
 	req.log.startTimer('TweetPost');
 
-	console.log('req.session.auth')
-	console.log(req.session.auth)
-	console.log(req.session)
-	console.log(req)
-
 	if(!req.xhr || !req.session.auth.twitter) return res.json({error:401, msg:'Not authenticated with twitter'});
 	
 	var twit = new twitter({

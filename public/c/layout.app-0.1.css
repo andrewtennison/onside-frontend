@@ -336,7 +336,7 @@ body,
 	.articleItem.rss .content h2, p {}
 	.articleItem.rss .content a {color:#000; text-decoration:underline}
 
-.articleItem.rss footer {position:absolute; bottom:0; left:0; right:0; padding:0; font-size:1.2em; color:#666; margin:0 15px; border-top:1px solid #ccc}
+.articleItem.rss footer {position:relative; display:block; clear:both; padding:0; font-size:1.2em; color:#666; margin:0; border-top:1px solid #ccc}
 	.articleItem.rss footer cite {display: block; float:left; font-style: normal; max-width: 300px; overflow: hidden; position: relative; text-overflow: ellipsis; white-space: nowrap; padding:5px}
 	.articleItem.rss nav {display:block; float:right;}
 		.articleItem.rss nav a {background:#999; float:right; color:#000; padding:5px; background:none}

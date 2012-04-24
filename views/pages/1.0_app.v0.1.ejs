@@ -105,7 +105,7 @@
 						<% if(!everyauth.loggedIn) { %>
 							<p class="forUnAuth">You need to be logged in and have <a class="requireLogin" href="#login">twitter associated</a> to your account</a> to post tweets</p>
 						<% } else if(!everyauth.twitter) { %>
-							<p><a class="requireLogin" href="/auth/twitter">Sign in</a> to twitter to post your thoughts</p>
+							<p><a class="requireLogin" href="/reAuth?">Sign in</a> to twitter to post your thoughts</p>
 						<% } else if(everyauth.twitter) { %>
 							<textarea class="forAuth formEl comment" id="tweetAdd" type="text" placeholder="tweet your comment" name="tweet"></textarea>
 							<button type="submit">tweet now</button>
