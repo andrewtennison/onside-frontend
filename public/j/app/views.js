@@ -87,10 +87,10 @@ TweetView			- individual tweet comment
 			_.bindAll(this, 'submit', 'search');
 		},
 		focus: function(){
-			on.helper.log('focus')
+			console.log('focus')
 		},
 		blur: function(){
-			on.helper.log('blur')
+			console.log('blur')
 		},
 		submit: function(e){
 		    e.preventDefault();
@@ -143,7 +143,7 @@ TweetView			- individual tweet comment
 			// runs after last item in collection is added
 		},
 		addAll: function(){
-			on.helper.log('# ListView.addAll = collection.reset // className = ' + this.className);
+			console.log('# ListView.addAll = collection.reset // className = ' + this.className);
 			this.destroyViews();
 
 			if(this.title) this.$el.prepend('<h2 class="groupTitle">'+this.title+'</h2>');
@@ -189,7 +189,7 @@ TweetView			- individual tweet comment
 		},
 		selectItem: function(e){
 			e.preventDefault();			
-			on.helper.log('! View.listItem.selectItem => click');
+			console.log('! View.listItem.selectItem => click');
 			$('#main').attr('class', false);
 			this.app.set({
 				selectedItemUID		: this.model.get('service') + '|' + this.model.id,
@@ -345,7 +345,7 @@ TweetView			- individual tweet comment
 		},
 		
 		initialize: function(){
-			on.helper.log('# View.Appview.initialize', 'info');
+			console.info('# View.Appview.initialize');
 			var self = this;
 			
 			_.bindAll(this, 'onResize', 'show', 'setAuth', 'triggerShow', 'triggerSearch', 'triggerFeedback');
@@ -353,7 +353,9 @@ TweetView			- individual tweet comment
 
 			$(window).on('resize', this.onResize);			
 			this.app.on('change:userAuth', this.setAuth);
+			
 			ev.on('update:view', function(val){
+				// used to slide content / left / right / center
 				console.log('ev.bnd.updateView - ' + val) 
 				self.show(val,true)
 			});
@@ -427,7 +429,7 @@ TweetView			- individual tweet comment
 			'click .toggleBlock'	: 'toggleBlocks'
 		},
 		initialize: function(){
-			on.helper.log('# View.Nav.initialize', 'info');
+			console.info('# View.Nav.initialize');
 			
 			this.app = this.options.app;
 			this.$eventButton = this.$('nav .events');
@@ -484,7 +486,7 @@ TweetView			- individual tweet comment
 		
 		toggleBlocks: function(e){
 			e.preventDefault();
-			on.helper.log('! click.toggleBlock => View.Nav.toggleBlocks');
+			console.log('! click.toggleBlock => View.Nav.toggleBlocks');
 			
 			var el = $(e.target),
 				h = e.target.getAttribute('href');
@@ -503,7 +505,7 @@ TweetView			- individual tweet comment
 		
 		changeGroup: function(e){
 			e.preventDefault();
-			on.helper.log('! click.toggleGroup => View.Nav.changeGroup');
+			console.log('! click.toggleGroup => View.Nav.changeGroup');
 	
 			var c = e.target.className,
 				val = (c.indexOf('event') === -1)? 'channels' : 'events';
@@ -513,7 +515,7 @@ TweetView			- individual tweet comment
 		},
 		
 		updateView: function(val){
-			on.helper.log('* View.Nav.updateView');
+			console.log('* View.Nav.updateView');
 			//switch(this.app.get('selectedServiceName')){
 			switch(val){
 				case 'event':
@@ -537,14 +539,14 @@ TweetView			- individual tweet comment
 					break;
 				
 				default:
-					on.helper.log('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'), 'error')
+					console.error('!! view.NavView.updateView: this.app.get(selectedServiceName) value = ' + this.app.get('selectedServiceName'))
 					break;
 			}
 			this.updateScroll();
 		},
 		
 		expandContainer: function(){
-			on.helper.log('* View.Nav.expandContainer')
+			console.log('* View.Nav.expandContainer')
 		}
 		
 	});
@@ -619,7 +621,7 @@ TweetView			- individual tweet comment
 		template: _.template( $('#savedSearchTemplate').html() ),
 		selectItem: function(e){
 			e.preventDefault();
-			on.helper.log('! View.listItem.selectItem => click');
+			console.log('! View.listItem.selectItem => click');
 			this.app.set({
 				selectedItemUID		: this.model.get('service') + '|' + this.model.get('query'),
 				selectedItemTitle	: this.model.get('name') || this.model.get('title')
@@ -643,14 +645,22 @@ TweetView			- individual tweet comment
 			//'click .next .prev
 		},
 		initialize: function(){
-			on.helper.log('# View.Detail.initialize', 'info')			
+			console.info('# View.Detail.initialize')
+			var self = this;			
 			this.app = this.options.app;
 			this.collection = this.app.detailedList;
 
 			_.bindAll(this, 'hideLoading', 'updateView', 'addOne', 'addAll', 'removeOne', 'selectStaticView');
 			
 			// BIND Collection
-			this.collection.on('change:selected', this.hideLoading);
+			
+			this.collection.on('change:selected', function(){
+				self.hideLoading();
+				console.log(this.selected)
+				console.log(this.requested)
+				console.log( self.collection.selected );
+
+			});
 			this.collection.on('add', this.addOne);
 			this.collection.on('reset', this.addAll);
 			this.collection.on('remove', this.removeOne);
@@ -660,6 +670,7 @@ TweetView			- individual tweet comment
 			this.app.on('change:selectedItemUID', this.updateView)
 		},
 		updateView: function(app,selectedItemUID){
+			console.log('# View.DetailList.updateView')
 			this.$el.addClass('loading');
 			
 			var s = selectedItemUID.split('|'),
@@ -670,6 +681,7 @@ TweetView			- individual tweet comment
 			this.collection.fetchModel(selectedItemUID, detailUID);
 		},
 		hideLoading: function(){
+			console.log('# View.DetailList.hideLoading')
 			this.$el.removeClass('loading');			
 		},
 		addOne: function(model){
@@ -695,8 +707,11 @@ TweetView			- individual tweet comment
 					view = new DetailView({model:model, app:this.options.app});
 					break;
 			};
+			console.log('> DetailListView.addOne complete')
+			
 			this.$el.append(view.render().el);
-			view.toggleDisplay( true );
+			view.toggleDisplay();
+			//this.hideLoading();
 		},
 		addAll: function(models){
 			console.error('View.DetailList.addAll');
@@ -705,7 +720,7 @@ TweetView			- individual tweet comment
 			console.error('View.DetailList.removeOne');
 		},
 		selectStaticView: function(model){
-			console.info('selectStaticView');
+			console.log('# View.DetailList.selectStaticView')
 			var view = StaticView,
 				type = model.get('type'),
 				val = model.get('val');
@@ -723,7 +738,6 @@ TweetView			- individual tweet comment
 					view = StaticView;
 					break;
 			};
-			console.info(view)
 			return view;
 		}
 	});
@@ -766,9 +780,12 @@ TweetView			- individual tweet comment
 		},
 		afterRender: function(){},
 		toggleDisplay: function(){
+			console.log('# View.StaticView.toggleDisplay')
 			var self = this,
 				el = this.$('input[type=text], input[type=password], input[type=search], textarea, select'),
 				speed = 200;
+				
+			console.log(this.model.get('selected'))
 				
 			if(this.model.get('selected')) {
 				this.$el.fadeIn(speed,function(){
@@ -925,6 +942,8 @@ TweetView			- individual tweet comment
 			return false;
 		},
 		toggleSports: function(e){
+			console.log('# View.Welcome_staticView.updateView')
+
 			e.preventDefault();
 			var $el = $(e.target),
 				$ch = this.$('.channelsQuickFollow');
@@ -1303,6 +1322,7 @@ TweetView			- individual tweet comment
 			})
 		},
 		toggleDisplay: function(){
+			console.log('# DetailView.toggleDisplay, selected = ' + this.model.get('selected'))
 			var self = this;
 			if(this.model.get('selected')) {
 				var collection = this.viewA.collection || false;
@@ -1934,7 +1954,7 @@ TweetView			- individual tweet comment
 				// not auth to use this module - login help
 				this.showHelp('auth');
 			}else{
-				console.log('/// checkContent')
+				console.log('> _genericListComment.checkContent > setupComments')
 				this.setupComments(s[1]);
 			};
 		},

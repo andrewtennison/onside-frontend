@@ -150,18 +150,20 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 			
 			// hide existing model
 			if(this.selected !== false) {
+				console.log('# Collection.DetailList.fetchModel > hide existing: ' + this.selected)
 				this.get(this.selected).set({ selected : false});
 				this.selected = false;
 			};
 
 			// if model exists show it
-			if( this.get( detailUID ) ) {
-				this.get(detailUID).set({selected:true});
+			var existingModel = this.get( detailUID );
+			if( existingModel ) {
+				console.log('# Collection.DetailList.fetchModel > show existing: ' + detailUID)
+				existingModel.set({selected:true});
 				this.selected = detailUID;
 				this.trigger('change:selected');
 				return;
 			};
-			
 			this.requested = detailUID;
 			
 			if( (/create|edit|delete/gi).test(s[1]) ){
@@ -170,9 +172,14 @@ var on = window.on || {}, BB = window.BB || {}, console = window.console || {}, 
 				return;
 			};
 
+			console.log('# Collection.DetailList.fetchModel > create new: ' + detailUID)
+
 			switch(type){
 				case 'static':
+					hash.selected = true;
+					this.selected = detailUID;
 					this.add(hash);
+					this.trigger('change:selected');
 					return;
 				case 'search':
 					model = new BB.DetailSearch(hash);
